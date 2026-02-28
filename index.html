@@ -1276,8 +1276,15 @@
         });
 
         document.getElementById('nextLevelBtn').addEventListener('click', () => {
-            if (currentLevel === 1) {
+            if (currentLevel === 1 || currentLevel === 2) {
                 document.getElementById('interstitialNameDisplay').innerText = playerName;
+
+                if (currentLevel === 1) {
+                    document.getElementById('interstitialImg').src = "tanjung_piai.png";
+                } else if (currentLevel === 2) {
+                    document.getElementById('interstitialImg').src = "pulau_kukup.png";
+                }
+
                 hideAllScreens();
                 screens.interstitial.classList.remove('hidden');
 
