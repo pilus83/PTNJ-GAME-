@@ -495,10 +495,18 @@
         <!-- Skrin Menang/Kalah -->
         <div id="endScreen" class="overlay hidden">
             <h1 id="endTitle" class="text-5xl font-bold mb-2 text-center">Tamat</h1>
-            <p id="endMessage" class="text-2xl mb-6 text-center">Anda telah...</p>
-            <div class="bg-gray-800 p-6 rounded-xl border border-gray-600 mb-6 text-center w-64">
-                <p class="text-lg text-gray-300">Markah Terkumpul:</p>
-                <p class="text-4xl font-bold text-yellow-400" id="finalScore">0</p>
+            <p id="endMessage" class="text-2xl mb-4 text-center">Anda telah...</p>
+
+            <!-- Box Markah & Kedudukan -->
+            <div
+                class="bg-gray-800 p-6 rounded-xl border border-gray-600 mb-6 flex flex-col items-center w-72 shadow-xl">
+                <p class="text-lg text-gray-300 mb-1">Markah Terkumpul:</p>
+                <p class="text-5xl font-black text-yellow-400 drop-shadow-md" id="finalScore">0</p>
+
+                <div id="rankContainer" class="mt-4 pt-4 border-t border-gray-600 w-full text-center hidden">
+                    <p class="text-sm text-gray-400">Kedudukan Semasa Anda:</p>
+                    <p class="text-2xl font-bold text-green-400 mt-1" id="finalRank">Tangga #1</p>
+                </div>
             </div>
             <div class="flex flex-col gap-3">
                 <button id="nextLevelBtn" class="hidden jungle-btn mb-3 flex justify-center items-center gap-2">
@@ -616,15 +624,24 @@
 
         // --- PENGURUSAN PAPAN MARKAH (LEADERBOARD) ---
         function saveHighScore(name, markah) {
-            if (markah <= 0) return;
+            if (markah <= 0) return -1;
             let board = JSON.parse(localStorage.getItem('ptnj_leaderboard')) || [];
-            board.push({ name: name || "Renjer Tanpa Nama", score: markah, date: new Date().toLocaleDateString() });
+
+            // Rekod baharu
+            const newRecord = { name: name || "Renjer Tanpa Nama", score: markah, date: new Date().toLocaleDateString() };
+            board.push(newRecord);
 
             // Susun dari tertinggi ke rendah
             board.sort((a, b) => b.score - a.score);
+
+            // Cari kedudukan terkini rekod tadi
+            const rankIndex = board.findIndex(r => r === newRecord);
+
             // Simpan hanya Top 10
             board = board.slice(0, 10);
             localStorage.setItem('ptnj_leaderboard', JSON.stringify(board));
+
+            return rankIndex; // Return index (0 = Tangga Pertama)
         }
 
         document.getElementById('openLeaderboardBtn').addEventListener('click', () => {
@@ -1318,15 +1335,32 @@
             timeDisplay.innerText = timeLeft;
         }
 
+        function showEndRank(rankIndex) {
+            const rankDiv = document.getElementById('rankContainer');
+            const rankText = document.getElementById('finalRank');
+
+            if (rankIndex >= 0 && rankIndex < 10) {
+                rankDiv.classList.remove('hidden');
+                rankText.innerText = `Tangga #${rankIndex + 1} 🏆`;
+            } else if (rankIndex >= 10) {
+                rankDiv.classList.remove('hidden');
+                rankText.innerText = `Tangga #${rankIndex + 1}`;
+                rankText.className = "text-xl font-bold text-gray-400 mt-1";
+            } else {
+                rankDiv.classList.add('hidden');
+            }
+        }
+
         function gameOver() {
             gameState = 'GAMEOVER';
-            saveHighScore(playerName, score); // Simpan skor sebelum tamat
+            let rank = saveHighScore(playerName, score); // Simpan skor dan dapatkan kedudukan
             hideAllScreens();
             screens.end.classList.remove('hidden');
             document.getElementById('endTitle').innerText = "Misi Gagal";
             document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-red-500";
             document.getElementById('endMessage').innerText = `Anda tewas di Tahap ${currentLevel}.`;
             document.getElementById('finalScore').innerText = score;
+            showEndRank(rank);
 
             document.getElementById('nextLevelBtn').classList.add('hidden');
             document.getElementById('restartBtn').innerText = "Main Semula";
@@ -1358,9 +1392,10 @@
 
                 score += 5000 + (timeLeft * 5);
                 updateHUD();
-                saveHighScore(playerName, score); // Simpan markah selepas menang penuh
+                let rank = saveHighScore(playerName, score); // Simpan markah selepas menang penuh
 
                 document.getElementById('finalScore').innerText = score;
+                showEndRank(rank);
 
                 document.getElementById('nextLevelBtn').classList.add('hidden');
                 document.getElementById('restartBtn').innerText = "Main Semula";
