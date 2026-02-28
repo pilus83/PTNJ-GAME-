@@ -1186,7 +1186,37 @@
                     ctx.scale(-1, 1);
                 }
 
+                // 4. Pergerakan Kaki (Pisahkan Badan Atas & Bawah)
+                let splitY = player.height * 0.55; // Titik pemotongan di pinggang
+                let swingAngle = 0;
+
+                if (Math.abs(player.vx) > 0.5 && player.grounded) {
+                    // Ayun kaki ke depan belakang bila lari
+                    swingAngle = Math.sin(Date.now() * 0.015) * 0.4;
+                }
+
+                // --- Lukis Bahagian Atas Badan ---
+                ctx.save();
+                ctx.beginPath();
+                ctx.rect(-player.width / 2, -player.height / 2, player.width, splitY);
+                ctx.clip();
                 ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
+                ctx.restore();
+
+                // --- Lukis Bahagian Kaki Bergerak ---
+                ctx.save();
+                // Alih titik putaran ke pinggang
+                ctx.translate(0, -player.height / 2 + splitY);
+                ctx.rotate(swingAngle); // Gerakkan kaki
+                // Undur balik dari pinggang
+                ctx.translate(0, player.height / 2 - splitY);
+
+                ctx.beginPath();
+                ctx.rect(-player.width, -player.height / 2 + splitY, player.width * 2, player.height - splitY);
+                ctx.clip();
+                ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
+                ctx.restore();
+
                 ctx.restore();
             } else {
                 let pColor = currentLevel >= 4 ? '#E53E3E' : player.color;
