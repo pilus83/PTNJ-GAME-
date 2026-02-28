@@ -521,17 +521,16 @@
             const imgData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const data = imgData.data;
             for (let i = 0; i < data.length; i += 4) {
-                // Padam latar belakang biru awan / cerah
-                // Mengesan warna langit biru cerah sehingga putih
+                // Padam latar belakang putih / hampir putih
                 let r = data[i], g = data[i + 1], b = data[i + 2];
-                if ((b > 200 && r < 180 && g < 220) || (r > 230 && g > 230 && b > 230)) {
-                    data[i + 3] = 0;
+                if (r > 240 && g > 240 && b > 240) {
+                    data[i + 3] = 0; // Jadikan lutsinar
                 }
             }
             tCtx.putImageData(imgData, 0, 0);
             playerImg.src = tempCanvas.toDataURL(); // Guna imej lutsinar
         };
-        rawPlayerImg.src = 'player_run.jpg'; // Muatkan imej 3D berlari asal
+        rawPlayerImg.src = 'player_new_run.png'; // Muatkan imej karakter baru
 
         const screens = {
             register: document.getElementById('registerScreen'),
@@ -738,9 +737,9 @@
         if ('ontouchstart' in window || navigator.maxTouchPoints > 0) touchControls.classList.remove('hidden');
 
         const player = {
-            x: 50, y: 200, width: 40, height: 60,
+            x: 50, y: 200, width: 70, height: 100, // Saiz dibesarkan
             vx: 0, vy: 0, speed: 5,
-            jumpPower: -13, maxJumps: 2, jumpCount: 0,
+            jumpPower: -14, maxJumps: 2, jumpCount: 0, // Kuasa lompat sikit tinggi sebab badan besar
             gravity: 0.6, grounded: false,
             color: '#2F855A', facingLeft: false
         };
