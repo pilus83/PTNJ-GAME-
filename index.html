@@ -6,6 +6,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Renjer Johor: Misi Taman Negara</title>
     <script src="https://cdn.tailwindcss.com"></script>
+    <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
     <style>
         body {
             margin: 0;
@@ -480,7 +481,8 @@
         <!-- Skrin Interstitial (Gambar) -->
         <div id="interstitialScreen"
             class="overlay hidden bg-green-900 bg-opacity-95 flex flex-col justify-center items-center">
-            <h2 class="text-4xl font-black text-white mb-6 text-center drop-shadow-lg">Tahniah Menamatkan Tahap 1!</h2>
+            <h2 class="text-5xl font-black text-white mb-6 text-center drop-shadow-lg">Tahniah <span
+                    id="interstitialNameDisplay" class="text-yellow-400"></span>!</h2>
             <img src="tanjung_piai.png" alt="Tanjung Piai"
                 class="max-w-[90%] max-h-[60vh] object-contain cursor-pointer transition transform hover:scale-105"
                 id="interstitialImg">
@@ -1275,8 +1277,35 @@
 
         document.getElementById('nextLevelBtn').addEventListener('click', () => {
             if (currentLevel === 1) {
+                document.getElementById('interstitialNameDisplay').innerText = playerName;
                 hideAllScreens();
                 screens.interstitial.classList.remove('hidden');
+
+                // Tembak bunga api (confetti)
+                let duration = 3 * 1000;
+                let end = Date.now() + duration;
+
+                (function frame() {
+                    confetti({
+                        particleCount: 5,
+                        angle: 60,
+                        spread: 55,
+                        origin: { x: 0 },
+                        zIndex: 100
+                    });
+                    confetti({
+                        particleCount: 5,
+                        angle: 120,
+                        spread: 55,
+                        origin: { x: 1 },
+                        zIndex: 100
+                    });
+
+                    if (Date.now() < end) {
+                        requestAnimationFrame(frame);
+                    }
+                }());
+
             } else {
                 currentLevel++;
                 startLevel();
