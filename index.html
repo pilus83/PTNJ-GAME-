@@ -64,25 +64,39 @@
         }
 
         .jungle-title {
-            font-family: 'Fredoka One', 'Varela Round', 'Arial Rounded MT Bold', sans-serif;
-            font-size: clamp(2.5rem, 6vw, 4.5rem);
-            color: #FFD700;
+            font-family: 'Fredoka One', 'Titan One', 'Arial Black', sans-serif;
+            font-size: clamp(3rem, 7vw, 5rem);
+            color: #FFF9D2;
+            /* Very light yellow face */
             text-transform: uppercase;
-            letter-spacing: 2px;
+            letter-spacing: 3px;
             text-align: center;
-            /* Text stroke and shadow for that cartoon look */
+
+            /* Cartoon 3D thick text */
+            -webkit-text-stroke: 2px #8E4A0B;
             text-shadow:
-                -2px -2px 0 #8B4513, 2px -2px 0 #8B4513, -2px 2px 0 #8B4513, 2px 2px 0 #8B4513,
-                0px 6px 0px #8B4513,
-                0px 8px 10px rgba(0, 0, 0, 0.5);
+                0px 2px 0px #FFC107,
+                0px 4px 0px #FF9800,
+                0px 7px 0px #D84315,
+                0px 9px 0px #5D4037,
+                0px 15px 15px rgba(0, 0, 0, 0.6);
+
             margin-bottom: 2rem;
-            line-height: 1.1;
+            line-height: 1.2;
             z-index: 10;
-            background: #D2691E;
-            padding: 10px 30px;
-            border-radius: 30px;
-            border: 4px solid #8B4513;
+
+            /* Wooden Board background */
+            background: linear-gradient(to bottom, #C47A41, #965321);
+            padding: 15px 50px;
+            border-radius: 30px 30px 20px 20px;
+            border: 6px solid #4A2912;
+            box-shadow:
+                inset 0px 5px 0px rgba(255, 255, 255, 0.2),
+                inset 0px -4px 0px rgba(0, 0, 0, 0.1),
+                0px 8px 0px #311A0B,
+                0px 14px 15px rgba(0, 0, 0, 0.6);
             display: inline-block;
+            position: relative;
         }
 
         .jungle-panel {
