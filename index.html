@@ -685,7 +685,7 @@
         });
         // --- TAMAT FUNGSI ADMIN ---
 
-        const keys = { right: false, left: false };
+        const keys = { right: false, left: false, up: false };
 
         function performJump() {
             if (player.jumpCount < player.maxJumps) {
@@ -699,13 +699,17 @@
             if (gameState !== 'PLAYING') return;
             if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
             if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
-            if (e.code === 'ArrowUp' || e.code === 'Space' || e.code === 'KeyW') performJump();
+            if (e.code === 'ArrowUp' || e.code === 'Space' || e.code === 'KeyW') {
+                keys.up = true;
+                performJump();
+            }
             if (e.code === 'KeyZ') shootFireball();
         });
 
         window.addEventListener('keyup', (e) => {
             if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
             if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+            if (e.code === 'ArrowUp' || e.code === 'Space' || e.code === 'KeyW') keys.up = false;
         });
 
         const btnLeft = document.getElementById('btnLeft');
@@ -737,9 +741,11 @@
         if ('ontouchstart' in window || navigator.maxTouchPoints > 0) touchControls.classList.remove('hidden');
 
         const player = {
-            x: 50, y: 200, width: 70, height: 100, // Saiz dibesarkan
-            vx: 0, vy: 0, speed: 5,
-            jumpPower: -14, maxJumps: 2, jumpCount: 0, // Kuasa lompat sikit tinggi sebab badan besar
+            x: 50, y: 200, width: 70, height: 100,
+            vx: 0, vy: 0,
+            runSpeed: 10, acceleration: 0.6, deceleration: 0.8,
+            jumpPower: -14, maxJumps: 2, jumpCount: 0,
+            fallMultiplier: 2.5, lowJumpMultiplier: 2.0,
             gravity: 0.6, grounded: false,
             color: '#2F855A', facingLeft: false
         };
@@ -889,12 +895,37 @@
                 if (timeLeft <= 0) { loseLife(); return; }
             }
 
-            if (keys.left) { player.vx = -player.speed; player.facingLeft = true; }
-            else if (keys.right) { player.vx = player.speed; player.facingLeft = false; }
-            else { player.vx *= 0.8; }
+            let moveInput = 0;
+            if (keys.left) { moveInput = -1; player.facingLeft = true; }
+            if (keys.right) { moveInput = 1; player.facingLeft = false; }
 
-            player.vy += player.gravity;
-            if (player.vy > 12) player.vy = 12;
+            // 1. LOGIK MOMENTUM (Pecutan)
+            if (moveInput !== 0) {
+                player.vx += moveInput * player.acceleration;
+                if (player.vx > player.runSpeed) player.vx = player.runSpeed;
+                if (player.vx < -player.runSpeed) player.vx = -player.runSpeed;
+            } else {
+                // Berhenti secara beransur-ansur (Friction)
+                if (player.vx > 0) {
+                    player.vx -= player.deceleration;
+                    if (player.vx < 0) player.vx = 0;
+                } else if (player.vx < 0) {
+                    player.vx += player.deceleration;
+                    if (player.vx > 0) player.vx = 0;
+                }
+            }
+
+            // 2. PHYSICS GRAVITI (Rasa Berat Mario)
+            if (player.vy > 0) {
+                // Jatuh lebih laju (Fall Multiplier)
+                player.vy += player.gravity * (player.fallMultiplier - 1);
+            } else if (player.vy < 0 && !keys.up) {
+                // Lompat pendek jika butang dilepaskan (Low Jump Multiplier)
+                player.vy += player.gravity * (player.lowJumpMultiplier - 1);
+            }
+            player.vy += player.gravity; // Graviti asas
+
+            if (player.vy > 15) player.vy = 15; // Had laju terminal jatuh
 
             player.x += player.vx;
             if (player.x < 0) player.x = 0;
