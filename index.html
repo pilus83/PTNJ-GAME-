@@ -477,15 +477,15 @@
             </div>
         </div>
 
-        <!-- Skrin Transisi Gambar Tanjung Piai -->
-        <div id="tanjungPiaiScreen"
-            class="overlay hidden title-screen cursor-pointer w-full h-full flex justify-center items-center bg-black bg-opacity-90">
+        <!-- Skrin Interstitial (Gambar) -->
+        <div id="interstitialScreen"
+            class="overlay hidden bg-green-900 bg-opacity-95 flex flex-col justify-center items-center">
+            <h2 class="text-4xl font-black text-white mb-6 text-center drop-shadow-lg">Tahniah Menamatkan Tahap 1!</h2>
             <img src="tanjung_piai.png" alt="Tanjung Piai"
-                class="max-w-full max-h-full object-contain animate-pulse shadow-2xl rounded-3xl"
-                style="width: auto; height: 100%;">
-            <p
-                class="absolute bottom-10 text-white font-bold text-2xl animate-bounce drop-shadow-lg bg-black bg-opacity-50 px-6 py-2 rounded-full border-2 border-white">
-                Klik Gambar Untuk Meneruskan ➡️</p>
+                class="max-w-[90%] max-h-[60vh] object-contain cursor-pointer transition transform hover:scale-105"
+                id="interstitialImg">
+            <p class="text-yellow-300 font-bold mt-6 text-xl animate-pulse">Ketik gambar untuk ke tahap seterusnya...
+            </p>
         </div>
 
         <!-- Kawalan Sentuh -->
@@ -516,7 +516,7 @@
             start: document.getElementById('startScreen'),
             trivia: document.getElementById('triviaScreen'),
             end: document.getElementById('endScreen'),
-            tanjungPiai: document.getElementById('tanjungPiaiScreen')
+            interstitial: document.getElementById('interstitialScreen')
         };
         const scoreDisplay = document.getElementById('scoreDisplay');
         const livesDisplay = document.getElementById('livesDisplay');
@@ -1272,16 +1272,17 @@
         });
 
         document.getElementById('nextLevelBtn').addEventListener('click', () => {
-            currentLevel++;
-            if (currentLevel === 2) {
+            if (currentLevel === 1) {
                 hideAllScreens();
-                screens.tanjungPiai.classList.remove('hidden');
+                screens.interstitial.classList.remove('hidden');
             } else {
+                currentLevel++;
                 startLevel();
             }
         });
 
-        screens.tanjungPiai.addEventListener('click', () => {
+        document.getElementById('interstitialImg').addEventListener('click', () => {
+            currentLevel++;
             startLevel();
         });
 
