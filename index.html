@@ -511,7 +511,25 @@
         const ctx = canvas.getContext('2d');
 
         const playerImg = new Image();
-        playerImg.src = 'player_pixel.png';
+        const rawPlayerImg = new Image();
+        rawPlayerImg.onload = () => {
+            const tempCanvas = document.createElement('canvas');
+            tempCanvas.width = rawPlayerImg.width;
+            tempCanvas.height = rawPlayerImg.height;
+            const tCtx = tempCanvas.getContext('2d');
+            tCtx.drawImage(rawPlayerImg, 0, 0);
+            const imgData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
+            const data = imgData.data;
+            for (let i = 0; i < data.length; i += 4) {
+                // Padam latar belakang putih / hampir putih
+                if (data[i] > 230 && data[i + 1] > 230 && data[i + 2] > 230) {
+                    data[i + 3] = 0; // Jadikan lutsinar (transparent)
+                }
+            }
+            tCtx.putImageData(imgData, 0, 0);
+            playerImg.src = tempCanvas.toDataURL(); // Guna imej lutsinar
+        };
+        rawPlayerImg.src = 'player_3d.jpg'; // Muatkan imej 3D asal
 
         const screens = {
             register: document.getElementById('registerScreen'),
