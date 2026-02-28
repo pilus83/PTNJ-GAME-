@@ -484,8 +484,10 @@
             <img src="tanjung_piai.png" alt="Tanjung Piai"
                 class="max-w-[90%] max-h-[60vh] object-contain cursor-pointer transition transform hover:scale-105"
                 id="interstitialImg">
-            <p class="text-yellow-300 font-bold mt-6 text-xl animate-pulse">Ketik gambar untuk ke tahap seterusnya...
-            </p>
+            <button id="interstitialNextBtn"
+                class="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 mt-8 shadow-lg transform transition hover:scale-110 border-4 border-green-800 animate-bounce">
+                <span class="text-4xl px-2">▶️</span>
+            </button>
         </div>
 
         <!-- Kawalan Sentuh -->
@@ -1282,6 +1284,11 @@
         });
 
         document.getElementById('interstitialImg').addEventListener('click', () => {
+            currentLevel++;
+            startLevel();
+        });
+
+        document.getElementById('interstitialNextBtn').addEventListener('click', () => {
             currentLevel++;
             startLevel();
         });
