@@ -543,8 +543,8 @@
             class="overlay hidden bg-green-900 bg-opacity-95 flex flex-col justify-center items-center">
             <h2 class="text-5xl font-black text-white mb-6 text-center drop-shadow-lg">Tahniah <span
                     id="interstitialNameDisplay" class="text-yellow-400"></span>!</h2>
-            <img src="tanjung_piai.png" alt="Tanjung Piai"
-                class="max-w-[90%] max-h-[60vh] object-contain cursor-pointer transition transform hover:scale-105"
+            <img src="" alt="Lokasi Taman Negara"
+                class="opacity-0 max-w-[90%] max-h-[60vh] object-contain cursor-pointer transition transform hover:scale-105"
                 id="interstitialImg">
             <button id="interstitialNextBtn"
                 class="bg-green-500 hover:bg-green-600 text-white rounded-full p-4 mt-8 shadow-lg transform transition hover:scale-110 border-4 border-green-800 animate-bounce">
@@ -1201,25 +1201,7 @@
         function drawGame() {
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBackground();
-
-            // Lukis Tiang Bendera (Flagpole)
-            ctx.fillStyle = '#CBD5E0'; // Warna tiang kelabu
-            ctx.fillRect(goal.x - cameraX + 25, goal.y, 10, goal.height + 50); // Tiang lebih tinggi sikit
-
-            // Lukis Puncak Tiang (Bulatan Emas)
-            ctx.fillStyle = '#ECC94B';
-            ctx.beginPath();
-            ctx.arc(goal.x - cameraX + 30, goal.y, 8, 0, Math.PI * 2);
-            ctx.fill();
-
-            // Lukis Bendera Merah
-            ctx.fillStyle = '#E53E3E'; // Merah
-            ctx.beginPath();
-            ctx.moveTo(goal.x + 35 - cameraX, goal.y + 10); // Mula kat tiang
-            ctx.lineTo(goal.x + 75 - cameraX, goal.y + 25); // Hujung bendera
-            ctx.lineTo(goal.x + 35 - cameraX, goal.y + 40); // Balik ke tiang
-            ctx.closePath();
-            ctx.fill();
+            // Tiang Bendera dipindahkan ke bawah supaya tidak disorok platform
 
             let groundColor = theme === 'bakau' ? '#7B341E' : '#8B4513';
             let topColor = theme === 'bakau' ? '#A0522D' : '#48BB78';
@@ -1304,6 +1286,26 @@
                 ctx.beginPath(); ctx.arc(cx + 7.5, f.y + 7.5, 7.5, 0, Math.PI * 2); ctx.fill();
                 ctx.fillStyle = '#D6BCFA'; ctx.beginPath(); ctx.arc(cx + 7.5, f.y + 7.5, 3, 0, Math.PI * 2); ctx.fill();
             }
+
+
+            // Lukis Tiang Bendera (Flagpole)
+            ctx.fillStyle = '#CBD5E0'; // Warna tiang kelabu
+            ctx.fillRect(goal.x - cameraX + 25, goal.y, 10, goal.height + 50); // Tiang lebih tinggi sikit
+
+            // Lukis Puncak Tiang (Bulatan Emas)
+            ctx.fillStyle = '#ECC94B';
+            ctx.beginPath();
+            ctx.arc(goal.x - cameraX + 30, goal.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Lukis Bendera Merah
+            ctx.fillStyle = '#E53E3E'; // Merah
+            ctx.beginPath();
+            ctx.moveTo(goal.x + 35 - cameraX, goal.y + 10); // Mula kat tiang
+            ctx.lineTo(goal.x + 75 - cameraX, goal.y + 25); // Hujung bendera
+            ctx.lineTo(goal.x + 35 - cameraX, goal.y + 40); // Balik ke tiang
+            ctx.closePath();
+            ctx.fill();
 
             let cx = player.x - cameraX;
             let cy = player.y;
