@@ -477,6 +477,17 @@
             </div>
         </div>
 
+        <!-- Skrin Transisi Gambar Tanjung Piai -->
+        <div id="tanjungPiaiScreen"
+            class="overlay hidden title-screen cursor-pointer w-full h-full flex justify-center items-center bg-black bg-opacity-90">
+            <img src="tanjung_piai.png" alt="Tanjung Piai"
+                class="max-w-full max-h-full object-contain animate-pulse shadow-2xl rounded-3xl"
+                style="width: auto; height: 100%;">
+            <p
+                class="absolute bottom-10 text-white font-bold text-2xl animate-bounce drop-shadow-lg bg-black bg-opacity-50 px-6 py-2 rounded-full border-2 border-white">
+                Klik Gambar Untuk Meneruskan ➡️</p>
+        </div>
+
         <!-- Kawalan Sentuh -->
         <div id="touch-controls" class="hidden">
             <div class="dir-buttons">
@@ -504,7 +515,8 @@
             adminDash: document.getElementById('adminDashboardScreen'),
             start: document.getElementById('startScreen'),
             trivia: document.getElementById('triviaScreen'),
-            end: document.getElementById('endScreen')
+            end: document.getElementById('endScreen'),
+            tanjungPiai: document.getElementById('tanjungPiaiScreen')
         };
         const scoreDisplay = document.getElementById('scoreDisplay');
         const livesDisplay = document.getElementById('livesDisplay');
@@ -1261,6 +1273,15 @@
 
         document.getElementById('nextLevelBtn').addEventListener('click', () => {
             currentLevel++;
+            if (currentLevel === 2) {
+                hideAllScreens();
+                screens.tanjungPiai.classList.remove('hidden');
+            } else {
+                startLevel();
+            }
+        });
+
+        screens.tanjungPiai.addEventListener('click', () => {
             startLevel();
         });
 
