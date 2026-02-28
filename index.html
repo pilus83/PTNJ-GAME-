@@ -584,6 +584,7 @@
         const screens = {
             register: document.getElementById('registerScreen'),
             adminLogin: document.getElementById('adminLoginScreen'),
+            adminDash: document.getElementById('adminDashboardScreen'),
             start: document.getElementById('startScreen'),
             trivia: document.getElementById('triviaScreen'),
             end: document.getElementById('endScreen'),
@@ -654,9 +655,13 @@
                 if (data && data.length > 0) {
                     triviaDB = data;
                 } else if (error) {
-                    console.error("Supabase Error Loading Trivia:", error);
+                    console.warn("Supabase Warning Loading Trivia:", error.message);
+                    triviaDB = [...defaultTriviaDB]; // Fallback if table doesn't exist
                 }
-            } catch (e) { console.error("Network Error Loading Trivia:", e); }
+            } catch (e) {
+                console.error("Network Error Loading Trivia:", e);
+                triviaDB = [...defaultTriviaDB]; // Fallback
+            }
         }
 
         async function saveTriviaDB(newDataObject) {
@@ -839,7 +844,12 @@
                 document.getElementById('adminUsername').value = '';
                 document.getElementById('adminPassword').value = '';
                 hideAllScreens();
-                renderAdminQuestions();
+                try {
+                    if (!triviaDB || triviaDB.length === 0) triviaDB = [...defaultTriviaDB];
+                    renderAdminQuestions();
+                } catch (e) {
+                    console.error("Error rendering admin panel:", e);
+                }
                 screens.adminDash.classList.remove('hidden');
             } else {
                 alert("ID Admin atau Kata Laluan SALAH!");
@@ -1512,6 +1522,50 @@
         }
         // Wrap all button bindings in DOMContentLoaded to prevent silent attachment failures
         document.addEventListener('DOMContentLoaded', () => {
+
+            document.getElementById('openAdminLoginBtn').addEventListener('click', () => {
+                hideAllScreens();
+                screens.adminLogin.classList.remove('hidden');
+                gameState = 'ADMIN_LOGIN'; // Set state so gameLoop doesn't draw
+            });
+
+            document.getElementById('adminLoginBackBtn').addEventListener('click', () => {
+                hideAllScreens();
+                screens.register.classList.remove('hidden');
+                gameState = 'REGISTER';
+            });
+
+            document.getElementById('adminLoginSubmitBtn').addEventListener('click', () => {
+                const u = document.getElementById('adminUsername').value;
+                const p = document.getElementById('adminPassword').value;
+
+                console.log("Admin Login clicked:", { u, expected: ADMIN_USER });
+
+                if (u === ADMIN_USER && p === ADMIN_PASS) {
+                    document.getElementById('adminUsername').value = '';
+                    document.getElementById('adminPassword').value = '';
+
+                    hideAllScreens();
+                    gameState = 'ADMIN'; // Set state to stop physics loop and background drawing
+
+                    try {
+                        if (!triviaDB || triviaDB.length === 0) triviaDB = [...defaultTriviaDB];
+                        renderAdminQuestions();
+                        console.log("Admin panel successfully rendered.");
+                    } catch (e) {
+                        console.error("Error rendering admin panel:", e);
+                    }
+                    screens.adminDash.classList.remove('hidden');
+                } else {
+                    alert("ID Admin atau Kata Laluan SALAH!");
+                }
+            });
+
+            document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+                hideAllScreens();
+                screens.register.classList.remove('hidden');
+                gameState = 'REGISTER';
+            });
 
             document.getElementById('submitNameBtn').addEventListener('click', () => {
                 const input = document.getElementById('playerNameInput').value.trim();
