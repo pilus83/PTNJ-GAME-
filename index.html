@@ -685,7 +685,7 @@
         });
         // --- TAMAT FUNGSI ADMIN ---
 
-        const keys = { right: false, left: false, up: false };
+        const keys = { right: false, left: false, up: false, shift: false };
 
         function performJump() {
             if (player.jumpCount < player.maxJumps) {
@@ -703,6 +703,7 @@
                 keys.up = true;
                 performJump();
             }
+            if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.shift = true;
             if (e.code === 'KeyZ') shootFireball();
         });
 
@@ -710,6 +711,7 @@
             if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
             if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
             if (e.code === 'ArrowUp' || e.code === 'Space' || e.code === 'KeyW') keys.up = false;
+            if (e.code === 'ShiftLeft' || e.code === 'ShiftRight') keys.shift = false;
         });
 
         const btnLeft = document.getElementById('btnLeft');
@@ -899,11 +901,14 @@
             if (keys.left) { moveInput = -1; player.facingLeft = true; }
             if (keys.right) { moveInput = 1; player.facingLeft = false; }
 
-            // 1. LOGIK MOMENTUM (Pecutan)
+            // 1. LOGIK MOMENTUM (Pecutan dan Walk/Run)
+            let targetSpeed = keys.shift ? player.runSpeed : player.walkSpeed;
+
             if (moveInput !== 0) {
                 player.vx += moveInput * player.acceleration;
-                if (player.vx > player.runSpeed) player.vx = player.runSpeed;
-                if (player.vx < -player.runSpeed) player.vx = -player.runSpeed;
+                // Kekang kelajuan pada targetSpeed (sprint / walk)
+                if (player.vx > targetSpeed) player.vx = targetSpeed;
+                if (player.vx < -targetSpeed) player.vx = -targetSpeed;
             } else {
                 // Berhenti secara beransur-ansur (Friction)
                 if (player.vx > 0) {
@@ -1191,8 +1196,9 @@
                 let swingAngle = 0;
 
                 if (Math.abs(player.vx) > 0.5 && player.grounded) {
-                    // Ayun kaki ke depan belakang bila lari
-                    swingAngle = Math.sin(Date.now() * 0.015) * 0.4;
+                    // Kelajuan ayunan berdasarkan kelajuan semasa (Momentum-based animation)
+                    let animSpeed = Math.abs(player.vx) * 0.002;
+                    swingAngle = Math.sin(Date.now() * animSpeed) * 0.4;
                 }
 
                 // --- Lukis Bahagian Atas Badan ---
