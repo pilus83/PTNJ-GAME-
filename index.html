@@ -423,6 +423,34 @@
             </div>
         </div>
 
+        <!-- Skrin Papan Markah Leaderboard -->
+        <div id="leaderboardScreen" class="overlay title-screen hidden">
+            <div class="jungle-panel mx-4" style="max-width: 600px; width: 95%;">
+                <h2 class="text-3xl font-black text-yellow-600 mb-4 drop-shadow-md">🏆 Papan Markah (Top 10)</h2>
+
+                <div class="admin-table-container mb-4" style="max-height: 300px;">
+                    <table class="admin-table text-lg">
+                        <thead>
+                            <tr>
+                                <th width="15%" class="text-center">#</th>
+                                <th width="50%">Renjer</th>
+                                <th width="35%" class="text-center">Markah</th>
+                            </tr>
+                        </thead>
+                        <tbody id="leaderboardList">
+                            <!-- Diisi oleh JS -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <div class="flex gap-4 justify-center">
+                    <button id="leaderboardBackBtn" class="jungle-btn jungle-btn-red px-8 py-2">
+                        ⬅️ Kembali
+                    </button>
+                </div>
+            </div>
+        </div>
+
         <!-- Skrin Menu Utama -->
         <div id="startScreen" class="overlay title-screen hidden">
             <h1 class="jungle-title" style="font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem;">RENJER JOHOR</h1>
@@ -522,7 +550,8 @@
             start: document.getElementById('startScreen'),
             trivia: document.getElementById('triviaScreen'),
             end: document.getElementById('endScreen'),
-            interstitial: document.getElementById('interstitialScreen')
+            interstitial: document.getElementById('interstitialScreen'),
+            leaderboard: document.getElementById('leaderboardScreen')
         };
         const scoreDisplay = document.getElementById('scoreDisplay');
         const livesDisplay = document.getElementById('livesDisplay');
