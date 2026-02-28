@@ -521,15 +521,17 @@
             const imgData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
             const data = imgData.data;
             for (let i = 0; i < data.length; i += 4) {
-                // Padam latar belakang putih / hampir putih
-                if (data[i] > 230 && data[i + 1] > 230 && data[i + 2] > 230) {
-                    data[i + 3] = 0; // Jadikan lutsinar (transparent)
+                // Padam latar belakang biru awan / cerah
+                // Mengesan warna langit biru cerah sehingga putih
+                let r = data[i], g = data[i + 1], b = data[i + 2];
+                if ((b > 200 && r < 180 && g < 220) || (r > 230 && g > 230 && b > 230)) {
+                    data[i + 3] = 0;
                 }
             }
             tCtx.putImageData(imgData, 0, 0);
             playerImg.src = tempCanvas.toDataURL(); // Guna imej lutsinar
         };
-        rawPlayerImg.src = 'player_3d.jpg'; // Muatkan imej 3D asal
+        rawPlayerImg.src = 'player_run.jpg'; // Muatkan imej 3D berlari asal
 
         const screens = {
             register: document.getElementById('registerScreen'),
@@ -1124,13 +1126,37 @@
             if (playerImg.complete && playerImg.naturalWidth > 0) {
                 ctx.save();
                 if (currentLevel >= 4) ctx.filter = 'sepia(100%) saturate(500%) hue-rotate(320deg) brightness(0.8)';
-                if (player.facingLeft) {
-                    ctx.translate((player.x - cameraX) + player.width / 2, player.y + player.height / 2);
-                    ctx.scale(-1, 1);
-                    ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
-                } else {
-                    ctx.drawImage(playerImg, player.x - cameraX, player.y, player.width, player.height);
+
+                // Animasi Fizikal
+                let cx = player.x - cameraX + player.width / 2;
+                let cy = player.y + player.height / 2;
+                ctx.translate(cx, cy);
+
+                // 1. Condong (Tilt) apabila berlari
+                let tiltAngle = (player.vx * 0.05);
+
+                // 2. Regang & Penyek (Squash & Stretch) masa melompat
+                let scaleX = 1;
+                let scaleY = 1;
+                if (!player.grounded) {
+                    scaleY = 1 + Math.abs(player.vy * 0.02); // Memanjang bila lompat
+                    scaleX = 1 - Math.abs(player.vy * 0.01); // Menipis sikit
+                    if (scaleY > 1.3) scaleY = 1.3;
+                    if (scaleX < 0.7) scaleX = 0.7;
+                } else if (Math.abs(player.vx) > 0.5) {
+                    // 3. Goyang (Wobble) ketika berlari di tanah
+                    scaleY = 1 + Math.sin(Date.now() * 0.02) * 0.05;
+                    scaleX = 1 - Math.sin(Date.now() * 0.02) * 0.02;
                 }
+
+                ctx.rotate(tiltAngle);
+                ctx.scale(scaleX, scaleY);
+
+                if (player.facingLeft) {
+                    ctx.scale(-1, 1);
+                }
+
+                ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
                 ctx.restore();
             } else {
                 let pColor = currentLevel >= 4 ? '#E53E3E' : player.color;
