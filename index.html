@@ -569,10 +569,14 @@
     <!-- SUPABASE SDK -->
     <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
 
-    <script>
+    <script type="module">
         const DB_URL = "https://pfazrzdsfezjkcupnmjb.supabase.co";
         const DB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmYXpremRzZmV6amtjdXBubWpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNjIyMDYsImV4cCI6MjA4NzgzODIwNn0.YOFakezR0VvuzST-26Q1-aps_c_JZ1YnqB2nAmVB96A";
-        const supabase = window.supabase.createClient(DB_URL, DB_KEY);
+        let supabaseClient;
+
+        try {
+            if (window.supabase) supabaseClient = window.supabase.createClient(DB_URL, DB_KEY);
+        } catch (e) { console.error("Global supabase import error:", e); }
 
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
@@ -580,7 +584,6 @@
         const screens = {
             register: document.getElementById('registerScreen'),
             adminLogin: document.getElementById('adminLoginScreen'),
-            adminDash: document.getElementById('adminDashboardScreen'),
             start: document.getElementById('startScreen'),
             trivia: document.getElementById('triviaScreen'),
             end: document.getElementById('endScreen'),
@@ -645,8 +648,9 @@
         let triviaDB = [...defaultTriviaDB]; // Temporary default while loading
 
         async function loadTriviaDB() {
+            if (!supabaseClient) return;
             try {
-                const { data, error } = await supabase.from('ptnj_trivia').select('*');
+                const { data, error } = await supabaseClient.from('ptnj_trivia').select('*');
                 if (data && data.length > 0) {
                     triviaDB = data;
                 } else if (error) {
@@ -656,17 +660,18 @@
         }
 
         async function saveTriviaDB(newDataObject) {
+            if (!supabaseClient) return;
             try {
-                // If ID exists, this expects an update/insert. But for now we just insert raw.
                 if (newDataObject) {
-                    await supabase.from('ptnj_trivia').insert([newDataObject]);
+                    await supabaseClient.from('ptnj_trivia').insert([newDataObject]);
                 }
             } catch (e) { console.error("Error saving Question:", e); }
         }
 
-        async function removeTriviaDB(id) {
+        window.removeTriviaDB = async function (id) {
+            if (!supabaseClient) return;
             try {
-                await supabase.from('ptnj_trivia').delete().eq('id', id);
+                await supabaseClient.from('ptnj_trivia').delete().eq('id', id);
             } catch (e) { console.error("Error deleting Question:", e); }
         }
 
@@ -674,15 +679,15 @@
         let currentRank = -1;
 
         async function saveHighScoreAsync(name, markah) {
-            if (markah <= 0) return;
+            if (markah <= 0 || !supabaseClient) return;
             const newRecord = { name: name || "Renjer Tanpa Nama", score: markah, date: new Date().toLocaleDateString() };
 
             try {
                 // Hantar rekod baharu ke Supabase
-                await supabase.from('ptnj_leaderboard').insert([newRecord]);
+                await supabaseClient.from('ptnj_leaderboard').insert([newRecord]);
 
                 // Ambil balik semua rekod untuk kira kedudukan (Real-time live rank)
-                const { data, error } = await supabase.from('ptnj_leaderboard')
+                const { data, error } = await supabaseClient.from('ptnj_leaderboard')
                     .select('id, name, score, date')
                     .order('score', { ascending: false });
 
@@ -702,8 +707,13 @@
 
             document.getElementById('leaderboardScreen').classList.remove('hidden');
 
+            if (!supabaseClient) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-red-500 font-bold">Client database tidak wujud.</td></tr>';
+                return;
+            }
+
             try {
-                const { data: board, error } = await supabase.from('ptnj_leaderboard')
+                const { data: board, error } = await supabaseClient.from('ptnj_leaderboard')
                     .select('*')
                     .order('score', { ascending: false })
                     .limit(10);
@@ -1499,155 +1509,173 @@
             gameState = 'PLAYING';
             hideAllScreens();
         }
+        // Wrap all button bindings in DOMContentLoaded to prevent silent attachment failures
+        document.addEventListener('DOMContentLoaded', () => {
 
-        document.getElementById('submitNameBtn').addEventListener('click', () => {
-            const input = document.getElementById('playerNameInput').value.trim();
-            if (input.length > 0) {
-                playerName = input;
-                document.getElementById('displayPlayerName').innerText = playerName;
-                hideAllScreens();
-                screens.start.classList.remove('hidden');
-            } else { alert("Sila masukkan nama anda!"); }
-        });
+            document.getElementById('submitNameBtn').addEventListener('click', () => {
+                const input = document.getElementById('playerNameInput').value.trim();
+                if (input.length > 0) {
+                    playerName = input;
+                    document.getElementById('displayPlayerName').innerText = playerName;
+                    hideAllScreens();
+                    screens.start.classList.remove('hidden');
+                } else { alert("Sila masukkan nama anda!"); }
+            });
 
-        document.getElementById('startBtn').addEventListener('click', () => {
-            score = 0; lives = 5; currentLevel = 1; usedQuestions = [];
-            startLevel();
-        });
+            document.getElementById('startBtn').addEventListener('click', () => {
+                score = 0; lives = 5; currentLevel = 1; usedQuestions = [];
+                startLevel();
+            });
 
-        document.getElementById('nextLevelBtn').addEventListener('click', () => {
-            if (currentLevel === 1 || currentLevel === 2) {
-                document.getElementById('interstitialNameDisplay').innerText = playerName;
+            document.getElementById('nextLevelBtn').addEventListener('click', () => {
+                if (currentLevel === 1 || currentLevel === 2) {
+                    document.getElementById('interstitialNameDisplay').innerText = playerName;
 
-                let imgEl = document.getElementById('interstitialImg');
-                imgEl.classList.add('opacity-0'); // Sembunyikan sementara memuat turun
+                    let imgEl = document.getElementById('interstitialImg');
+                    imgEl.classList.add('opacity-0'); // Sembunyikan sementara memuat turun
 
-                if (currentLevel === 1) {
-                    imgEl.src = "tanjung_piai.png";
-                } else if (currentLevel === 2) {
-                    imgEl.src = "pulau_kukup.png";
-                }
-
-                imgEl.onload = () => {
-                    imgEl.classList.remove('opacity-0');
-                    imgEl.classList.add('opacity-100');
-                    imgEl.classList.add('transition-opacity');
-                    imgEl.classList.add('duration-500');
-                };
-
-                hideAllScreens();
-                screens.interstitial.classList.remove('hidden');
-
-                // Tembak bunga api (confetti)
-                let duration = 3 * 1000;
-                let end = Date.now() + duration;
-
-                (function frame() {
-                    confetti({
-                        particleCount: 5,
-                        angle: 60,
-                        spread: 55,
-                        origin: { x: 0 },
-                        zIndex: 100
-                    });
-                    confetti({
-                        particleCount: 5,
-                        angle: 120,
-                        spread: 55,
-                        origin: { x: 1 },
-                        zIndex: 100
-                    });
-
-                    if (Date.now() < end) {
-                        requestAnimationFrame(frame);
+                    if (currentLevel === 1) {
+                        imgEl.src = "tanjung_piai.png";
+                    } else if (currentLevel === 2) {
+                        imgEl.src = "pulau_kukup.png";
                     }
-                }());
 
-            } else {
+                    imgEl.onload = () => {
+                        imgEl.classList.remove('opacity-0');
+                        imgEl.classList.add('opacity-100');
+                        imgEl.classList.add('transition-opacity');
+                        imgEl.classList.add('duration-500');
+                    };
+
+                    hideAllScreens();
+                    screens.interstitial.classList.remove('hidden');
+
+                    // Tembak bunga api (confetti)
+                    let duration = 3 * 1000;
+                    let end = Date.now() + duration;
+
+                    (function frame() {
+                        confetti({
+                            particleCount: 5,
+                            angle: 60,
+                            spread: 55,
+                            origin: { x: 0 },
+                            zIndex: 100
+                        });
+                        confetti({
+                            particleCount: 5,
+                            angle: 120,
+                            spread: 55,
+                            origin: { x: 1 },
+                            zIndex: 100
+                        });
+
+                        if (Date.now() < end) {
+                            requestAnimationFrame(frame);
+                        }
+                    }());
+
+                } else {
+                    currentLevel++;
+                    startLevel();
+                }
+            });
+
+            document.getElementById('interstitialImg').addEventListener('click', () => {
                 currentLevel++;
                 startLevel();
+            });
+
+            document.getElementById('interstitialNextBtn').addEventListener('click', () => {
+                currentLevel++;
+                startLevel();
+            });
+
+            document.getElementById('restartBtn').addEventListener('click', () => {
+                hideAllScreens();
+                screens.start.classList.remove('hidden');
+            });
+
+            function gameLoop() {
+                if (gameState === 'PLAYING') {
+                    updatePhysics();
+                    drawGame();
+                } else if (gameState !== 'ADMIN') {
+                    lastTimeTick = Date.now();
+                    drawGame();
+                }
+                requestAnimationFrame(gameLoop);
             }
-        });
 
-        document.getElementById('interstitialImg').addEventListener('click', () => {
-            currentLevel++;
-            startLevel();
-        });
+            const aiBank = [
+                { q: "Menurut Jabatan Perhutanan, apakah zon yang paling dirahsiakan di Johor yang tidak boleh diakses awam?", options: ["Zon Rimba Teras", "Zon Ekonomi Awam", "Zon Perkhemahan Bebas"], answer: 0, diff: 3 },
+                { q: "Hutan Paya Bakau memainkan peranan menyerap gas apa dari udara lebih banyak daripada pokok biasa?", options: ["Gas Oksigen Berlebihan", "Gas Karbon Dioksida 4x Ganda", "Gas Metana Pembakaran"], answer: 1, diff: 2 },
+                { q: "Apakah spesies burung penting yang singgah di Tanjung Piai semasa migrasi antarabangsa laluan Asia-Australasia?", options: ["Burung Pacat Telinga Merah", "Burung Siput Biasa", "Burung Hijrah Kaki Abu-abu (Waders)"], answer: 2, diff: 2 },
+                { q: "Air Terjun Buaya Sangkut merupakan daya tarikan sungai utama di taman mana?", options: ["Taman Negara Johor Endau-Rompin", "Taman Marin Kepulauan Sultan Iskandar", "Kawasan Rekreasi Gunung Arong"], answer: 0, diff: 1 },
+                { q: "Apakah nama puteri mitos yang memberikan 7 syarat mustahil kepada Sultan Melaka?", options: ["Puteri Santubong", "Puteri Gunung Banang", "Puteri Gunung Ledang"], answer: 2, diff: 1 },
+                { q: "Endau-Rompin ditubuhkan secara rasmi oleh Kerajaan Negeri Johor pada tahun...", options: ["1920-an", "1993", "2015"], answer: 1, diff: 3 }
+            ];
 
-        document.getElementById('interstitialNextBtn').addEventListener('click', () => {
-            currentLevel++;
-            startLevel();
-        });
+            document.getElementById('aiGenBtn').addEventListener('click', () => {
+                const diffTarget = parseInt(document.getElementById('newDiff').value);
+                const pool = aiBank.filter(a => a.diff === diffTarget);
+                const c = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : aiBank[Math.floor(Math.random() * aiBank.length)];
 
-        document.getElementById('restartBtn').addEventListener('click', () => {
-            hideAllScreens();
-            screens.start.classList.remove('hidden');
-        });
+                document.getElementById('newQuestion').value = c.q;
+                document.getElementById('newOpt0').value = c.options[0];
+                document.getElementById('newOpt1').value = c.options[1];
+                document.getElementById('newOpt2').value = c.options[2];
+                document.getElementById('newAnswer').value = c.answer;
+            });
 
-        function gameLoop() {
-            if (gameState === 'PLAYING') {
-                updatePhysics();
-                drawGame();
-            } else if (gameState !== 'ADMIN') {
-                lastTimeTick = Date.now();
-                drawGame();
+            async function renderTop3() {
+                const container = document.getElementById('top3Container');
+                const list = document.getElementById('top3List');
+
+                if (!supabaseClient) {
+                    container.classList.add('hidden');
+                    return;
+                }
+
+                try {
+                    const { data: board, error } = await supabaseClient.from('ptnj_leaderboard')
+                        .select('*')
+                        .order('score', { ascending: false })
+                        .limit(3);
+
+                    if (board && board.length > 0) {
+                        container.classList.remove('hidden');
+                        list.innerHTML = board.map((r, i) => {
+                            let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+                            return `<div class="mb-1">${medal} <b class="text-white tracking-wider">${r.name.toUpperCase()}</b> <span class="bg-gray-700 rounded px-2 py-0.5 ml-1 drop-shadow text-yellow-300">${r.score}</span></div>`;
+                        }).join('');
+                    } else { container.classList.add('hidden'); }
+                } catch (e) {
+                    container.classList.add('hidden');
+                }
             }
-            requestAnimationFrame(gameLoop);
-        }
 
-        const aiBank = [
-            { q: "Menurut Jabatan Perhutanan, apakah zon yang paling dirahsiakan di Johor yang tidak boleh diakses awam?", options: ["Zon Rimba Teras", "Zon Ekonomi Awam", "Zon Perkhemahan Bebas"], answer: 0, diff: 3 },
-            { q: "Hutan Paya Bakau memainkan peranan menyerap gas apa dari udara lebih banyak daripada pokok biasa?", options: ["Gas Oksigen Berlebihan", "Gas Karbon Dioksida 4x Ganda", "Gas Metana Pembakaran"], answer: 1, diff: 2 },
-            { q: "Apakah spesies burung penting yang singgah di Tanjung Piai semasa migrasi antarabangsa laluan Asia-Australasia?", options: ["Burung Pacat Telinga Merah", "Burung Siput Biasa", "Burung Hijrah Kaki Abu-abu (Waders)"], answer: 2, diff: 2 },
-            { q: "Air Terjun Buaya Sangkut merupakan daya tarikan sungai utama di taman mana?", options: ["Taman Negara Johor Endau-Rompin", "Taman Marin Kepulauan Sultan Iskandar", "Kawasan Rekreasi Gunung Arong"], answer: 0, diff: 1 },
-            { q: "Apakah nama puteri mitos yang memberikan 7 syarat mustahil kepada Sultan Melaka?", options: ["Puteri Santubong", "Puteri Gunung Banang", "Puteri Gunung Ledang"], answer: 2, diff: 1 },
-            { q: "Endau-Rompin ditubuhkan secara rasmi oleh Kerajaan Negeri Johor pada tahun...", options: ["1920-an", "1993", "2015"], answer: 1, diff: 3 }
-        ];
-
-        document.getElementById('aiGenBtn').addEventListener('click', () => {
-            const diffTarget = parseInt(document.getElementById('newDiff').value);
-            const pool = aiBank.filter(a => a.diff === diffTarget);
-            const c = pool.length > 0 ? pool[Math.floor(Math.random() * pool.length)] : aiBank[Math.floor(Math.random() * aiBank.length)];
-
-            document.getElementById('newQuestion').value = c.q;
-            document.getElementById('newOpt0').value = c.options[0];
-            document.getElementById('newOpt1').value = c.options[1];
-            document.getElementById('newOpt2').value = c.options[2];
-            document.getElementById('newAnswer').value = c.answer;
-        });
-
-        async function renderTop3() {
-            const container = document.getElementById('top3Container');
-            const list = document.getElementById('top3List');
+            async function initializeApp() {
+                try {
+                    if (supabaseClient) {
+                        await loadTriviaDB();
+                        renderTop3(); // Memuat turun Top 3 Live dari Server
+                    }
+                } catch (e) { console.error("Initialization error:", e); }
+            }
 
             try {
-                const { data: board, error } = await supabase.from('ptnj_leaderboard')
-                    .select('*')
-                    .order('score', { ascending: false })
-                    .limit(3);
-
-                if (board && board.length > 0) {
-                    container.classList.remove('hidden');
-                    list.innerHTML = board.map((r, i) => {
-                        let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-                        return `<div class="mb-1">${medal} <b class="text-white tracking-wider">${r.name.toUpperCase()}</b> <span class="bg-gray-700 rounded px-2 py-0.5 ml-1 drop-shadow text-yellow-300">${r.score}</span></div>`;
-                    }).join('');
-                } else { container.classList.add('hidden'); }
+                buildLevel(1);
+                initializeApp();
+                requestAnimationFrame(gameLoop);
+                console.log("Game fully initialized");
             } catch (e) {
-                container.classList.add('hidden');
+                console.error("Game crash on startup:", e);
             }
-        }
 
-        async function initializeApp() {
-            await loadTriviaDB();
-            renderTop3(); // Memuat turun Top 3 Live dari Server
-        }
-
-        buildLevel(1);
-        initializeApp();
-        requestAnimationFrame(gameLoop);
-
+        }); // END DOMContentLoaded
     </script>
 </body>
 
 </html>
+```
