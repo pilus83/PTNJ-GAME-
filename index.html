@@ -1435,11 +1435,21 @@
             if (currentLevel === 1 || currentLevel === 2) {
                 document.getElementById('interstitialNameDisplay').innerText = playerName;
 
+                let imgEl = document.getElementById('interstitialImg');
+                imgEl.classList.add('opacity-0'); // Sembunyikan sementara memuat turun
+
                 if (currentLevel === 1) {
-                    document.getElementById('interstitialImg').src = "tanjung_piai.png";
+                    imgEl.src = "tanjung_piai.png";
                 } else if (currentLevel === 2) {
-                    document.getElementById('interstitialImg').src = "pulau_kukup.png";
+                    imgEl.src = "pulau_kukup.png";
                 }
+
+                imgEl.onload = () => {
+                    imgEl.classList.remove('opacity-0');
+                    imgEl.classList.add('opacity-100');
+                    imgEl.classList.add('transition-opacity');
+                    imgEl.classList.add('duration-500');
+                };
 
                 hideAllScreens();
                 screens.interstitial.classList.remove('hidden');
