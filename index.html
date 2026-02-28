@@ -1,5 +1,6 @@
 <!DOCTYPE html>
 <html lang="ms">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
@@ -14,6 +15,7 @@
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             touch-action: none;
         }
+
         #game-container {
             position: relative;
             width: 100vw;
@@ -22,15 +24,23 @@
             justify-content: center;
             align-items: center;
         }
+
         canvas {
-            box-shadow: 0 0 20px rgba(0,0,0,0.5);
+            box-shadow: 0 0 20px rgba(0, 0, 0, 0.5);
+            width: 100vw;
+            height: 100vh;
             max-width: 100%;
             max-height: 100%;
+            aspect-ratio: 16 / 9;
             object-fit: contain;
         }
+
         .overlay {
             position: absolute;
-            top: 0; left: 0; width: 100%; height: 100%;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
             background: rgba(0, 0, 0, 0.85);
             display: flex;
             flex-direction: column;
@@ -39,8 +49,69 @@
             color: white;
             z-index: 10;
         }
-        .hidden { display: none !important; }
-        
+
+        .hidden {
+            display: none !important;
+        }
+
+        .title-screen {
+            background-image: url('bg_start.png');
+            background-size: cover;
+            background-position: bottom center;
+            background-repeat: no-repeat;
+        }
+
+        .mario-title {
+            font-family: 'Arial Black', Impact, sans-serif;
+            font-size: clamp(3rem, 8vw, 6rem);
+            color: #fff;
+            text-transform: uppercase;
+            letter-spacing: 2px;
+            text-align: center;
+            text-shadow:
+                -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000,
+                0px 8px 0px #0052cc,
+                0px 10px 0px #000,
+                0px 15px 15px rgba(0, 0, 0, 0.6);
+            margin-bottom: 2rem;
+            line-height: 1.1;
+            z-index: 10;
+        }
+
+        .mario-panel {
+            background-color: rgba(255, 255, 255, 0.95);
+            border: 4px solid #000;
+            border-radius: 20px;
+            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.5);
+            color: #333;
+            padding: 2rem;
+            max-width: 500px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        .mario-btn {
+            background-color: #e52521;
+            color: white;
+            border: 3px solid #000;
+            border-radius: 12px;
+            font-size: 1.2rem;
+            font-weight: bold;
+            padding: 12px 20px;
+            text-transform: uppercase;
+            box-shadow: 0px 6px 0px #800000;
+            transition: all 0.1s;
+            cursor: pointer;
+            width: 100%;
+        }
+
+        .mario-btn:active {
+            transform: translateY(6px);
+            box-shadow: 0px 0px 0px #800000;
+        }
+
         #hud {
             position: absolute;
             top: 20px;
@@ -51,13 +122,16 @@
             text-shadow: 2px 2px 0px white;
             z-index: 5;
             pointer-events: none;
-            background: rgba(255,255,255,0.8);
+            background: rgba(255, 255, 255, 0.8);
             padding: 10px 20px;
             border-radius: 15px;
             display: flex;
             gap: 15px;
         }
-        .text-red { color: #E53E3E !important; }
+
+        .text-red {
+            color: #E53E3E !important;
+        }
 
         #touch-controls {
             position: absolute;
@@ -69,6 +143,7 @@
             z-index: 5;
             box-sizing: border-box;
         }
+
         .btn-touch {
             background: rgba(255, 255, 255, 0.3);
             border: 2px solid white;
@@ -83,11 +158,20 @@
             user-select: none;
             backdrop-filter: blur(5px);
         }
-        .btn-touch:active { background: rgba(255, 255, 255, 0.6); }
-        .dir-buttons { display: flex; gap: 15px; }
+
+        .btn-touch:active {
+            background: rgba(255, 255, 255, 0.6);
+        }
+
+        .dir-buttons {
+            display: flex;
+            gap: 15px;
+        }
 
         @media (min-width: 768px) {
-            #touch-controls { display: none; }
+            #touch-controls {
+                display: none;
+            }
         }
 
         /* Admin Table Styles */
@@ -99,960 +183,1011 @@
             border: 1px solid #ddd;
             border-radius: 8px;
         }
-        .admin-table { width: 100%; border-collapse: collapse; color: black; font-size: 12px; }
-        .admin-table th, .admin-table td { padding: 6px; border-bottom: 1px solid #ddd; text-align: left; }
-        .admin-table th { background-color: #2b6cb0; color: white; position: sticky; top: 0; }
-        .admin-table tr:nth-child(even) { background-color: #f2f2f2; }
-        .admin-table tr:hover { background-color: #e2e8f0; }
+
+        .admin-table {
+            width: 100%;
+            border-collapse: collapse;
+            color: black;
+            font-size: 12px;
+        }
+
+        .admin-table th,
+        .admin-table td {
+            padding: 6px;
+            border-bottom: 1px solid #ddd;
+            text-align: left;
+        }
+
+        .admin-table th {
+            background-color: #2b6cb0;
+            color: white;
+            position: sticky;
+            top: 0;
+        }
+
+        .admin-table tr:nth-child(even) {
+            background-color: #f2f2f2;
+        }
+
+        .admin-table tr:hover {
+            background-color: #e2e8f0;
+        }
     </style>
 </head>
+
 <body>
 
-<div id="game-container">
-    <div id="hud">
-        <span>Tahap: <span id="levelDisplay">1</span></span> | 
-        <span>Markah: <span id="scoreDisplay">0</span></span> | 
-        <span>Nyawa: <span id="livesDisplay">5</span></span> |
-        <span>⏱️ Masa: <span id="timeDisplay">100</span>s</span>
-    </div>
-
-    <canvas id="gameCanvas" width="800" height="450"></canvas>
-
-    <!-- Skrin Daftar Nama -->
-    <div id="registerScreen" class="overlay">
-        <h1 class="text-6xl font-extrabold text-green-400 mb-6 text-center">RENJER JOHOR</h1>
-        <div class="bg-white p-8 rounded-xl text-center max-w-md mx-4 shadow-2xl relative">
-            <h2 class="text-2xl font-bold text-gray-800 mb-4">Sila Masukkan Nama</h2>
-            <p class="text-gray-600 mb-6">Sila masukkan nama anda sebagai rekod pengembaraan.</p>
-            <input type="text" id="playerNameInput" placeholder="Nama Renjer (Contoh: Ali)" maxlength="15" 
-                   class="w-full border-2 border-green-500 rounded-lg p-3 text-black text-xl mb-4 text-center focus:outline-none focus:ring-2 focus:ring-green-600">
-            <button id="submitNameBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-lg text-xl transition transform hover:scale-105 mb-4">
-                Daftar & Mula
-            </button>
-            <button id="openAdminLoginBtn" class="text-sm text-blue-500 hover:text-blue-700 underline font-semibold">
-                Log Masuk Super Admin
-            </button>
+    <div id="game-container">
+        <div id="hud">
+            <span>Tahap: <span id="levelDisplay">1</span></span> |
+            <span>Markah: <span id="scoreDisplay">0</span></span> |
+            <span>Nyawa: <span id="livesDisplay">5</span></span> |
+            <span>⏱️ Masa: <span id="timeDisplay">100</span>s</span>
         </div>
-    </div>
 
-    <!-- Skrin Log Masuk Admin -->
-    <div id="adminLoginScreen" class="overlay hidden">
-        <div class="bg-gray-900 p-8 rounded-xl text-center max-w-sm mx-4 shadow-2xl border-2 border-blue-500">
-            <h2 class="text-2xl font-bold text-blue-400 mb-6">⚙️ Akses Super Admin</h2>
-            <input type="text" id="adminUsername" placeholder="ID Admin" 
-                   class="w-full border-2 border-blue-500 rounded-lg p-3 text-black text-lg mb-4 text-center focus:outline-none bg-gray-100">
-            <input type="password" id="adminPassword" placeholder="Kata Laluan" 
-                   class="w-full border-2 border-blue-500 rounded-lg p-3 text-black text-lg mb-6 text-center focus:outline-none bg-gray-100">
-            <button id="adminLoginSubmitBtn" class="w-full bg-blue-600 hover:bg-blue-700 text-white font-bold py-3 px-8 rounded-lg text-lg transition mb-3">
-                Log Masuk
-            </button>
-            <button id="adminLoginBackBtn" class="w-full bg-gray-600 hover:bg-gray-700 text-white font-bold py-2 px-8 rounded-lg text-md transition">
-                Kembali
-            </button>
+        <canvas id="gameCanvas" width="800" height="450"></canvas>
+
+        <!-- Skrin Daftar Nama -->
+        <div id="registerScreen" class="overlay title-screen">
+            <h1 class="mario-title">RENJER<br>JOHOR</h1>
+            <div class="mario-panel mx-4">
+                <h2 class="text-3xl font-black text-gray-800 mb-4">Sila Masukkan Nama</h2>
+                <p class="text-gray-700 font-bold mb-6">Sila masukkan nama anda sebagai rekod pengembaraan.</p>
+                <input type="text" id="playerNameInput" placeholder="Nama Renjer (Contoh: Ali)" maxlength="15"
+                    class="w-full border-4 border-black rounded-lg p-3 text-black text-xl mb-4 text-center focus:outline-none focus:ring-4 focus:ring-blue-500 font-bold">
+                <button id="submitNameBtn" class="mario-btn mb-4">
+                    Daftar & Mula
+                </button>
+                <button id="openAdminLoginBtn"
+                    class="text-sm text-blue-600 hover:text-blue-800 underline font-extrabold mt-2">
+                    Log Masuk Super Admin
+                </button>
+            </div>
         </div>
-    </div>
 
-    <!-- Skrin Papan Pemuka Admin -->
-    <div id="adminDashboardScreen" class="overlay hidden">
-        <div class="bg-white p-6 rounded-xl text-center max-w-4xl w-[95%] mx-4 shadow-2xl border-4 border-blue-600 flex flex-col h-[90vh]">
-            <div class="flex justify-between items-center mb-4">
-                <h2 class="text-2xl font-bold text-blue-800">Papan Pemuka Super Admin</h2>
-                <button id="adminLogoutBtn" class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition">Log Keluar</button>
+        <!-- Skrin Log Masuk Admin -->
+        <div id="adminLoginScreen" class="overlay title-screen hidden">
+            <div class="mario-panel mx-4" style="border-color: #0052cc;">
+                <h2 class="text-2xl font-black text-blue-800 mb-6">⚙️ Akses Super Admin</h2>
+                <input type="text" id="adminUsername" placeholder="ID Admin"
+                    class="w-full border-4 border-black rounded-lg p-3 text-black text-lg mb-4 text-center focus:outline-none font-bold">
+                <input type="password" id="adminPassword" placeholder="Kata Laluan"
+                    class="w-full border-4 border-black rounded-lg p-3 text-black text-lg mb-6 text-center focus:outline-none font-bold">
+                <button id="adminLoginSubmitBtn" class="mario-btn mb-4"
+                    style="background-color: #0052cc; box-shadow: 0px 6px 0px #003380;">
+                    Log Masuk
+                </button>
+                <button id="adminLoginBackBtn" class="mario-btn"
+                    style="background-color: #555; box-shadow: 0px 6px 0px #333;">
+                    Kembali
+                </button>
             </div>
-            
-            <!-- Senarai Soalan -->
-            <h3 class="text-lg font-bold text-gray-700 text-left mb-2">Pangkalan Data Soalan Trivia</h3>
-            <div class="admin-table-container flex-grow">
-                <table class="admin-table">
-                    <thead>
-                        <tr>
-                            <th class="w-12">No.</th>
-                            <th>Soalan</th>
-                            <th>Tahap</th>
-                            <th class="w-20">Tindakan</th>
-                        </tr>
-                    </thead>
-                    <tbody id="adminQuestionList">
-                        <!-- Dijana secara dinamik -->
-                    </tbody>
-                </table>
-            </div>
+        </div>
 
-            <!-- Tambah Soalan Baru -->
-            <div class="bg-gray-100 p-4 rounded-lg text-left mt-2">
-                <h3 class="text-md font-bold text-blue-700 mb-3">➕ Tambah Soalan Baharu</h3>
-                <input type="text" id="newQuestion" placeholder="Masukkan Soalan" class="w-full p-2 mb-2 border rounded text-black text-sm">
-                
-                <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-                    <input type="text" id="newOpt0" placeholder="Pilihan 1" class="w-full p-2 border rounded text-black text-sm border-gray-300">
-                    <input type="text" id="newOpt1" placeholder="Pilihan 2" class="w-full p-2 border rounded text-black text-sm border-gray-300">
-                    <input type="text" id="newOpt2" placeholder="Pilihan 3" class="w-full p-2 border rounded text-black text-sm border-gray-300">
+        <!-- Skrin Papan Pemuka Admin -->
+        <div id="adminDashboardScreen" class="overlay hidden">
+            <div
+                class="bg-white p-6 rounded-xl text-center max-w-4xl w-[95%] mx-4 shadow-2xl border-4 border-blue-600 flex flex-col h-[90vh]">
+                <div class="flex justify-between items-center mb-4">
+                    <h2 class="text-2xl font-bold text-blue-800">Papan Pemuka Super Admin</h2>
+                    <button id="adminLogoutBtn"
+                        class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition">Log
+                        Keluar</button>
                 </div>
-                
-                <div class="flex gap-4 items-center">
-                    <div class="flex-1">
-                        <label class="text-sm font-semibold text-gray-700">Jawapan Betul:</label>
-                        <select id="newAnswer" class="w-full p-2 border rounded text-black text-sm mt-1">
-                            <option value="0">Pilihan 1</option>
-                            <option value="1">Pilihan 2</option>
-                            <option value="2">Pilihan 3</option>
-                        </select>
+
+                <!-- Senarai Soalan -->
+                <h3 class="text-lg font-bold text-gray-700 text-left mb-2">Pangkalan Data Soalan Trivia</h3>
+                <div class="admin-table-container flex-grow">
+                    <table class="admin-table">
+                        <thead>
+                            <tr>
+                                <th class="w-12">No.</th>
+                                <th>Soalan</th>
+                                <th>Tahap</th>
+                                <th class="w-20">Tindakan</th>
+                            </tr>
+                        </thead>
+                        <tbody id="adminQuestionList">
+                            <!-- Dijana secara dinamik -->
+                        </tbody>
+                    </table>
+                </div>
+
+                <!-- Tambah Soalan Baru -->
+                <div class="bg-gray-100 p-4 rounded-lg text-left mt-2">
+                    <h3 class="text-md font-bold text-blue-700 mb-3">➕ Tambah Soalan Baharu</h3>
+                    <input type="text" id="newQuestion" placeholder="Masukkan Soalan"
+                        class="w-full p-2 mb-2 border rounded text-black text-sm">
+
+                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+                        <input type="text" id="newOpt0" placeholder="Pilihan 1"
+                            class="w-full p-2 border rounded text-black text-sm border-gray-300">
+                        <input type="text" id="newOpt1" placeholder="Pilihan 2"
+                            class="w-full p-2 border rounded text-black text-sm border-gray-300">
+                        <input type="text" id="newOpt2" placeholder="Pilihan 3"
+                            class="w-full p-2 border rounded text-black text-sm border-gray-300">
                     </div>
-                    <div class="flex-1">
-                        <label class="text-sm font-semibold text-gray-700">Tahap Kesukaran:</label>
-                        <select id="newDiff" class="w-full p-2 border rounded text-black text-sm mt-1">
-                            <option value="1">1 - Mudah (Tahap 1-3)</option>
-                            <option value="2">2 - Sederhana (Tahap 4-5)</option>
-                            <option value="3">3 - Sukar (Tahap 6)</option>
-                        </select>
+
+                    <div class="flex gap-4 items-center">
+                        <div class="flex-1">
+                            <label class="text-sm font-semibold text-gray-700">Jawapan Betul:</label>
+                            <select id="newAnswer" class="w-full p-2 border rounded text-black text-sm mt-1">
+                                <option value="0">Pilihan 1</option>
+                                <option value="1">Pilihan 2</option>
+                                <option value="2">Pilihan 3</option>
+                            </select>
+                        </div>
+                        <div class="flex-1">
+                            <label class="text-sm font-semibold text-gray-700">Tahap Kesukaran:</label>
+                            <select id="newDiff" class="w-full p-2 border rounded text-black text-sm mt-1">
+                                <option value="1">1 - Mudah (Tahap 1-3)</option>
+                                <option value="2">2 - Sederhana (Tahap 4-5)</option>
+                                <option value="3">3 - Sukar (Tahap 6)</option>
+                            </select>
+                        </div>
+                        <button id="addQuestionBtn"
+                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded mt-6 h-10 transition">
+                            Simpan
+                        </button>
                     </div>
-                    <button id="addQuestionBtn" class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded mt-6 h-10 transition">
-                        Simpan
-                    </button>
                 </div>
             </div>
         </div>
-    </div>
 
-    <!-- Skrin Menu Utama -->
-    <div id="startScreen" class="overlay hidden">
-        <h1 class="text-5xl font-bold text-green-400 mb-2 text-center">Selamat Datang, Renjer <span id="displayPlayerName" class="text-yellow-300"></span>!</h1>
-        <h2 class="text-2xl mb-6">Bersedia untuk 6 Tahap Misi Taman Negara</h2>
-        <div class="bg-gray-800 p-6 rounded-lg text-center max-w-md mx-4 border-2 border-green-500">
-            <p class="mb-2 text-left">🎮 <strong>Cara Bermain & Halangan:</strong></p>
-            <ul class="text-sm text-gray-300 mb-4 text-left list-disc pl-5">
-                <li>Gunakan panah kiri/kanan & Spacebar untuk lompat (Boleh <strong>Lompat 2 Kali</strong>).</li>
-                <li>Hati-hati dengan masa. Masa tamat = Hilang nyawa.</li>
-                <li>Lompat <strong>ATAS KEPALA</strong> haiwan liar untuk menewaskannya.</li>
-                <li class="text-red-400">⚠️ <strong>Tahap 4 ke atas:</strong> Hati-hati dengan Pemburu Haram yang menembak api ungu!</li>
-                <li class="text-yellow-400">🔥 <strong>Tahap 4 ke atas:</strong> Tekan kekunci "Z" atau butang Api untuk tembak musuh!</li>
-            </ul>
-            <button id="startBtn" class="w-full bg-green-500 hover:bg-green-600 text-white font-bold py-3 px-8 rounded-full text-xl transition transform hover:scale-105">
-                Mula Permainan
-            </button>
-        </div>
-    </div>
+        <!-- Skrin Menu Utama -->
+        <div id="startScreen" class="overlay title-screen hidden">
+            <h1 class="mario-title" style="font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem;">RENJER JOHOR</h1>
+            <div class="mario-panel mx-4 max-w-lg">
+                <h1 class="text-3xl font-black text-blue-600 mb-2 text-center">Selamat Datang,<br><span
+                        id="displayPlayerName" class="text-red-600"></span>!</h1>
+                <h2 class="text-xl font-bold mb-4 text-gray-700">Bersedia untuk 6 Tahap Misi Taman Negara</h2>
 
-    <!-- Skrin Soalan Trivia -->
-    <div id="triviaScreen" class="overlay hidden">
-        <div class="bg-white text-black p-8 rounded-xl max-w-lg w-[90%] mx-4 shadow-2xl border-4 border-green-500">
-            <div class="flex items-center mb-4">
-                <div class="bg-blue-500 text-white rounded-full w-10 h-10 flex justify-center items-center font-bold text-xl mr-3">?</div>
-                <h2 class="text-2xl font-bold text-blue-700">Trivia Taman Negara</h2>
+                <div class="bg-blue-50 border-4 border-blue-200 p-4 rounded-lg text-left mb-6 shadow-inner">
+                    <p class="mb-2 text-blue-900">🎮 <strong>Cara Bermain & Halangan:</strong></p>
+                    <ul class="text-sm text-gray-800 list-disc pl-5 space-y-1 font-medium">
+                        <li>Gunakan panah kiri/kanan & Spacebar untuk lompat (Boleh <strong>Lompat 2 Kali</strong>).
+                        </li>
+                        <li>Hati-hati dengan masa. Masa tamat = Hilang nyawa.</li>
+                        <li>Lompat <strong>ATAS KEPALA</strong> haiwan liar untuk menewaskannya.</li>
+                        <li class="text-red-600">⚠️ <strong>Tahap 4+:</strong> Pemburu Haram menembak api ungu!</li>
+                        <li class="text-orange-600">🔥 <strong>Tahap 4+:</strong> Tekan "Z" atau butang Api
+                            untuk tembak musuh!</li>
+                    </ul>
+                </div>
+
+                <button id="startBtn" class="mario-btn"
+                    style="background-color: #4CAF50; box-shadow: 0px 6px 0px #2E7D32;">
+                    Mula Permainan
+                </button>
             </div>
-            <p id="questionText" class="text-lg mb-6 font-medium"></p>
-            <div id="answersContainer" class="flex flex-col gap-3"></div>
+        </div>
+
+        <!-- Skrin Soalan Trivia -->
+        <div id="triviaScreen" class="overlay hidden">
+            <div class="bg-white text-black p-8 rounded-xl max-w-lg w-[90%] mx-4 shadow-2xl border-4 border-green-500">
+                <div class="flex items-center mb-4">
+                    <div
+                        class="bg-blue-500 text-white rounded-full w-10 h-10 flex justify-center items-center font-bold text-xl mr-3">
+                        ?</div>
+                    <h2 class="text-2xl font-bold text-blue-700">Trivia Taman Negara</h2>
+                </div>
+                <p id="questionText" class="text-lg mb-6 font-medium"></p>
+                <div id="answersContainer" class="flex flex-col gap-3"></div>
+            </div>
+        </div>
+
+        <!-- Skrin Menang/Kalah -->
+        <div id="endScreen" class="overlay hidden">
+            <h1 id="endTitle" class="text-5xl font-bold mb-2 text-center">Tamat</h1>
+            <p id="endMessage" class="text-2xl mb-6 text-center">Anda telah...</p>
+            <div class="bg-gray-800 p-6 rounded-xl border border-gray-600 mb-6 text-center w-64">
+                <p class="text-lg text-gray-300">Markah Terkumpul:</p>
+                <p class="text-4xl font-bold text-yellow-400" id="finalScore">0</p>
+            </div>
+            <div class="flex flex-col gap-3">
+                <button id="nextLevelBtn"
+                    class="hidden bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-full text-xl transition transform hover:scale-105">
+                    Ke Tahap Seterusnya ➡️
+                </button>
+                <button id="restartBtn"
+                    class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition transform hover:scale-105">
+                    Kembali ke Menu Utama
+                </button>
+            </div>
+        </div>
+
+        <!-- Kawalan Sentuh -->
+        <div id="touch-controls" class="hidden">
+            <div class="dir-buttons">
+                <div class="btn-touch" id="btnLeft">⬅️</div>
+                <div class="btn-touch" id="btnRight">➡️</div>
+            </div>
+            <div class="dir-buttons">
+                <div class="btn-touch hidden" id="btnShoot"
+                    style="background: rgba(221, 107, 32, 0.5); border-color: #FBD38D;">🔥</div>
+                <div class="btn-touch" id="btnJump">⬆️</div>
+            </div>
         </div>
     </div>
 
-    <!-- Skrin Menang/Kalah -->
-    <div id="endScreen" class="overlay hidden">
-        <h1 id="endTitle" class="text-5xl font-bold mb-2 text-center">Tamat</h1>
-        <p id="endMessage" class="text-2xl mb-6 text-center">Anda telah...</p>
-        <div class="bg-gray-800 p-6 rounded-xl border border-gray-600 mb-6 text-center w-64">
-            <p class="text-lg text-gray-300">Markah Terkumpul:</p>
-            <p class="text-4xl font-bold text-yellow-400" id="finalScore">0</p>
-        </div>
-        <div class="flex flex-col gap-3">
-            <button id="nextLevelBtn" class="hidden bg-yellow-500 hover:bg-yellow-600 text-black font-bold py-3 px-8 rounded-full text-xl transition transform hover:scale-105">
-                Ke Tahap Seterusnya ➡️
-            </button>
-            <button id="restartBtn" class="bg-blue-500 hover:bg-blue-600 text-white font-bold py-3 px-8 rounded-full text-xl transition transform hover:scale-105">
-                Kembali ke Menu Utama
-            </button>
-        </div>
-    </div>
+    <script>
+        const canvas = document.getElementById('gameCanvas');
+        const ctx = canvas.getContext('2d');
 
-    <!-- Kawalan Sentuh -->
-    <div id="touch-controls" class="hidden">
-        <div class="dir-buttons">
-            <div class="btn-touch" id="btnLeft">⬅️</div>
-            <div class="btn-touch" id="btnRight">➡️</div>
-        </div>
-        <div class="dir-buttons">
-            <div class="btn-touch hidden" id="btnShoot" style="background: rgba(221, 107, 32, 0.5); border-color: #FBD38D;">🔥</div>
-            <div class="btn-touch" id="btnJump">⬆️</div>
-        </div>
-    </div>
-</div>
+        const playerImg = new Image();
+        playerImg.src = 'image_00026b.png';
 
-<script>
-    const canvas = document.getElementById('gameCanvas');
-    const ctx = canvas.getContext('2d');
-    
-    const playerImg = new Image();
-    playerImg.src = 'image_00026b.png';
-    
-    const screens = {
-        register: document.getElementById('registerScreen'),
-        adminLogin: document.getElementById('adminLoginScreen'),
-        adminDash: document.getElementById('adminDashboardScreen'),
-        start: document.getElementById('startScreen'),
-        trivia: document.getElementById('triviaScreen'),
-        end: document.getElementById('endScreen')
-    };
-    const scoreDisplay = document.getElementById('scoreDisplay');
-    const livesDisplay = document.getElementById('livesDisplay');
-    const levelDisplay = document.getElementById('levelDisplay');
-    const timeDisplay = document.getElementById('timeDisplay');
-    const touchControls = document.getElementById('touch-controls');
-    const btnShoot = document.getElementById('btnShoot');
+        const screens = {
+            register: document.getElementById('registerScreen'),
+            adminLogin: document.getElementById('adminLoginScreen'),
+            adminDash: document.getElementById('adminDashboardScreen'),
+            start: document.getElementById('startScreen'),
+            trivia: document.getElementById('triviaScreen'),
+            end: document.getElementById('endScreen')
+        };
+        const scoreDisplay = document.getElementById('scoreDisplay');
+        const livesDisplay = document.getElementById('livesDisplay');
+        const levelDisplay = document.getElementById('levelDisplay');
+        const timeDisplay = document.getElementById('timeDisplay');
+        const touchControls = document.getElementById('touch-controls');
+        const btnShoot = document.getElementById('btnShoot');
 
-    let gameState = 'REGISTER'; 
-    let playerName = "";
-    let score = 0;
-    let lives = 5;
-    let currentLevel = 1;
-    let cameraX = 0;
-    let levelWidth = 3000;
-    let theme = 'gunung';
-    
-    let timeLeft = 100;
-    let lastTimeTick = Date.now();
+        let gameState = 'REGISTER';
+        let playerName = "";
+        let score = 0;
+        let lives = 5;
+        let currentLevel = 1;
+        let cameraX = 0;
+        let levelWidth = 3000;
+        let theme = 'gunung';
 
-    let usedQuestions = [];
-    
-    let fireballs = [];
-    let enemyFireballs = []; 
-    let lastShootTime = 0;
+        let timeLeft = 100;
+        let lastTimeTick = Date.now();
 
-    // KREDENSIAL SUPER ADMIN LALAI (Default)
-    const ADMIN_USER = "admin";
-    const ADMIN_PASS = "admin123";
+        let usedQuestions = [];
 
-    // Pangkalan Data Soalan (Ditukar dari const ke let supaya Admin boleh ubah)
-    let triviaDB = [
-        // TAHAP 1-3 (Mudah) - diff: 1
-        { q: "Gunung Ledang merupakan gunung tertinggi di negeri mana?", options: ["Melaka", "Johor", "Pahang"], answer: 1, diff: 1 },
-        { q: "Siapakah agensi yang menjaga Taman Negara Johor?", options: ["Jabatan Perhutanan", "PTNJ", "PERHILITAN"], answer: 1, diff: 1 },
-        { q: "Apakah lagenda terkenal yang dikaitkan dengan Gunung Ledang?", options: ["Mahsuri", "Puteri Santubong", "Puteri Gunung Ledang"], answer: 2, diff: 1 },
-        { q: "Tanjung Piai terkenal sebagai?", options: ["Titik Paling Utara Asia", "Penghujung Selatan Benua Asia", "Pulau Terbesar"], answer: 1, diff: 1 },
-        { q: "Apakah haiwan ikonik Taman Negara Endau-Rompin?", options: ["Orang Utan", "Harimau Malaya", "Beruang Panda"], answer: 1, diff: 1 },
-        { q: "Daerah manakah letaknya Gunung Ledang?", options: ["Muar", "Tangkak", "Segamat"], answer: 1, diff: 1 },
-        
-        // TAHAP 4-5 (Sederhana) - diff: 2
-        { q: "Pulau Kukup memegang status sebagai pulau bakau tidak berpenghuni yang keberapa terbesar di dunia?", options: ["Pertama", "Kedua", "Ketiga"], answer: 1, diff: 2 },
-        { q: "Apakah kumpulan Orang Asli utama yang menetap di Endau-Rompin (Peta)?", options: ["Semang", "Jakun", "Senoi"], answer: 1, diff: 2 },
-        { q: "Spesies pokok kipas gergasi kuno endemik di Endau-Rompin dipanggil?", options: ["Rafflesia", "Livistona endauensis", "Pokok Cengal"], answer: 1, diff: 2 },
-        { q: "Tanjung Piai dan Pulau Kukup telah diiktiraf sebagai Tapak?", options: ["Tapak Ramsar", "Tapak UNESCO", "Tapak Warisan Bersejarah"], answer: 0, diff: 2 },
-        { q: "Berapakah bilangan pulau utama dalam gugusan Taman Laut Sultan Iskandar?", options: ["5 Pulau", "13 Pulau", "25 Pulau"], answer: 1, diff: 2 },
-        { q: "Paya bakau memainkan peranan penting dalam alam sekitar sebagai...", options: ["Punca air minuman", "Melindungi pantai dari hakisan", "Tempat melombong pasir"], answer: 1, diff: 2 },
-        
-        // TAHAP 6 (Sangat Sukar) - diff: 3
-        { q: "Spesies kera apakah yang banyak mendiami kawasan bakau Pulau Kukup?", options: ["Kera Bekantan", "Kera Ekor Panjang (Macaque)", "Cimpanzi"], answer: 1, diff: 3 },
-        { q: "Apakah status flora dan fauna dalam semua Taman Negara?", options: ["Boleh diburu", "Dilindungi sepenuhnya oleh undang-undang", "Tanggungjawab penduduk"], answer: 1, diff: 3 },
-        { q: "Pulau Kukup merupakan pulau yang terbentuk sepenuhnya daripada?", options: ["Pasir Pantai", "Lumpur dan Hutan Bakau", "Batu Karang"], answer: 1, diff: 3 },
-        { q: "Umur dianggarkan bagi pembentukan batuan di Hutan Endau-Rompin?", options: ["50 Juta Tahun", "240 Juta Tahun", "1 Bilion Tahun"], answer: 1, diff: 3 },
-        { q: "Apakah nama saintifik bagi pokok periuk kera yang terdapat di kawasan Gunung Ledang?", options: ["Hibiscus rosa-sinensis", "Nepenthes", "Rafflesia arnoldii"], answer: 1, diff: 3 },
-        { q: "Berapakah jumlah anggaran keluasan Taman Negara Endau-Rompin (Peta & Selai)?", options: ["10,000 hektar", "40,000 hektar", "80,000 hektar"], answer: 2, diff: 3 }
-    ];
-    let currentTriviaBlock = null;
+        let fireballs = [];
+        let enemyFireballs = [];
+        let lastShootTime = 0;
 
-    // --- FUNGSI SUPER ADMIN ---
-    function renderAdminQuestions() {
-        const tbody = document.getElementById('adminQuestionList');
-        tbody.innerHTML = '';
-        triviaDB.forEach((q, idx) => {
-            const tr = document.createElement('tr');
-            
-            // Format options text
-            let optsText = `A) ${q.options[0]}<br>B) ${q.options[1]}<br>C) ${q.options[2]}`;
-            // Highlight correct answer
-            optsText = optsText.replace(q.options[q.answer], `<strong class="text-green-600">${q.options[q.answer]} (Betul)</strong>`);
+        // KREDENSIAL SUPER ADMIN LALAI (Default)
+        const ADMIN_USER = "admin";
+        const ADMIN_PASS = "admin123";
 
-            tr.innerHTML = `
+        // Pangkalan Data Soalan (Ditukar dari const ke let supaya Admin boleh ubah)
+        let triviaDB = [
+            // TAHAP 1-3 (Mudah) - diff: 1
+            { q: "Gunung Ledang merupakan gunung tertinggi di negeri mana?", options: ["Melaka", "Johor", "Pahang"], answer: 1, diff: 1 },
+            { q: "Siapakah agensi yang menjaga Taman Negara Johor?", options: ["Jabatan Perhutanan", "PTNJ", "PERHILITAN"], answer: 1, diff: 1 },
+            { q: "Apakah lagenda terkenal yang dikaitkan dengan Gunung Ledang?", options: ["Mahsuri", "Puteri Santubong", "Puteri Gunung Ledang"], answer: 2, diff: 1 },
+            { q: "Tanjung Piai terkenal sebagai?", options: ["Titik Paling Utara Asia", "Penghujung Selatan Benua Asia", "Pulau Terbesar"], answer: 1, diff: 1 },
+            { q: "Apakah haiwan ikonik Taman Negara Endau-Rompin?", options: ["Orang Utan", "Harimau Malaya", "Beruang Panda"], answer: 1, diff: 1 },
+            { q: "Daerah manakah letaknya Gunung Ledang?", options: ["Muar", "Tangkak", "Segamat"], answer: 1, diff: 1 },
+
+            // TAHAP 4-5 (Sederhana) - diff: 2
+            { q: "Pulau Kukup memegang status sebagai pulau bakau tidak berpenghuni yang keberapa terbesar di dunia?", options: ["Pertama", "Kedua", "Ketiga"], answer: 1, diff: 2 },
+            { q: "Apakah kumpulan Orang Asli utama yang menetap di Endau-Rompin (Peta)?", options: ["Semang", "Jakun", "Senoi"], answer: 1, diff: 2 },
+            { q: "Spesies pokok kipas gergasi kuno endemik di Endau-Rompin dipanggil?", options: ["Rafflesia", "Livistona endauensis", "Pokok Cengal"], answer: 1, diff: 2 },
+            { q: "Tanjung Piai dan Pulau Kukup telah diiktiraf sebagai Tapak?", options: ["Tapak Ramsar", "Tapak UNESCO", "Tapak Warisan Bersejarah"], answer: 0, diff: 2 },
+            { q: "Berapakah bilangan pulau utama dalam gugusan Taman Laut Sultan Iskandar?", options: ["5 Pulau", "13 Pulau", "25 Pulau"], answer: 1, diff: 2 },
+            { q: "Paya bakau memainkan peranan penting dalam alam sekitar sebagai...", options: ["Punca air minuman", "Melindungi pantai dari hakisan", "Tempat melombong pasir"], answer: 1, diff: 2 },
+
+            // TAHAP 6 (Sangat Sukar) - diff: 3
+            { q: "Spesies kera apakah yang banyak mendiami kawasan bakau Pulau Kukup?", options: ["Kera Bekantan", "Kera Ekor Panjang (Macaque)", "Cimpanzi"], answer: 1, diff: 3 },
+            { q: "Apakah status flora dan fauna dalam semua Taman Negara?", options: ["Boleh diburu", "Dilindungi sepenuhnya oleh undang-undang", "Tanggungjawab penduduk"], answer: 1, diff: 3 },
+            { q: "Pulau Kukup merupakan pulau yang terbentuk sepenuhnya daripada?", options: ["Pasir Pantai", "Lumpur dan Hutan Bakau", "Batu Karang"], answer: 1, diff: 3 },
+            { q: "Umur dianggarkan bagi pembentukan batuan di Hutan Endau-Rompin?", options: ["50 Juta Tahun", "240 Juta Tahun", "1 Bilion Tahun"], answer: 1, diff: 3 },
+            { q: "Apakah nama saintifik bagi pokok periuk kera yang terdapat di kawasan Gunung Ledang?", options: ["Hibiscus rosa-sinensis", "Nepenthes", "Rafflesia arnoldii"], answer: 1, diff: 3 },
+            { q: "Berapakah jumlah anggaran keluasan Taman Negara Endau-Rompin (Peta & Selai)?", options: ["10,000 hektar", "40,000 hektar", "80,000 hektar"], answer: 2, diff: 3 }
+        ];
+        let currentTriviaBlock = null;
+
+        // --- FUNGSI SUPER ADMIN ---
+        function renderAdminQuestions() {
+            const tbody = document.getElementById('adminQuestionList');
+            tbody.innerHTML = '';
+            triviaDB.forEach((q, idx) => {
+                const tr = document.createElement('tr');
+
+                // Format options text
+                let optsText = `A) ${q.options[0]}<br>B) ${q.options[1]}<br>C) ${q.options[2]}`;
+                // Highlight correct answer
+                optsText = optsText.replace(q.options[q.answer], `<strong class="text-green-600">${q.options[q.answer]} (Betul)</strong>`);
+
+                tr.innerHTML = `
                 <td class="font-bold">${idx + 1}</td>
                 <td><p class="font-bold text-gray-800">${q.q}</p><div class="text-xs text-gray-600 mt-1">${optsText}</div></td>
-                <td><span class="px-2 py-1 rounded text-xs font-bold ${q.diff===1?'bg-green-200 text-green-800':q.diff===2?'bg-yellow-200 text-yellow-800':'bg-red-200 text-red-800'}">Tahap ${q.diff}</span></td>
+                <td><span class="px-2 py-1 rounded text-xs font-bold ${q.diff === 1 ? 'bg-green-200 text-green-800' : q.diff === 2 ? 'bg-yellow-200 text-yellow-800' : 'bg-red-200 text-red-800'}">Tahap ${q.diff}</span></td>
                 <td><button onclick="deleteQuestion(${idx})" class="bg-red-500 hover:bg-red-600 text-white px-3 py-1 rounded text-xs">Padam</button></td>
             `;
-            tbody.appendChild(tr);
-        });
-    }
+                tbody.appendChild(tr);
+            });
+        }
 
-    window.deleteQuestion = function(idx) {
-        if(confirm("Adakah anda pasti mahu memadam soalan ini?")) {
-            triviaDB.splice(idx, 1);
+        window.deleteQuestion = function (idx) {
+            if (confirm("Adakah anda pasti mahu memadam soalan ini?")) {
+                triviaDB.splice(idx, 1);
+                renderAdminQuestions();
+            }
+        };
+
+        document.getElementById('addQuestionBtn').addEventListener('click', () => {
+            const qText = document.getElementById('newQuestion').value.trim();
+            const opt0 = document.getElementById('newOpt0').value.trim();
+            const opt1 = document.getElementById('newOpt1').value.trim();
+            const opt2 = document.getElementById('newOpt2').value.trim();
+            const ans = parseInt(document.getElementById('newAnswer').value);
+            const diff = parseInt(document.getElementById('newDiff').value);
+
+            if (!qText || !opt0 || !opt1 || !opt2) {
+                alert("Sila lengkapkan semua medan soalan dan pilihan jawapan!");
+                return;
+            }
+
+            triviaDB.push({ q: qText, options: [opt0, opt1, opt2], answer: ans, diff: diff });
+
+            // Clear forms
+            document.getElementById('newQuestion').value = '';
+            document.getElementById('newOpt0').value = '';
+            document.getElementById('newOpt1').value = '';
+            document.getElementById('newOpt2').value = '';
+
             renderAdminQuestions();
-        }
-    };
+            alert("Soalan baharu berjaya ditambah!");
+        });
 
-    document.getElementById('addQuestionBtn').addEventListener('click', () => {
-        const qText = document.getElementById('newQuestion').value.trim();
-        const opt0 = document.getElementById('newOpt0').value.trim();
-        const opt1 = document.getElementById('newOpt1').value.trim();
-        const opt2 = document.getElementById('newOpt2').value.trim();
-        const ans = parseInt(document.getElementById('newAnswer').value);
-        const diff = parseInt(document.getElementById('newDiff').value);
-
-        if(!qText || !opt0 || !opt1 || !opt2) {
-            alert("Sila lengkapkan semua medan soalan dan pilihan jawapan!");
-            return;
-        }
-
-        triviaDB.push({ q: qText, options: [opt0, opt1, opt2], answer: ans, diff: diff });
-        
-        // Clear forms
-        document.getElementById('newQuestion').value = '';
-        document.getElementById('newOpt0').value = '';
-        document.getElementById('newOpt1').value = '';
-        document.getElementById('newOpt2').value = '';
-        
-        renderAdminQuestions();
-        alert("Soalan baharu berjaya ditambah!");
-    });
-
-    document.getElementById('openAdminLoginBtn').addEventListener('click', () => {
-        hideAllScreens();
-        screens.adminLogin.classList.remove('hidden');
-        gameState = 'ADMIN';
-    });
-
-    document.getElementById('adminLoginBackBtn').addEventListener('click', () => {
-        hideAllScreens();
-        screens.register.classList.remove('hidden');
-        gameState = 'REGISTER';
-    });
-
-    document.getElementById('adminLoginSubmitBtn').addEventListener('click', () => {
-        const u = document.getElementById('adminUsername').value;
-        const p = document.getElementById('adminPassword').value;
-        if (u === ADMIN_USER && p === ADMIN_PASS) {
-            document.getElementById('adminUsername').value = '';
-            document.getElementById('adminPassword').value = '';
+        document.getElementById('openAdminLoginBtn').addEventListener('click', () => {
             hideAllScreens();
-            renderAdminQuestions();
-            screens.adminDash.classList.remove('hidden');
-        } else {
-            alert("ID Admin atau Kata Laluan SALAH!");
-        }
-    });
+            screens.adminLogin.classList.remove('hidden');
+            gameState = 'ADMIN';
+        });
 
-    document.getElementById('adminLogoutBtn').addEventListener('click', () => {
-        hideAllScreens();
-        screens.register.classList.remove('hidden');
-        gameState = 'REGISTER';
-    });
-    // --- TAMAT FUNGSI ADMIN ---
+        document.getElementById('adminLoginBackBtn').addEventListener('click', () => {
+            hideAllScreens();
+            screens.register.classList.remove('hidden');
+            gameState = 'REGISTER';
+        });
 
-    const keys = { right: false, left: false };
-
-    function performJump() {
-        if (player.jumpCount < player.maxJumps) {
-            player.vy = player.jumpPower; 
-            player.jumpCount++;
-            player.grounded = false;
-        }
-    }
-
-    window.addEventListener('keydown', (e) => {
-        if(gameState !== 'PLAYING') return;
-        if(e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
-        if(e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
-        if(e.code === 'ArrowUp' || e.code === 'Space' || e.code === 'KeyW') performJump();
-        if(e.code === 'KeyZ') shootFireball();
-    });
-
-    window.addEventListener('keyup', (e) => {
-        if(e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
-        if(e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
-    });
-
-    const btnLeft = document.getElementById('btnLeft');
-    const btnRight = document.getElementById('btnRight');
-    const btnJump = document.getElementById('btnJump');
-
-    const addTouch = (elem, key, isJump = false) => {
-        elem.addEventListener('touchstart', (e) => { 
-            e.preventDefault(); 
-            if(gameState === 'PLAYING') {
-                if(isJump) performJump();
-                else keys[key] = true; 
+        document.getElementById('adminLoginSubmitBtn').addEventListener('click', () => {
+            const u = document.getElementById('adminUsername').value;
+            const p = document.getElementById('adminPassword').value;
+            if (u === ADMIN_USER && p === ADMIN_PASS) {
+                document.getElementById('adminUsername').value = '';
+                document.getElementById('adminPassword').value = '';
+                hideAllScreens();
+                renderAdminQuestions();
+                screens.adminDash.classList.remove('hidden');
+            } else {
+                alert("ID Admin atau Kata Laluan SALAH!");
             }
         });
-        elem.addEventListener('touchend', (e) => { 
-            e.preventDefault(); 
-            if(!isJump) keys[key] = false; 
+
+        document.getElementById('adminLogoutBtn').addEventListener('click', () => {
+            hideAllScreens();
+            screens.register.classList.remove('hidden');
+            gameState = 'REGISTER';
         });
-    };
-    addTouch(btnLeft, 'left');
-    addTouch(btnRight, 'right');
-    addTouch(btnJump, 'up', true);
+        // --- TAMAT FUNGSI ADMIN ---
 
-    btnShoot.addEventListener('touchstart', (e) => {
-        e.preventDefault();
-        if(gameState === 'PLAYING') shootFireball();
-    });
+        const keys = { right: false, left: false };
 
-    if ('ontouchstart' in window || navigator.maxTouchPoints > 0) touchControls.classList.remove('hidden');
+        function performJump() {
+            if (player.jumpCount < player.maxJumps) {
+                player.vy = player.jumpPower;
+                player.jumpCount++;
+                player.grounded = false;
+            }
+        }
 
-    const player = {
-        x: 50, y: 200, width: 40, height: 60,
-        vx: 0, vy: 0, speed: 5, 
-        jumpPower: -13, maxJumps: 2, jumpCount: 0,
-        gravity: 0.6, grounded: false,
-        color: '#2F855A', facingLeft: false
-    };
-
-    function shootFireball() {
-        if (currentLevel < 4) return;
-        let now = Date.now();
-        if (now - lastShootTime < 500) return; 
-        lastShootTime = now;
-
-        fireballs.push({
-            x: player.facingLeft ? player.x - 20 : player.x + player.width,
-            y: player.y + player.height / 2 - 10,
-            width: 20, height: 20,
-            vx: player.facingLeft ? -10 : 10
+        window.addEventListener('keydown', (e) => {
+            if (gameState !== 'PLAYING') return;
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = true;
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = true;
+            if (e.code === 'ArrowUp' || e.code === 'Space' || e.code === 'KeyW') performJump();
+            if (e.code === 'KeyZ') shootFireball();
         });
-    }
 
-    let platforms = [], coins = [], trivias = [], hazards = [], enemies = [];
-    let goal = { x: 0, y: 0, width: 60, height: 100 };
+        window.addEventListener('keyup', (e) => {
+            if (e.code === 'ArrowRight' || e.code === 'KeyD') keys.right = false;
+            if (e.code === 'ArrowLeft' || e.code === 'KeyA') keys.left = false;
+        });
 
-    function buildLevel(level) {
-        platforms = []; coins = []; trivias = []; hazards = []; enemies = [];
-        enemyFireballs = []; 
-        
-        if (level <= 2) theme = 'gunung';
-        else if (level <= 4) theme = 'hutan';
-        else theme = 'bakau';
+        const btnLeft = document.getElementById('btnLeft');
+        const btnRight = document.getElementById('btnRight');
+        const btnJump = document.getElementById('btnJump');
 
-        timeLeft = 80 + (level * 20); 
-        lastTimeTick = Date.now();
+        const addTouch = (elem, key, isJump = false) => {
+            elem.addEventListener('touchstart', (e) => {
+                e.preventDefault();
+                if (gameState === 'PLAYING') {
+                    if (isJump) performJump();
+                    else keys[key] = true;
+                }
+            });
+            elem.addEventListener('touchend', (e) => {
+                e.preventDefault();
+                if (!isJump) keys[key] = false;
+            });
+        };
+        addTouch(btnLeft, 'left');
+        addTouch(btnRight, 'right');
+        addTouch(btnJump, 'up', true);
 
-        levelWidth = 3000 + (level * 500); 
-        let enemyBaseSpeed = 1.0 + (level * 0.2); 
-        let fireSpawnChance = 0.15 + (level * 0.05); 
-        
-        let curX = 0;
-        platforms.push({ x: curX, y: 400, width: 500, height: 50, type: 'ground' });
-        curX += 500;
+        btnShoot.addEventListener('touchstart', (e) => {
+            e.preventDefault();
+            if (gameState === 'PLAYING') shootFireball();
+        });
 
-        let triviaPlaced = 0;
+        if ('ontouchstart' in window || navigator.maxTouchPoints > 0) touchControls.classList.remove('hidden');
 
-        let animalTypes = [];
-        if (theme === 'gunung') animalTypes = ['monyet', 'burung'];
-        else if (theme === 'hutan') animalTypes = ['harimau', 'gajah', 'monyet', 'burung'];
-        else animalTypes = ['burung', 'monyet', 'harimau']; 
+        const player = {
+            x: 50, y: 200, width: 40, height: 60,
+            vx: 0, vy: 0, speed: 5,
+            jumpPower: -13, maxJumps: 2, jumpCount: 0,
+            gravity: 0.6, grounded: false,
+            color: '#2F855A', facingLeft: false
+        };
 
-        if (level >= 4) {
-            animalTypes.push('pemburu', 'pemburu'); 
+        function shootFireball() {
+            if (currentLevel < 4) return;
+            let now = Date.now();
+            if (now - lastShootTime < 500) return;
+            lastShootTime = now;
+
+            fireballs.push({
+                x: player.facingLeft ? player.x - 20 : player.x + player.width,
+                y: player.y + player.height / 2 - 10,
+                width: 20, height: 20,
+                vx: player.facingLeft ? -10 : 10
+            });
         }
 
-        while (curX < levelWidth - 800) {
-            let gap = 80 + Math.random() * (40 + (level * 8)); 
-            if (gap > 220) gap = 220; 
-            
-            hazards.push({ x: curX, y: 420, width: gap, height: 30 });
-            curX += gap;
-            
-            let platW = 200 + Math.random() * 400;
-            platforms.push({ x: curX, y: 400, width: platW, height: 50, type: 'ground' });
-            
-            if (Math.random() < 0.6 + (level * 0.05)) {
-                let eType = Math.random() < fireSpawnChance ? 'fire' : animalTypes[Math.floor(Math.random() * animalTypes.length)];
-                let eObj = { type: eType, active: true };
-                
-                if (eType === 'gajah') {
-                    eObj.width = 70; eObj.height = 45; eObj.vx = enemyBaseSpeed * 0.5; eObj.minX = curX; eObj.maxX = curX + platW;
-                } else if (eType === 'harimau') {
-                    eObj.width = 60; eObj.height = 30; eObj.vx = enemyBaseSpeed * 1.5; eObj.minX = curX; eObj.maxX = curX + platW;
-                } else if (eType === 'monyet') {
-                    eObj.width = 30; eObj.height = 30; eObj.vx = enemyBaseSpeed; eObj.vy = 0; eObj.minX = curX; eObj.maxX = curX + platW;
-                } else if (eType === 'burung') {
-                    eObj.width = 30; eObj.height = 20; eObj.vx = -enemyBaseSpeed * 1.5; eObj.startY = 150 + Math.random() * 100;
-                    eObj.minX = -1000; eObj.maxX = levelWidth + 1000;
-                } else if (eType === 'pemburu') {
-                    eObj.width = 40; eObj.height = 60; eObj.vx = enemyBaseSpeed * 0.8; eObj.minX = curX; eObj.maxX = curX + platW;
-                    eObj.lastShoot = Date.now() + Math.random() * 2000;
-                } else {
-                    eObj.width = 30; eObj.height = 30; eObj.type = 'fire';
+        let platforms = [], coins = [], trivias = [], hazards = [], enemies = [];
+        let goal = { x: 0, y: 0, width: 60, height: 100 };
+
+        function buildLevel(level) {
+            platforms = []; coins = []; trivias = []; hazards = []; enemies = [];
+            enemyFireballs = [];
+
+            if (level <= 2) theme = 'gunung';
+            else if (level <= 4) theme = 'hutan';
+            else theme = 'bakau';
+
+            timeLeft = 80 + (level * 20);
+            lastTimeTick = Date.now();
+
+            levelWidth = 3000 + (level * 500);
+            let enemyBaseSpeed = 1.0 + (level * 0.2);
+            let fireSpawnChance = 0.15 + (level * 0.05);
+
+            let curX = 0;
+            platforms.push({ x: curX, y: 400, width: 500, height: 50, type: 'ground' });
+            curX += 500;
+
+            let triviaPlaced = 0;
+
+            let animalTypes = [];
+            if (theme === 'gunung') animalTypes = ['monyet', 'burung'];
+            else if (theme === 'hutan') animalTypes = ['harimau', 'gajah', 'monyet', 'burung'];
+            else animalTypes = ['burung', 'monyet', 'harimau'];
+
+            if (level >= 4) {
+                animalTypes.push('pemburu', 'pemburu');
+            }
+
+            while (curX < levelWidth - 800) {
+                let gap = 80 + Math.random() * (40 + (level * 8));
+                if (gap > 220) gap = 220;
+
+                hazards.push({ x: curX, y: 420, width: gap, height: 30 });
+                curX += gap;
+
+                let platW = 200 + Math.random() * 400;
+                platforms.push({ x: curX, y: 400, width: platW, height: 50, type: 'ground' });
+
+                if (Math.random() < 0.6 + (level * 0.05)) {
+                    let eType = Math.random() < fireSpawnChance ? 'fire' : animalTypes[Math.floor(Math.random() * animalTypes.length)];
+                    let eObj = { type: eType, active: true };
+
+                    if (eType === 'gajah') {
+                        eObj.width = 70; eObj.height = 45; eObj.vx = enemyBaseSpeed * 0.5; eObj.minX = curX; eObj.maxX = curX + platW;
+                    } else if (eType === 'harimau') {
+                        eObj.width = 60; eObj.height = 30; eObj.vx = enemyBaseSpeed * 1.5; eObj.minX = curX; eObj.maxX = curX + platW;
+                    } else if (eType === 'monyet') {
+                        eObj.width = 30; eObj.height = 30; eObj.vx = enemyBaseSpeed; eObj.vy = 0; eObj.minX = curX; eObj.maxX = curX + platW;
+                    } else if (eType === 'burung') {
+                        eObj.width = 30; eObj.height = 20; eObj.vx = -enemyBaseSpeed * 1.5; eObj.startY = 150 + Math.random() * 100;
+                        eObj.minX = -1000; eObj.maxX = levelWidth + 1000;
+                    } else if (eType === 'pemburu') {
+                        eObj.width = 40; eObj.height = 60; eObj.vx = enemyBaseSpeed * 0.8; eObj.minX = curX; eObj.maxX = curX + platW;
+                        eObj.lastShoot = Date.now() + Math.random() * 2000;
+                    } else {
+                        eObj.width = 30; eObj.height = 30; eObj.type = 'fire';
+                    }
+
+                    eObj.x = eType === 'fire' ? curX + platW / 2 : curX + 20;
+                    eObj.y = eType === 'burung' ? eObj.startY : 400 - eObj.height;
+
+                    enemies.push(eObj);
                 }
 
-                eObj.x = eType === 'fire' ? curX + platW/2 : curX + 20;
-                eObj.y = eType === 'burung' ? eObj.startY : 400 - eObj.height;
+                if (Math.random() > 0.4) {
+                    platforms.push({ x: curX + platW / 4, y: 250 - (Math.random() * 50), width: 120, height: 20, type: 'platform' });
+                    coins.push({ x: curX + platW / 4 + 60, y: 210, radius: 10, collected: false });
 
-                enemies.push(eObj);
-            }
-            
-            if (Math.random() > 0.4) {
-                platforms.push({ x: curX + platW/4, y: 250 - (Math.random()*50), width: 120, height: 20, type: 'platform' });
-                coins.push({ x: curX + platW/4 + 60, y: 210, radius: 10, collected: false });
-                
-                if (triviaPlaced < 3 && Math.random() > 0.5) {
-                    trivias.push({ x: curX + platW/4 + 40, y: 190, width: 40, height: 60, active: true });
-                    triviaPlaced++;
-                }
-            }
-            curX += platW;
-        }
-        
-        while(triviaPlaced < 3) {
-            trivias.push({ x: curX - 300 - (triviaPlaced*100), y: 340, width: 40, height: 60, active: true });
-            triviaPlaced++;
-        }
-
-        platforms.push({ x: curX, y: 400, width: 800, height: 50, type: 'ground' });
-        goal = { x: curX + 400, y: 250, width: 60, height: 100 };
-    }
-
-    function drawBackground() {
-        if (theme === 'gunung') {
-            let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            grad.addColorStop(0, '#87CEEB'); grad.addColorStop(1, '#E0F6FF');
-            ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
-            
-            ctx.fillStyle = '#68D391'; ctx.beginPath(); ctx.moveTo(0 - cameraX * 0.1, 400); ctx.lineTo(300 - cameraX * 0.1, 100); ctx.lineTo(600 - cameraX * 0.1, 400); ctx.fill();
-            ctx.fillStyle = '#48BB78'; ctx.beginPath(); ctx.moveTo(400 - cameraX * 0.2, 400); ctx.lineTo(700 - cameraX * 0.2, 150); ctx.lineTo(1000 - cameraX * 0.2, 400); ctx.fill();
-        } 
-        else if (theme === 'hutan') {
-            let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            grad.addColorStop(0, '#276749'); grad.addColorStop(1, '#9AE6B4');
-            ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#744210';
-            for(let i=0; i<10; i++) ctx.fillRect((i * 300) - cameraX * 0.2, 50, 40, 350);
-        } 
-        else if (theme === 'bakau') {
-            let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
-            grad.addColorStop(0, '#ED8936'); grad.addColorStop(1, '#FEEBC8');
-            ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
-
-            ctx.fillStyle = '#9C4221';
-            for(let i=0; i<15; i++) {
-                ctx.beginPath(); let bx = (i * 200) - cameraX * 0.15;
-                ctx.moveTo(bx, 400); ctx.lineTo(bx + 30, 250); ctx.lineTo(bx + 60, 400); ctx.fill();
-            }
-        }
-    }
-
-    function updatePhysics() {
-        let now = Date.now();
-        if (now - lastTimeTick >= 1000) {
-            timeLeft--;
-            lastTimeTick = now;
-            updateHUD();
-            if(timeLeft <= 10) timeDisplay.classList.add('text-red');
-            else timeDisplay.classList.remove('text-red');
-            if (timeLeft <= 0) { loseLife(); return; }
-        }
-
-        if (keys.left) { player.vx = -player.speed; player.facingLeft = true; } 
-        else if (keys.right) { player.vx = player.speed; player.facingLeft = false; } 
-        else { player.vx *= 0.8; }
-
-        player.vy += player.gravity;
-        if (player.vy > 12) player.vy = 12;
-
-        player.x += player.vx;
-        if(player.x < 0) player.x = 0;
-
-        for (let p of platforms) {
-            if (checkCollision(player, p)) {
-                if (player.vx > 0) { player.x = p.x - player.width; player.vx = 0; } 
-                else if (player.vx < 0) { player.x = p.x + p.width; player.vx = 0; }
-            }
-        }
-
-        player.y += player.vy;
-        player.grounded = false;
-
-        for (let p of platforms) {
-            if (checkCollision(player, p)) {
-                if (player.vy > 0) { 
-                    player.y = p.y - player.height; player.vy = 0;
-                    player.grounded = true; player.jumpCount = 0; 
-                } else if (player.vy < 0) { 
-                    player.y = p.y + p.height; player.vy = 0;
-                }
-            }
-        }
-
-        cameraX = player.x - canvas.width / 2 + player.width / 2;
-        if (cameraX < 0) cameraX = 0;
-        if (cameraX > levelWidth - canvas.width) cameraX = levelWidth - canvas.width;
-
-        for (let c of coins) {
-            if (!c.collected && checkCircleRectCollision(c, player)) {
-                c.collected = true; score += 10; updateHUD();
-            }
-        }
-
-        for (let i = fireballs.length - 1; i >= 0; i--) {
-            let f = fireballs[i]; f.x += f.vx;
-            if (f.x < cameraX || f.x > cameraX + canvas.width) { fireballs.splice(i, 1); continue; }
-
-            let hit = false;
-            for (let j = enemies.length - 1; j >= 0; j--) {
-                let e = enemies[j];
-                if (e.type !== 'fire' && checkCollision(f, e)) {
-                    enemies.splice(j, 1); 
-                    score += 30; updateHUD();
-                    hit = true; break;
-                }
-            }
-            if (hit) fireballs.splice(i, 1);
-        }
-
-        for (let i = enemyFireballs.length - 1; i >= 0; i--) {
-            let f = enemyFireballs[i]; f.x += f.vx;
-            if (f.x < cameraX - 100 || f.x > cameraX + canvas.width + 100) {
-                enemyFireballs.splice(i, 1); continue;
-            }
-            if (checkCollision(f, player)) {
-                loseLife();
-                enemyFireballs.splice(i, 1);
-            }
-        }
-
-        for (let i = enemies.length - 1; i >= 0; i--) {
-            let e = enemies[i];
-            
-            if (e.type === 'harimau' || e.type === 'gajah' || e.type === 'pemburu') {
-                e.x += e.vx;
-                if (e.x <= e.minX || e.x + e.width >= e.maxX) e.vx *= -1;
-
-                if (e.type === 'pemburu' && now - e.lastShoot > 2500) {
-                    if (Math.abs(player.x - e.x) < 500 && Math.abs(player.y - e.y) < 100) {
-                        e.lastShoot = now;
-                        enemyFireballs.push({
-                            x: e.vx > 0 ? e.x + e.width : e.x - 15,
-                            y: e.y + 20,
-                            width: 15, height: 15,
-                            vx: e.vx > 0 ? 5 : -5
-                        });
+                    if (triviaPlaced < 3 && Math.random() > 0.5) {
+                        trivias.push({ x: curX + platW / 4 + 40, y: 190, width: 40, height: 60, active: true });
+                        triviaPlaced++;
                     }
                 }
-            } else if (e.type === 'monyet') {
-                e.x += e.vx;
-                if (e.x <= e.minX || e.x + e.width >= e.maxX) e.vx *= -1;
-                e.vy += 0.5; e.y += e.vy;
-                if (e.y >= 400 - e.height) { e.y = 400 - e.height; if(Math.random() < 0.05) e.vy = -8; }
-            } else if (e.type === 'burung') {
-                e.x += e.vx; e.y = e.startY + Math.sin(now * 0.005) * 40; 
+                curX += platW;
             }
 
-            if (checkCollision(player, e)) {
-                if (player.vy > 0 && player.y + player.height < e.y + 20 && e.type !== 'fire') {
-                    player.vy = -10; player.jumpCount = 1; 
-                    enemies.splice(i, 1);
-                    score += 30; updateHUD();
-                } else {
-                    loseLife();
+            while (triviaPlaced < 3) {
+                trivias.push({ x: curX - 300 - (triviaPlaced * 100), y: 340, width: 40, height: 60, active: true });
+                triviaPlaced++;
+            }
+
+            platforms.push({ x: curX, y: 400, width: 800, height: 50, type: 'ground' });
+            goal = { x: curX + 400, y: 250, width: 60, height: 100 };
+        }
+
+        function drawBackground() {
+            if (theme === 'gunung') {
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, '#87CEEB'); grad.addColorStop(1, '#E0F6FF');
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#68D391'; ctx.beginPath(); ctx.moveTo(0 - cameraX * 0.1, 400); ctx.lineTo(300 - cameraX * 0.1, 100); ctx.lineTo(600 - cameraX * 0.1, 400); ctx.fill();
+                ctx.fillStyle = '#48BB78'; ctx.beginPath(); ctx.moveTo(400 - cameraX * 0.2, 400); ctx.lineTo(700 - cameraX * 0.2, 150); ctx.lineTo(1000 - cameraX * 0.2, 400); ctx.fill();
+            }
+            else if (theme === 'hutan') {
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, '#276749'); grad.addColorStop(1, '#9AE6B4');
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#744210';
+                for (let i = 0; i < 10; i++) ctx.fillRect((i * 300) - cameraX * 0.2, 50, 40, 350);
+            }
+            else if (theme === 'bakau') {
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, '#ED8936'); grad.addColorStop(1, '#FEEBC8');
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+
+                ctx.fillStyle = '#9C4221';
+                for (let i = 0; i < 15; i++) {
+                    ctx.beginPath(); let bx = (i * 200) - cameraX * 0.15;
+                    ctx.moveTo(bx, 400); ctx.lineTo(bx + 30, 250); ctx.lineTo(bx + 60, 400); ctx.fill();
                 }
             }
         }
 
-        for (let t of trivias) {
-            if (t.active && checkCollision(player, t)) {
-                t.active = false; triggerTrivia();
+        function updatePhysics() {
+            let now = Date.now();
+            if (now - lastTimeTick >= 1000) {
+                timeLeft--;
+                lastTimeTick = now;
+                updateHUD();
+                if (timeLeft <= 10) timeDisplay.classList.add('text-red');
+                else timeDisplay.classList.remove('text-red');
+                if (timeLeft <= 0) { loseLife(); return; }
             }
+
+            if (keys.left) { player.vx = -player.speed; player.facingLeft = true; }
+            else if (keys.right) { player.vx = player.speed; player.facingLeft = false; }
+            else { player.vx *= 0.8; }
+
+            player.vy += player.gravity;
+            if (player.vy > 12) player.vy = 12;
+
+            player.x += player.vx;
+            if (player.x < 0) player.x = 0;
+
+            for (let p of platforms) {
+                if (checkCollision(player, p)) {
+                    if (player.vx > 0) { player.x = p.x - player.width; player.vx = 0; }
+                    else if (player.vx < 0) { player.x = p.x + p.width; player.vx = 0; }
+                }
+            }
+
+            player.y += player.vy;
+            player.grounded = false;
+
+            for (let p of platforms) {
+                if (checkCollision(player, p)) {
+                    if (player.vy > 0) {
+                        player.y = p.y - player.height; player.vy = 0;
+                        player.grounded = true; player.jumpCount = 0;
+                    } else if (player.vy < 0) {
+                        player.y = p.y + p.height; player.vy = 0;
+                    }
+                }
+            }
+
+            cameraX = player.x - canvas.width / 2 + player.width / 2;
+            if (cameraX < 0) cameraX = 0;
+            if (cameraX > levelWidth - canvas.width) cameraX = levelWidth - canvas.width;
+
+            for (let c of coins) {
+                if (!c.collected && checkCircleRectCollision(c, player)) {
+                    c.collected = true; score += 10; updateHUD();
+                }
+            }
+
+            for (let i = fireballs.length - 1; i >= 0; i--) {
+                let f = fireballs[i]; f.x += f.vx;
+                if (f.x < cameraX || f.x > cameraX + canvas.width) { fireballs.splice(i, 1); continue; }
+
+                let hit = false;
+                for (let j = enemies.length - 1; j >= 0; j--) {
+                    let e = enemies[j];
+                    if (e.type !== 'fire' && checkCollision(f, e)) {
+                        enemies.splice(j, 1);
+                        score += 30; updateHUD();
+                        hit = true; break;
+                    }
+                }
+                if (hit) fireballs.splice(i, 1);
+            }
+
+            for (let i = enemyFireballs.length - 1; i >= 0; i--) {
+                let f = enemyFireballs[i]; f.x += f.vx;
+                if (f.x < cameraX - 100 || f.x > cameraX + canvas.width + 100) {
+                    enemyFireballs.splice(i, 1); continue;
+                }
+                if (checkCollision(f, player)) {
+                    loseLife();
+                    enemyFireballs.splice(i, 1);
+                }
+            }
+
+            for (let i = enemies.length - 1; i >= 0; i--) {
+                let e = enemies[i];
+
+                if (e.type === 'harimau' || e.type === 'gajah' || e.type === 'pemburu') {
+                    e.x += e.vx;
+                    if (e.x <= e.minX || e.x + e.width >= e.maxX) e.vx *= -1;
+
+                    if (e.type === 'pemburu' && now - e.lastShoot > 2500) {
+                        if (Math.abs(player.x - e.x) < 500 && Math.abs(player.y - e.y) < 100) {
+                            e.lastShoot = now;
+                            enemyFireballs.push({
+                                x: e.vx > 0 ? e.x + e.width : e.x - 15,
+                                y: e.y + 20,
+                                width: 15, height: 15,
+                                vx: e.vx > 0 ? 5 : -5
+                            });
+                        }
+                    }
+                } else if (e.type === 'monyet') {
+                    e.x += e.vx;
+                    if (e.x <= e.minX || e.x + e.width >= e.maxX) e.vx *= -1;
+                    e.vy += 0.5; e.y += e.vy;
+                    if (e.y >= 400 - e.height) { e.y = 400 - e.height; if (Math.random() < 0.05) e.vy = -8; }
+                } else if (e.type === 'burung') {
+                    e.x += e.vx; e.y = e.startY + Math.sin(now * 0.005) * 40;
+                }
+
+                if (checkCollision(player, e)) {
+                    if (player.vy > 0 && player.y + player.height < e.y + 20 && e.type !== 'fire') {
+                        player.vy = -10; player.jumpCount = 1;
+                        enemies.splice(i, 1);
+                        score += 30; updateHUD();
+                    } else {
+                        loseLife();
+                    }
+                }
+            }
+
+            for (let t of trivias) {
+                if (t.active && checkCollision(player, t)) {
+                    t.active = false; triggerTrivia();
+                }
+            }
+
+            if (player.y > canvas.height) loseLife();
+            for (let h of hazards) if (checkCollision(player, h)) loseLife();
+            if (checkCollision(player, goal)) winLevel();
         }
 
-        if (player.y > canvas.height) loseLife();
-        for (let h of hazards) if (checkCollision(player, h)) loseLife();
-        if (checkCollision(player, goal)) winLevel();
-    }
+        function checkCollision(r1, r2) {
+            return (r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.height + r1.y > r2.y);
+        }
+        function checkCircleRectCollision(circle, rect) {
+            let testX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.width));
+            let testY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.height));
+            let distX = circle.x - testX; let distY = circle.y - testY;
+            return Math.sqrt((distX * distX) + (distY * distY)) <= circle.radius;
+        }
 
-    function checkCollision(r1, r2) {
-        return (r1.x < r2.x + r2.width && r1.x + r1.width > r2.x && r1.y < r2.y + r2.height && r1.height + r1.y > r2.y);
-    }
-    function checkCircleRectCollision(circle, rect) {
-        let testX = Math.max(rect.x, Math.min(circle.x, rect.x + rect.width));
-        let testY = Math.max(rect.y, Math.min(circle.y, rect.y + rect.height));
-        let distX = circle.x - testX; let distY = circle.y - testY;
-        return Math.sqrt((distX*distX) + (distY*distY)) <= circle.radius;
-    }
+        function drawGame() {
+            ctx.clearRect(0, 0, canvas.width, canvas.height);
+            drawBackground();
 
-    function drawGame() {
-        ctx.clearRect(0, 0, canvas.width, canvas.height);
-        drawBackground();
+            ctx.fillStyle = '#CBD5E0'; ctx.fillRect(goal.x - cameraX, goal.y, 10, goal.height);
+            ctx.fillStyle = '#E53E3E'; ctx.beginPath(); ctx.moveTo(goal.x + 10 - cameraX, goal.y); ctx.lineTo(goal.x + 60 - cameraX, goal.y + 20); ctx.lineTo(goal.x + 10 - cameraX, goal.y + 40); ctx.fill();
 
-        ctx.fillStyle = '#CBD5E0'; ctx.fillRect(goal.x - cameraX, goal.y, 10, goal.height);
-        ctx.fillStyle = '#E53E3E'; ctx.beginPath(); ctx.moveTo(goal.x + 10 - cameraX, goal.y); ctx.lineTo(goal.x + 60 - cameraX, goal.y + 20); ctx.lineTo(goal.x + 10 - cameraX, goal.y + 40); ctx.fill();
+            let groundColor = theme === 'bakau' ? '#7B341E' : '#8B4513';
+            let topColor = theme === 'bakau' ? '#A0522D' : '#48BB78';
 
-        let groundColor = theme === 'bakau' ? '#7B341E' : '#8B4513';
-        let topColor = theme === 'bakau' ? '#A0522D' : '#48BB78';
+            for (let p of platforms) {
+                if (p.type === 'ground') {
+                    ctx.fillStyle = groundColor; ctx.fillRect(p.x - cameraX, p.y, p.width, p.height);
+                    ctx.fillStyle = topColor; ctx.fillRect(p.x - cameraX, p.y, p.width, 10);
+                } else {
+                    ctx.fillStyle = '#A0522D'; ctx.fillRect(p.x - cameraX, p.y, p.width, p.height);
+                    ctx.fillStyle = '#CD853F'; ctx.fillRect(p.x - cameraX, p.y, p.width, 4);
+                }
+            }
 
-        for (let p of platforms) {
-            if (p.type === 'ground') {
-                ctx.fillStyle = groundColor; ctx.fillRect(p.x - cameraX, p.y, p.width, p.height);
-                ctx.fillStyle = topColor; ctx.fillRect(p.x - cameraX, p.y, p.width, 10);
+            for (let h of hazards) {
+                ctx.fillStyle = theme === 'bakau' ? '#8B4513' : '#2B6CB0';
+                ctx.fillRect(h.x - cameraX, h.y, h.width, h.height);
+                ctx.fillStyle = theme === 'bakau' ? '#A0522D' : '#63B3ED';
+                ctx.fillRect(h.x - cameraX + 10, h.y + 5, h.width - 20, 5);
+            }
+
+            for (let c of coins) {
+                if (!c.collected) {
+                    ctx.fillStyle = '#ECC94B'; ctx.beginPath(); ctx.arc(c.x - cameraX, c.y, c.radius, 0, Math.PI * 2); ctx.fill();
+                    ctx.strokeStyle = '#D69E2E'; ctx.lineWidth = 2; ctx.stroke();
+                }
+            }
+
+            for (let t of trivias) {
+                if (t.active) {
+                    ctx.fillStyle = '#8B4513'; ctx.fillRect(t.x + 15 - cameraX, t.y + 30, 10, 30);
+                    ctx.fillStyle = '#3182CE'; ctx.fillRect(t.x - cameraX, t.y, t.width, 30);
+                    ctx.fillStyle = '#FFFFFF'; ctx.font = '24px Arial'; ctx.fillText('?', t.x + 12 - cameraX, t.y + 24);
+                }
+            }
+
+            for (let e of enemies) {
+                let cx = e.x - cameraX;
+                if (e.type === 'harimau') {
+                    ctx.fillStyle = '#DD6B20'; ctx.fillRect(cx, e.y, e.width, e.height);
+                    ctx.fillStyle = '#000000'; for (let s = 5; s < e.width; s += 15) ctx.fillRect(cx + s, e.y, 4, e.height);
+                    let faceDir = e.vx > 0 ? e.width - 10 : 0;
+                    ctx.fillStyle = '#FBD38D'; ctx.fillRect(cx + faceDir, e.y + 5, 10, 15);
+                }
+                else if (e.type === 'gajah') {
+                    ctx.fillStyle = '#A0AEC0'; ctx.fillRect(cx, e.y, e.width, e.height);
+                    let trunkDir = e.vx > 0 ? e.width : -10; ctx.fillRect(cx + trunkDir, e.y + 10, 10, e.height - 10);
+                    ctx.fillStyle = '#FFFFFF'; let tuskDir = e.vx > 0 ? e.width : -5;
+                    ctx.beginPath(); ctx.moveTo(cx + tuskDir, e.y + 20); ctx.lineTo(cx + tuskDir + (e.vx > 0 ? 10 : -10), e.y + 30); ctx.lineTo(cx + tuskDir, e.y + 25); ctx.fill();
+                }
+                else if (e.type === 'monyet') {
+                    ctx.fillStyle = '#8B4513'; ctx.fillRect(cx, e.y, e.width, e.height);
+                    let faceDir = e.vx > 0 ? e.width - 15 : 5; ctx.fillStyle = '#FBB6CE'; ctx.fillRect(cx + faceDir, e.y + 5, 10, 10);
+                    ctx.strokeStyle = '#8B4513'; ctx.lineWidth = 3; let tailDir = e.vx > 0 ? 0 : e.width;
+                    ctx.beginPath(); ctx.arc(cx + tailDir, e.y + e.height - 10, 8, Math.PI, 0); ctx.stroke();
+                }
+                else if (e.type === 'burung') {
+                    ctx.fillStyle = '#3182CE'; let flap = Math.sin(Date.now() * 0.02) * 10;
+                    ctx.beginPath(); ctx.moveTo(cx, e.y + 10); ctx.lineTo(cx + 15, e.y + 10 + flap); ctx.lineTo(cx + e.width, e.y); ctx.fill();
+                }
+                else if (e.type === 'pemburu') {
+                    ctx.fillStyle = '#2D3748'; ctx.fillRect(cx, e.y, e.width, e.height);
+                    let faceDir = e.vx > 0 ? e.width - 15 : 5;
+                    ctx.fillStyle = '#FBD38D'; ctx.fillRect(cx + faceDir, e.y + 5, 10, 15);
+                    ctx.fillStyle = '#1A202C'; ctx.fillRect(cx - 5, e.y - 5, e.width + 10, 10);
+                }
+                else if (e.type === 'fire') {
+                    let flicker = Math.sin(Date.now() * 0.01) * 5;
+                    ctx.fillStyle = '#DD6B20'; ctx.beginPath(); ctx.moveTo(cx, e.y + e.height); ctx.lineTo(cx + e.width / 2, e.y + flicker); ctx.lineTo(cx + e.width, e.y + e.height); ctx.fill();
+                    ctx.fillStyle = '#ECC94B'; ctx.beginPath(); ctx.moveTo(cx + 6, e.y + e.height); ctx.lineTo(cx + e.width / 2, e.y + 10 + flicker * 0.5); ctx.lineTo(cx + e.width - 6, e.y + e.height); ctx.fill();
+                }
+            }
+
+            for (let f of fireballs) {
+                let cx = f.x - cameraX; ctx.fillStyle = '#DD6B20';
+                ctx.beginPath(); ctx.arc(cx + 10, f.y + 10, 10, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#ECC94B'; ctx.beginPath(); ctx.arc(cx + 10, f.y + 10, 5, 0, Math.PI * 2); ctx.fill();
+            }
+
+            for (let f of enemyFireballs) {
+                let cx = f.x - cameraX; ctx.fillStyle = '#9F7AEA';
+                ctx.beginPath(); ctx.arc(cx + 7.5, f.y + 7.5, 7.5, 0, Math.PI * 2); ctx.fill();
+                ctx.fillStyle = '#D6BCFA'; ctx.beginPath(); ctx.arc(cx + 7.5, f.y + 7.5, 3, 0, Math.PI * 2); ctx.fill();
+            }
+
+            if (playerImg.complete && playerImg.naturalWidth > 0) {
+                ctx.save();
+                if (currentLevel >= 4) ctx.filter = 'sepia(100%) saturate(500%) hue-rotate(320deg) brightness(0.8)';
+                if (player.facingLeft) {
+                    ctx.translate((player.x - cameraX) + player.width / 2, player.y + player.height / 2);
+                    ctx.scale(-1, 1);
+                    ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
+                } else {
+                    ctx.drawImage(playerImg, player.x - cameraX, player.y, player.width, player.height);
+                }
+                ctx.restore();
             } else {
-                ctx.fillStyle = '#A0522D'; ctx.fillRect(p.x - cameraX, p.y, p.width, p.height);
-                ctx.fillStyle = '#CD853F'; ctx.fillRect(p.x - cameraX, p.y, p.width, 4);
+                let pColor = currentLevel >= 4 ? '#E53E3E' : player.color;
+                ctx.fillStyle = pColor; ctx.fillRect(player.x - cameraX, player.y, player.width, player.height);
+                ctx.fillStyle = '#22543D'; ctx.fillRect(player.x - 5 - cameraX, player.y - 5, player.width + 10, 10);
+                ctx.fillStyle = '#FBD38D'; ctx.fillRect(player.x + 5 - cameraX, player.y + 5, player.width - 10, 15);
+                ctx.fillStyle = '#000'; let eo = (!player.facingLeft) ? 15 : 5;
+                ctx.fillRect(player.x + eo - cameraX, player.y + 8, 4, 4); ctx.fillRect(player.x + eo + 8 - cameraX, player.y + 8, 4, 4);
             }
         }
 
-        for (let h of hazards) {
-            ctx.fillStyle = theme === 'bakau' ? '#8B4513' : '#2B6CB0'; 
-            ctx.fillRect(h.x - cameraX, h.y, h.width, h.height);
-            ctx.fillStyle = theme === 'bakau' ? '#A0522D' : '#63B3ED';
-            ctx.fillRect(h.x - cameraX + 10, h.y + 5, h.width - 20, 5);
+        function triggerTrivia() {
+            gameState = 'TRIVIA';
+            keys.left = false; keys.right = false;
+
+            hideAllScreens();
+            screens.trivia.classList.remove('hidden');
+
+            let diffTarget = 1;
+            if (currentLevel >= 4) diffTarget = 2;
+            if (currentLevel === 6) diffTarget = 3;
+
+            // Carian soalan yang wujud dalam pangkalan data admin yang belum ditanya
+            let pool = triviaDB.filter(q => q.diff === diffTarget && !usedQuestions.includes(q.q));
+            if (pool.length === 0) pool = triviaDB.filter(q => !usedQuestions.includes(q.q));
+            if (pool.length === 0) { usedQuestions = []; pool = triviaDB; }
+
+            // Fallback kecemasan jika admin terpadam SEMUA soalan
+            if (pool.length === 0) {
+                pool = [{ q: "Sila minta admin masukkan soalan baharu!", options: ["OK", "Faham", "Baik"], answer: 0, diff: 1 }];
+            }
+
+            const qData = pool[Math.floor(Math.random() * pool.length)];
+            currentTriviaBlock = qData;
+            usedQuestions.push(qData.q);
+
+            document.getElementById('questionText').innerText = qData.q;
+
+            const container = document.getElementById('answersContainer');
+            container.innerHTML = '';
+
+            qData.options.forEach((opt, idx) => {
+                const btn = document.createElement('button');
+                btn.className = 'w-full text-left bg-gray-100 hover:bg-green-100 border-2 border-gray-300 hover:border-green-500 p-4 rounded-lg font-bold transition duration-200';
+                btn.innerText = String.fromCharCode(65 + idx) + ". " + opt;
+                btn.onclick = () => checkAnswer(idx, qData.answer);
+                container.appendChild(btn);
+            });
         }
 
-        for (let c of coins) {
-            if (!c.collected) {
-                ctx.fillStyle = '#ECC94B'; ctx.beginPath(); ctx.arc(c.x - cameraX, c.y, c.radius, 0, Math.PI * 2); ctx.fill();
-                ctx.strokeStyle = '#D69E2E'; ctx.lineWidth = 2; ctx.stroke();
-            }
-        }
-
-        for (let t of trivias) {
-            if (t.active) {
-                ctx.fillStyle = '#8B4513'; ctx.fillRect(t.x + 15 - cameraX, t.y + 30, 10, 30);
-                ctx.fillStyle = '#3182CE'; ctx.fillRect(t.x - cameraX, t.y, t.width, 30);
-                ctx.fillStyle = '#FFFFFF'; ctx.font = '24px Arial'; ctx.fillText('?', t.x + 12 - cameraX, t.y + 24);
-            }
-        }
-
-        for (let e of enemies) {
-            let cx = e.x - cameraX;
-            if (e.type === 'harimau') {
-                ctx.fillStyle = '#DD6B20'; ctx.fillRect(cx, e.y, e.width, e.height);
-                ctx.fillStyle = '#000000'; for(let s=5; s<e.width; s+=15) ctx.fillRect(cx + s, e.y, 4, e.height);
-                let faceDir = e.vx > 0 ? e.width - 10 : 0;
-                ctx.fillStyle = '#FBD38D'; ctx.fillRect(cx + faceDir, e.y + 5, 10, 15);
-            } 
-            else if (e.type === 'gajah') {
-                ctx.fillStyle = '#A0AEC0'; ctx.fillRect(cx, e.y, e.width, e.height);
-                let trunkDir = e.vx > 0 ? e.width : -10; ctx.fillRect(cx + trunkDir, e.y + 10, 10, e.height - 10);
-                ctx.fillStyle = '#FFFFFF'; let tuskDir = e.vx > 0 ? e.width : -5;
-                ctx.beginPath(); ctx.moveTo(cx + tuskDir, e.y + 20); ctx.lineTo(cx + tuskDir + (e.vx>0?10:-10), e.y + 30); ctx.lineTo(cx + tuskDir, e.y + 25); ctx.fill();
-            }
-            else if (e.type === 'monyet') {
-                ctx.fillStyle = '#8B4513'; ctx.fillRect(cx, e.y, e.width, e.height);
-                let faceDir = e.vx > 0 ? e.width - 15 : 5; ctx.fillStyle = '#FBB6CE'; ctx.fillRect(cx + faceDir, e.y + 5, 10, 10);
-                ctx.strokeStyle = '#8B4513'; ctx.lineWidth = 3; let tailDir = e.vx > 0 ? 0 : e.width;
-                ctx.beginPath(); ctx.arc(cx + tailDir, e.y + e.height - 10, 8, Math.PI, 0); ctx.stroke();
-            }
-            else if (e.type === 'burung') {
-                ctx.fillStyle = '#3182CE'; let flap = Math.sin(Date.now() * 0.02) * 10;
-                ctx.beginPath(); ctx.moveTo(cx, e.y + 10); ctx.lineTo(cx + 15, e.y + 10 + flap); ctx.lineTo(cx + e.width, e.y); ctx.fill();
-            }
-            else if (e.type === 'pemburu') {
-                ctx.fillStyle = '#2D3748'; ctx.fillRect(cx, e.y, e.width, e.height);
-                let faceDir = e.vx > 0 ? e.width - 15 : 5;
-                ctx.fillStyle = '#FBD38D'; ctx.fillRect(cx + faceDir, e.y + 5, 10, 15);
-                ctx.fillStyle = '#1A202C'; ctx.fillRect(cx - 5, e.y - 5, e.width + 10, 10); 
-            }
-            else if (e.type === 'fire') {
-                let flicker = Math.sin(Date.now() * 0.01) * 5;
-                ctx.fillStyle = '#DD6B20'; ctx.beginPath(); ctx.moveTo(cx, e.y + e.height); ctx.lineTo(cx + e.width / 2, e.y + flicker); ctx.lineTo(cx + e.width, e.y + e.height); ctx.fill();
-                ctx.fillStyle = '#ECC94B'; ctx.beginPath(); ctx.moveTo(cx + 6, e.y + e.height); ctx.lineTo(cx + e.width / 2, e.y + 10 + flicker * 0.5); ctx.lineTo(cx + e.width - 6, e.y + e.height); ctx.fill();
-            }
-        }
-
-        for (let f of fireballs) {
-            let cx = f.x - cameraX; ctx.fillStyle = '#DD6B20';
-            ctx.beginPath(); ctx.arc(cx + 10, f.y + 10, 10, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = '#ECC94B'; ctx.beginPath(); ctx.arc(cx + 10, f.y + 10, 5, 0, Math.PI * 2); ctx.fill();
-        }
-
-        for (let f of enemyFireballs) {
-            let cx = f.x - cameraX; ctx.fillStyle = '#9F7AEA';
-            ctx.beginPath(); ctx.arc(cx + 7.5, f.y + 7.5, 7.5, 0, Math.PI * 2); ctx.fill();
-            ctx.fillStyle = '#D6BCFA'; ctx.beginPath(); ctx.arc(cx + 7.5, f.y + 7.5, 3, 0, Math.PI * 2); ctx.fill();
-        }
-
-        if (playerImg.complete && playerImg.naturalWidth > 0) {
-            ctx.save();
-            if (currentLevel >= 4) ctx.filter = 'sepia(100%) saturate(500%) hue-rotate(320deg) brightness(0.8)';
-            if (player.facingLeft) {
-                ctx.translate((player.x - cameraX) + player.width / 2, player.y + player.height / 2);
-                ctx.scale(-1, 1);
-                ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
+        function checkAnswer(selectedIdx, correctIdx) {
+            if (selectedIdx === correctIdx) {
+                let bonus = 50 * currentLevel;
+                score += bonus;
+                alert(`Betul! Anda mendapat ${bonus} markah.`);
             } else {
-                ctx.drawImage(playerImg, player.x - cameraX, player.y, player.width, player.height);
+                lives -= 1;
+                alert("Salah! Jawapan sebenar ialah:\n\n" + currentTriviaBlock.options[correctIdx]);
+                if (lives <= 0) { gameOver(); return; }
             }
-            ctx.restore();
-        } else {
-            let pColor = currentLevel >= 4 ? '#E53E3E' : player.color; 
-            ctx.fillStyle = pColor; ctx.fillRect(player.x - cameraX, player.y, player.width, player.height);
-            ctx.fillStyle = '#22543D'; ctx.fillRect(player.x - 5 - cameraX, player.y - 5, player.width + 10, 10);
-            ctx.fillStyle = '#FBD38D'; ctx.fillRect(player.x + 5 - cameraX, player.y + 5, player.width - 10, 15);
-            ctx.fillStyle = '#000'; let eo = (!player.facingLeft) ? 15 : 5;
-            ctx.fillRect(player.x + eo - cameraX, player.y + 8, 4, 4); ctx.fillRect(player.x + eo + 8 - cameraX, player.y + 8, 4, 4);
-        }
-    }
-
-    function triggerTrivia() {
-        gameState = 'TRIVIA';
-        keys.left = false; keys.right = false; 
-        
-        hideAllScreens();
-        screens.trivia.classList.remove('hidden');
-
-        let diffTarget = 1;
-        if (currentLevel >= 4) diffTarget = 2; 
-        if (currentLevel === 6) diffTarget = 3; 
-
-        // Carian soalan yang wujud dalam pangkalan data admin yang belum ditanya
-        let pool = triviaDB.filter(q => q.diff === diffTarget && !usedQuestions.includes(q.q));
-        if(pool.length === 0) pool = triviaDB.filter(q => !usedQuestions.includes(q.q));
-        if(pool.length === 0) { usedQuestions = []; pool = triviaDB; }
-        
-        // Fallback kecemasan jika admin terpadam SEMUA soalan
-        if(pool.length === 0) {
-            pool = [{ q: "Sila minta admin masukkan soalan baharu!", options: ["OK", "Faham", "Baik"], answer: 0, diff: 1 }];
+            lastTimeTick = Date.now();
+            updateHUD(); hideAllScreens(); gameState = 'PLAYING';
         }
 
-        const qData = pool[Math.floor(Math.random() * pool.length)];
-        currentTriviaBlock = qData;
-        usedQuestions.push(qData.q); 
+        function hideAllScreens() {
+            Object.values(screens).forEach(s => s.classList.add('hidden'));
+        }
 
-        document.getElementById('questionText').innerText = qData.q;
-        
-        const container = document.getElementById('answersContainer');
-        container.innerHTML = ''; 
-
-        qData.options.forEach((opt, idx) => {
-            const btn = document.createElement('button');
-            btn.className = 'w-full text-left bg-gray-100 hover:bg-green-100 border-2 border-gray-300 hover:border-green-500 p-4 rounded-lg font-bold transition duration-200';
-            btn.innerText = String.fromCharCode(65 + idx) + ". " + opt; 
-            btn.onclick = () => checkAnswer(idx, qData.answer);
-            container.appendChild(btn);
-        });
-    }
-
-    function checkAnswer(selectedIdx, correctIdx) {
-        if (selectedIdx === correctIdx) {
-            let bonus = 50 * currentLevel;
-            score += bonus;
-            alert(`Betul! Anda mendapat ${bonus} markah.`);
-        } else {
+        function loseLife() {
             lives -= 1;
-            alert("Salah! Jawapan sebenar ialah:\n\n" + currentTriviaBlock.options[correctIdx]);
-            if (lives <= 0) { gameOver(); return; }
-        }
-        lastTimeTick = Date.now(); 
-        updateHUD(); hideAllScreens(); gameState = 'PLAYING';
-    }
-
-    function hideAllScreens() {
-        Object.values(screens).forEach(s => s.classList.add('hidden'));
-    }
-
-    function loseLife() {
-        lives -= 1;
-        updateHUD();
-        if (lives <= 0) {
-            gameOver();
-        } else {
-            player.x = cameraX + 50; player.y = 100; player.vx = 0; player.vy = 0; player.jumpCount = 0;
-            enemyFireballs = []; 
-            timeLeft += 10; lastTimeTick = Date.now();
-        }
-    }
-
-    function updateHUD() {
-        scoreDisplay.innerText = score;
-        livesDisplay.innerText = lives;
-        levelDisplay.innerText = currentLevel;
-        timeDisplay.innerText = timeLeft;
-    }
-
-    function gameOver() {
-        gameState = 'GAMEOVER';
-        hideAllScreens();
-        screens.end.classList.remove('hidden');
-        document.getElementById('endTitle').innerText = "Misi Gagal";
-        document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-red-500";
-        document.getElementById('endMessage').innerText = `Anda tewas di Tahap ${currentLevel}.`;
-        document.getElementById('finalScore').innerText = score;
-        
-        document.getElementById('nextLevelBtn').classList.add('hidden');
-        document.getElementById('restartBtn').innerText = "Kembali ke Menu Utama";
-        document.getElementById('restartBtn').classList.remove('hidden');
-    }
-
-    function winLevel() {
-        gameState = 'GAMEOVER';
-        hideAllScreens();
-        
-        if (currentLevel < 6) {
-            screens.end.classList.remove('hidden');
-            document.getElementById('endTitle').innerText = `Tahap ${currentLevel} Selesai!`;
-            document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-green-400";
-            document.getElementById('endMessage').innerText = "Hebat! Teruskan ke tahap yang lebih sukar.";
-            
-            lives += 1; 
-            score += (timeLeft * 2) + (100 * currentLevel); 
             updateHUD();
-            document.getElementById('finalScore').innerText = score;
+            if (lives <= 0) {
+                gameOver();
+            } else {
+                player.x = cameraX + 50; player.y = 100; player.vx = 0; player.vy = 0; player.jumpCount = 0;
+                enemyFireballs = [];
+                timeLeft += 10; lastTimeTick = Date.now();
+            }
+        }
 
-            document.getElementById('nextLevelBtn').classList.remove('hidden');
-            document.getElementById('restartBtn').classList.add('hidden');
-        } else {
+        function updateHUD() {
+            scoreDisplay.innerText = score;
+            livesDisplay.innerText = lives;
+            levelDisplay.innerText = currentLevel;
+            timeDisplay.innerText = timeLeft;
+        }
+
+        function gameOver() {
+            gameState = 'GAMEOVER';
+            hideAllScreens();
             screens.end.classList.remove('hidden');
-            document.getElementById('endTitle').innerText = "MISI SELESAI!";
-            document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-yellow-400";
-            document.getElementById('endMessage').innerText = "Tahniah! Anda berjaya menamatkan kesemua 6 Tahap!";
-            
-            score += 5000 + (timeLeft * 5); 
-            updateHUD();
+            document.getElementById('endTitle').innerText = "Misi Gagal";
+            document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-red-500";
+            document.getElementById('endMessage').innerText = `Anda tewas di Tahap ${currentLevel}.`;
             document.getElementById('finalScore').innerText = score;
 
             document.getElementById('nextLevelBtn').classList.add('hidden');
-            document.getElementById('restartBtn').innerText = "Main Semula";
+            document.getElementById('restartBtn').innerText = "Kembali ke Menu Utama";
             document.getElementById('restartBtn').classList.remove('hidden');
         }
-    }
 
-    function startLevel() {
-        player.x = 50; player.y = 200; player.vx = 0; player.vy = 0; player.facingLeft = false; player.jumpCount = 0;
-        fireballs = []; enemyFireballs = []; 
-        
-        if (currentLevel >= 4) btnShoot.classList.remove('hidden');
-        else btnShoot.classList.add('hidden');
+        function winLevel() {
+            gameState = 'GAMEOVER';
+            hideAllScreens();
 
-        buildLevel(currentLevel);
-        updateHUD();
-        gameState = 'PLAYING';
-        hideAllScreens();
-    }
+            if (currentLevel < 6) {
+                screens.end.classList.remove('hidden');
+                document.getElementById('endTitle').innerText = `Tahap ${currentLevel} Selesai!`;
+                document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-green-400";
+                document.getElementById('endMessage').innerText = "Hebat! Teruskan ke tahap yang lebih sukar.";
 
-    document.getElementById('submitNameBtn').addEventListener('click', () => {
-        const input = document.getElementById('playerNameInput').value.trim();
-        if(input.length > 0) {
-            playerName = input;
-            document.getElementById('displayPlayerName').innerText = playerName;
+                lives += 1;
+                score += (timeLeft * 2) + (100 * currentLevel);
+                updateHUD();
+                document.getElementById('finalScore').innerText = score;
+
+                document.getElementById('nextLevelBtn').classList.remove('hidden');
+                document.getElementById('restartBtn').classList.add('hidden');
+            } else {
+                screens.end.classList.remove('hidden');
+                document.getElementById('endTitle').innerText = "MISI SELESAI!";
+                document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-yellow-400";
+                document.getElementById('endMessage').innerText = "Tahniah! Anda berjaya menamatkan kesemua 6 Tahap!";
+
+                score += 5000 + (timeLeft * 5);
+                updateHUD();
+                document.getElementById('finalScore').innerText = score;
+
+                document.getElementById('nextLevelBtn').classList.add('hidden');
+                document.getElementById('restartBtn').innerText = "Main Semula";
+                document.getElementById('restartBtn').classList.remove('hidden');
+            }
+        }
+
+        function startLevel() {
+            player.x = 50; player.y = 200; player.vx = 0; player.vy = 0; player.facingLeft = false; player.jumpCount = 0;
+            fireballs = []; enemyFireballs = [];
+
+            if (currentLevel >= 4) btnShoot.classList.remove('hidden');
+            else btnShoot.classList.add('hidden');
+
+            buildLevel(currentLevel);
+            updateHUD();
+            gameState = 'PLAYING';
+            hideAllScreens();
+        }
+
+        document.getElementById('submitNameBtn').addEventListener('click', () => {
+            const input = document.getElementById('playerNameInput').value.trim();
+            if (input.length > 0) {
+                playerName = input;
+                document.getElementById('displayPlayerName').innerText = playerName;
+                hideAllScreens();
+                screens.start.classList.remove('hidden');
+            } else { alert("Sila masukkan nama anda!"); }
+        });
+
+        document.getElementById('startBtn').addEventListener('click', () => {
+            score = 0; lives = 5; currentLevel = 1; usedQuestions = [];
+            startLevel();
+        });
+
+        document.getElementById('nextLevelBtn').addEventListener('click', () => {
+            currentLevel++;
+            startLevel();
+        });
+
+        document.getElementById('restartBtn').addEventListener('click', () => {
             hideAllScreens();
             screens.start.classList.remove('hidden');
-        } else { alert("Sila masukkan nama anda!"); }
-    });
+        });
 
-    document.getElementById('startBtn').addEventListener('click', () => {
-        score = 0; lives = 5; currentLevel = 1; usedQuestions = []; 
-        startLevel();
-    });
-
-    document.getElementById('nextLevelBtn').addEventListener('click', () => {
-        currentLevel++;
-        startLevel();
-    });
-
-    document.getElementById('restartBtn').addEventListener('click', () => {
-        hideAllScreens();
-        screens.start.classList.remove('hidden');
-    });
-
-    function gameLoop() {
-        if (gameState === 'PLAYING') {
-            updatePhysics();
-            drawGame();
-        } else if (gameState !== 'ADMIN') {
-            lastTimeTick = Date.now(); 
-            drawGame();
+        function gameLoop() {
+            if (gameState === 'PLAYING') {
+                updatePhysics();
+                drawGame();
+            } else if (gameState !== 'ADMIN') {
+                lastTimeTick = Date.now();
+                drawGame();
+            }
+            requestAnimationFrame(gameLoop);
         }
+
+        buildLevel(1);
         requestAnimationFrame(gameLoop);
-    }
 
-    buildLevel(1);
-    requestAnimationFrame(gameLoop);
-
-</script>
+    </script>
 </body>
+
 </html>
