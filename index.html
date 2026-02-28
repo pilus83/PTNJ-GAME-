@@ -958,8 +958,23 @@
             ctx.clearRect(0, 0, canvas.width, canvas.height);
             drawBackground();
 
-            ctx.fillStyle = '#CBD5E0'; ctx.fillRect(goal.x - cameraX, goal.y, 10, goal.height);
-            ctx.fillStyle = '#E53E3E'; ctx.beginPath(); ctx.moveTo(goal.x + 10 - cameraX, goal.y); ctx.lineTo(goal.x + 60 - cameraX, goal.y + 20); ctx.lineTo(goal.x + 10 - cameraX, goal.y + 40); ctx.fill();
+            // Lukis Tiang Bendera (Flagpole)
+            ctx.fillStyle = '#CBD5E0'; // Warna tiang kelabu
+            ctx.fillRect(goal.x - cameraX + 25, goal.y, 10, goal.height + 50); // Tiang lebih tinggi sikit
+
+            // Lukis Puncak Tiang (Bulatan Emas)
+            ctx.fillStyle = '#ECC94B';
+            ctx.beginPath();
+            ctx.arc(goal.x - cameraX + 30, goal.y, 8, 0, Math.PI * 2);
+            ctx.fill();
+
+            // Lukis Bendera Merah
+            ctx.fillStyle = '#E53E3E'; // Merah
+            ctx.beginPath();
+            ctx.moveTo(goal.x + 35 - cameraX, goal.y + 10); // Mula kat tiang
+            ctx.lineTo(goal.x + 75 - cameraX, goal.y + 25); // Hujung bendera
+            ctx.lineTo(goal.x + 35 - cameraX, goal.y + 40); // Balik ke tiang
+            ctx.fill();
 
             let groundColor = theme === 'bakau' ? '#7B341E' : '#8B4513';
             let topColor = theme === 'bakau' ? '#A0522D' : '#48BB78';
