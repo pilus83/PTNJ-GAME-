@@ -510,27 +510,6 @@
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
 
-        const playerImg = new Image();
-        const rawPlayerImg = new Image();
-        rawPlayerImg.onload = () => {
-            const tempCanvas = document.createElement('canvas');
-            tempCanvas.width = rawPlayerImg.width;
-            tempCanvas.height = rawPlayerImg.height;
-            const tCtx = tempCanvas.getContext('2d');
-            tCtx.drawImage(rawPlayerImg, 0, 0);
-            const imgData = tCtx.getImageData(0, 0, tempCanvas.width, tempCanvas.height);
-            const data = imgData.data;
-            for (let i = 0; i < data.length; i += 4) {
-                // Padam latar belakang putih / hampir putih
-                let r = data[i], g = data[i + 1], b = data[i + 2];
-                if (r > 240 && g > 240 && b > 240) {
-                    data[i + 3] = 0; // Jadikan lutsinar
-                }
-            }
-            tCtx.putImageData(imgData, 0, 0);
-            playerImg.src = tempCanvas.toDataURL(); // Guna imej lutsinar
-        };
-        rawPlayerImg.src = 'player_classic.jpg'; // Muatkan imej karakter klasik baru
 
         const screens = {
             register: document.getElementById('registerScreen'),
@@ -741,7 +720,7 @@
         if ('ontouchstart' in window || navigator.maxTouchPoints > 0) touchControls.classList.remove('hidden');
 
         const player = {
-            x: 50, y: 200, width: 60, height: 90,
+            x: 50, y: 200, width: 40, height: 60,
             vx: 0, vy: 0, speed: 5,
             jumpPower: -13, maxJumps: 2, jumpCount: 0,
             gravity: 0.6, grounded: false,
@@ -1126,79 +1105,12 @@
                 ctx.fillStyle = '#D6BCFA'; ctx.beginPath(); ctx.arc(cx + 7.5, f.y + 7.5, 3, 0, Math.PI * 2); ctx.fill();
             }
 
-            if (playerImg.complete && playerImg.naturalWidth > 0) {
-                ctx.save();
-                if (currentLevel >= 4) ctx.filter = 'sepia(100%) saturate(500%) hue-rotate(320deg) brightness(0.8)';
-
-                // Animasi Fizikal
-                let cx = player.x - cameraX + player.width / 2;
-                let cy = player.y + player.height / 2;
-                ctx.translate(cx, cy);
-
-                // 1. Condong (Tilt) apabila berlari
-                let tiltAngle = (player.vx * 0.05);
-
-                // 2. Regang & Penyek (Squash & Stretch) masa melompat
-                let scaleX = 1;
-                let scaleY = 1;
-                if (!player.grounded) {
-                    scaleY = 1 + Math.abs(player.vy * 0.02); // Memanjang bila lompat
-                    scaleX = 1 - Math.abs(player.vy * 0.01); // Menipis sikit
-                    if (scaleY > 1.3) scaleY = 1.3;
-                    if (scaleX < 0.7) scaleX = 0.7;
-                } else if (Math.abs(player.vx) > 0.5) {
-                    // 3. Goyang (Wobble) ketika berlari di tanah
-                    scaleY = 1 + Math.sin(Date.now() * 0.02) * 0.05;
-                    scaleX = 1 - Math.sin(Date.now() * 0.02) * 0.02;
-                }
-
-                ctx.rotate(tiltAngle);
-                ctx.scale(scaleX, scaleY);
-
-                if (player.facingLeft) {
-                    ctx.scale(-1, 1);
-                }
-
-                // 4. Pergerakan Kaki (Pisahkan Badan Atas & Bawah)
-                let splitY = player.height * 0.55; // Titik pemotongan di pinggang
-                let swingAngle = 0;
-
-                if (Math.abs(player.vx) > 0.5 && player.grounded) {
-                    // Ayun kaki ke depan belakang bila lari
-                    swingAngle = Math.sin(Date.now() * 0.015) * 0.4;
-                }
-
-                // --- Lukis Bahagian Atas Badan ---
-                ctx.save();
-                ctx.beginPath();
-                ctx.rect(-player.width / 2, -player.height / 2, player.width, splitY);
-                ctx.clip();
-                ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
-                ctx.restore();
-
-                // --- Lukis Bahagian Kaki Bergerak ---
-                ctx.save();
-                // Alih titik putaran ke pinggang
-                ctx.translate(0, -player.height / 2 + splitY);
-                ctx.rotate(swingAngle); // Gerakkan kaki
-                // Undur balik dari pinggang
-                ctx.translate(0, player.height / 2 - splitY);
-
-                ctx.beginPath();
-                ctx.rect(-player.width, -player.height / 2 + splitY, player.width * 2, player.height - splitY);
-                ctx.clip();
-                ctx.drawImage(playerImg, -player.width / 2, -player.height / 2, player.width, player.height);
-                ctx.restore();
-
-                ctx.restore();
-            } else {
-                let pColor = currentLevel >= 4 ? '#E53E3E' : player.color;
-                ctx.fillStyle = pColor; ctx.fillRect(player.x - cameraX, player.y, player.width, player.height);
-                ctx.fillStyle = '#22543D'; ctx.fillRect(player.x - 5 - cameraX, player.y - 5, player.width + 10, 10);
-                ctx.fillStyle = '#FBD38D'; ctx.fillRect(player.x + 5 - cameraX, player.y + 5, player.width - 10, 15);
-                ctx.fillStyle = '#000'; let eo = (!player.facingLeft) ? 15 : 5;
-                ctx.fillRect(player.x + eo - cameraX, player.y + 8, 4, 4); ctx.fillRect(player.x + eo + 8 - cameraX, player.y + 8, 4, 4);
-            }
+            let pColor = currentLevel >= 4 ? '#E53E3E' : player.color;
+            ctx.fillStyle = pColor; ctx.fillRect(player.x - cameraX, player.y, player.width, player.height);
+            ctx.fillStyle = '#22543D'; ctx.fillRect(player.x - 5 - cameraX, player.y - 5, player.width + 10, 10);
+            ctx.fillStyle = '#FBD38D'; ctx.fillRect(player.x + 5 - cameraX, player.y + 5, player.width - 10, 15);
+            ctx.fillStyle = '#000'; let eo = (!player.facingLeft) ? 15 : 5;
+            ctx.fillRect(player.x + eo - cameraX, player.y + 8, 4, 4); ctx.fillRect(player.x + eo + 8 - cameraX, player.y + 8, 4, 4);
         }
 
         function triggerTrivia() {
