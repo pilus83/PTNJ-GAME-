@@ -566,10 +566,16 @@
         </div>
     </div>
 
+    <!-- SUPABASE SDK -->
+    <script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+
     <script>
+        const DB_URL = "https://pfazrzdsfezjkcupnmjb.supabase.co";
+        const DB_KEY = "eyJhbGciOiJIUzI1NiIsInR5cCI6IkpXVCJ9.eyJpc3MiOiJzdXBhYmFzZSIsInJlZiI6InBmYXpremRzZmV6amtjdXBubWpiIiwicm9sZSI6ImFub24iLCJpYXQiOjE3NzIyNjIyMDYsImV4cCI6MjA4NzgzODIwNn0.YOFakezR0VvuzST-26Q1-aps_c_JZ1YnqB2nAmVB96A";
+        const supabase = window.supabase.createClient(DB_URL, DB_KEY);
+
         const canvas = document.getElementById('gameCanvas');
         const ctx = canvas.getContext('2d');
-
 
         const screens = {
             register: document.getElementById('registerScreen'),
@@ -636,57 +642,90 @@
             { q: "Berapakah jumlah anggaran keluasan Taman Negara Endau-Rompin (Peta & Selai)?", options: ["10,000 hektar", "40,000 hektar", "80,000 hektar"], answer: 2, diff: 3 }
         ];
 
-        let triviaDB = JSON.parse(localStorage.getItem('ptnj_trivia')) || defaultTriviaDB;
+        let triviaDB = [...defaultTriviaDB]; // Temporary default while loading
 
-        function saveTriviaDB() {
-            localStorage.setItem('ptnj_trivia', JSON.stringify(triviaDB));
+        async function loadTriviaDB() {
+            try {
+                const { data, error } = await supabase.from('ptnj_trivia').select('*');
+                if (data && data.length > 0) {
+                    triviaDB = data;
+                } else if (error) {
+                    console.error("Supabase Error Loading Trivia:", error);
+                }
+            } catch (e) { console.error("Network Error Loading Trivia:", e); }
+        }
+
+        async function saveTriviaDB(newDataObject) {
+            try {
+                // If ID exists, this expects an update/insert. But for now we just insert raw.
+                if (newDataObject) {
+                    await supabase.from('ptnj_trivia').insert([newDataObject]);
+                }
+            } catch (e) { console.error("Error saving Question:", e); }
+        }
+
+        async function removeTriviaDB(id) {
+            try {
+                await supabase.from('ptnj_trivia').delete().eq('id', id);
+            } catch (e) { console.error("Error deleting Question:", e); }
         }
 
         // --- PENGURUSAN PAPAN MARKAH (LEADERBOARD) ---
-        function saveHighScore(name, markah) {
-            if (markah <= 0) return -1;
-            let board = JSON.parse(localStorage.getItem('ptnj_leaderboard')) || [];
+        let currentRank = -1;
 
-            // Rekod baharu
+        async function saveHighScoreAsync(name, markah) {
+            if (markah <= 0) return;
             const newRecord = { name: name || "Renjer Tanpa Nama", score: markah, date: new Date().toLocaleDateString() };
-            board.push(newRecord);
 
-            // Susun dari tertinggi ke rendah
-            board.sort((a, b) => b.score - a.score);
+            try {
+                // Hantar rekod baharu ke Supabase
+                await supabase.from('ptnj_leaderboard').insert([newRecord]);
 
-            // Cari kedudukan terkini rekod tadi
-            const rankIndex = board.findIndex(r => r === newRecord);
+                // Ambil balik semua rekod untuk kira kedudukan (Real-time live rank)
+                const { data, error } = await supabase.from('ptnj_leaderboard')
+                    .select('id, name, score, date')
+                    .order('score', { ascending: false });
 
-            // Simpan hanya Top 10
-            board = board.slice(0, 10);
-            localStorage.setItem('ptnj_leaderboard', JSON.stringify(board));
-
-            return rankIndex; // Return index (0 = Tangga Pertama)
+                if (data) {
+                    // Cari kedudukan terkini rekod tadi
+                    currentRank = data.findIndex(r => r.name === newRecord.name && r.score === newRecord.score);
+                    showEndRank(currentRank);
+                }
+            } catch (e) { console.error("Error saving High Score:", e); }
         }
 
-        document.getElementById('openLeaderboardBtn').addEventListener('click', () => {
+        document.getElementById('openLeaderboardBtn').addEventListener('click', async () => {
             hideAllScreens();
 
             const tbody = document.getElementById('leaderboardList');
-            tbody.innerHTML = '';
-
-            let board = JSON.parse(localStorage.getItem('ptnj_leaderboard')) || [];
-
-            if (board.length === 0) {
-                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-500 font-bold">Belum ada rekod. Jadilah yang pertama!</td></tr>';
-            } else {
-                board.forEach((entry, idx) => {
-                    let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
-                    let rowHtml = `<tr class="border-b border-gray-200">
-                        <td class="text-center font-black">${medal}</td>
-                        <td class="font-bold text-gray-800">${entry.name} <span class="text-xs text-gray-400 block">${entry.date}</span></td>
-                        <td class="text-center font-black text-green-700">${entry.score}</td>
-                    </tr>`;
-                    tbody.insertAdjacentHTML('beforeend', rowHtml);
-                });
-            }
+            tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-500 font-bold">Sedang memuat turun data secara live...</td></tr>';
 
             document.getElementById('leaderboardScreen').classList.remove('hidden');
+
+            try {
+                const { data: board, error } = await supabase.from('ptnj_leaderboard')
+                    .select('*')
+                    .order('score', { ascending: false })
+                    .limit(10);
+
+                tbody.innerHTML = '';
+
+                if (!board || board.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-500 font-bold">Belum ada rekod. Jadilah yang pertama!</td></tr>';
+                } else {
+                    board.forEach((entry, idx) => {
+                        let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
+                        let rowHtml = `<tr class="border-b border-gray-200">
+                            <td class="text-center font-black">${medal}</td>
+                            <td class="font-bold text-gray-800">${entry.name} <span class="text-xs text-gray-400 block">${entry.date}</span></td>
+                            <td class="text-center font-black text-green-700">${entry.score}</td>
+                        </tr>`;
+                        tbody.insertAdjacentHTML('beforeend', rowHtml);
+                    });
+                }
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-red-500 font-bold">Gagal menyambung ke pangkalan data awan.</td></tr>';
+            }
         });
 
         document.getElementById('leaderboardBackBtn').addEventListener('click', () => {
@@ -716,7 +755,7 @@
                 card.innerHTML = `
                     <p class="font-bold text-gray-900 text-sm leading-snug w-[85%]">${idx + 1}. ${q.q}</p>
                     ${optsText}
-                    <button onclick="deleteQuestion(${idx})" title="Padam Soalan" class="absolute top-2 right-2 bg-red-100 hover:bg-red-500 text-red-700 hover:text-white border border-red-300 rounded text-xs px-2 py-1 transition font-bold">X</button>
+                    <button onclick="deleteQuestion(${idx}, ${q.id})" title="Padam Soalan" class="absolute top-2 right-2 bg-red-100 hover:bg-red-500 text-red-700 hover:text-white border border-red-300 rounded text-xs px-2 py-1 transition font-bold">X</button>
                 `;
 
                 if (q.diff === 1) list1.appendChild(card);
@@ -725,15 +764,15 @@
             });
         }
 
-        window.deleteQuestion = function (idx) {
-            if (confirm("Adakah anda pasti mahu memadam soalan ini?")) {
+        window.deleteQuestion = async function (idx, dbId) {
+            if (confirm("Adakah anda pasti mahu memadam soalan ini? Ini akan memadamkannya dari server pangkalan data awam.")) {
                 triviaDB.splice(idx, 1);
-                saveTriviaDB();
                 renderAdminQuestions();
+                if (dbId) await removeTriviaDB(dbId);
             }
         };
 
-        document.getElementById('addQuestionBtn').addEventListener('click', () => {
+        document.getElementById('addQuestionBtn').addEventListener('click', async () => {
             const qText = document.getElementById('newQuestion').value.trim();
             const opt0 = document.getElementById('newOpt0').value.trim();
             const opt1 = document.getElementById('newOpt1').value.trim();
@@ -746,8 +785,20 @@
                 return;
             }
 
-            triviaDB.push({ q: qText, options: [opt0, opt1, opt2], answer: ans, diff: diff });
-            saveTriviaDB();
+            const payload = { q: qText, options: [opt0, opt1, opt2], answer: ans, diff: diff };
+            // Optimistic UI mapping
+            triviaDB.push(payload);
+            renderAdminQuestions();
+
+            document.getElementById('addQuestionBtn').innerText = "Menyimpan...";
+            document.getElementById('addQuestionBtn').disabled = true;
+
+            await saveTriviaDB(payload);
+            await loadTriviaDB(); // Ambil balik soalan yang dah ada auto-increment ID
+            renderAdminQuestions(); // Render semula dengan ID rasmi
+
+            document.getElementById('addQuestionBtn').innerText = "Simpan";
+            document.getElementById('addQuestionBtn').disabled = false;
 
             // Clear forms
             document.getElementById('newQuestion').value = '';
@@ -1379,14 +1430,19 @@
 
         function gameOver() {
             gameState = 'GAMEOVER';
-            let rank = saveHighScore(playerName, score); // Simpan skor dan dapatkan kedudukan
+
+            // Set kedudukan kepada hidden dahulu semntara menunggu Cloud Server
+            document.getElementById('rankContainer').classList.add('hidden');
+
+            saveHighScoreAsync(playerName, score); // Simpan skor secara Async Backend
+
             hideAllScreens();
             screens.end.classList.remove('hidden');
             document.getElementById('endTitle').innerText = "Misi Gagal";
             document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-red-500";
             document.getElementById('endMessage').innerText = `Anda tewas di Tahap ${currentLevel}.`;
             document.getElementById('finalScore').innerText = score;
-            showEndRank(rank);
+            // showEndRank(rank); di panggil dalam promise saveHighScoreAsync
 
             document.getElementById('nextLevelBtn').classList.add('hidden');
             document.getElementById('restartBtn').innerText = "Main Semula";
@@ -1418,10 +1474,12 @@
 
                 score += 5000 + (timeLeft * 5);
                 updateHUD();
-                let rank = saveHighScore(playerName, score); // Simpan markah selepas menang penuh
+
+                document.getElementById('rankContainer').classList.add('hidden');
+                saveHighScoreAsync(playerName, score); // Simpan markah selepas menang penuh
 
                 document.getElementById('finalScore').innerText = score;
-                showEndRank(rank);
+                // showEndRank(rank); dipanggil dalam promise
 
                 document.getElementById('nextLevelBtn').classList.add('hidden');
                 document.getElementById('restartBtn').innerText = "Main Semula";
@@ -1558,22 +1616,35 @@
             document.getElementById('newAnswer').value = c.answer;
         });
 
-        function renderTop3() {
+        async function renderTop3() {
             const container = document.getElementById('top3Container');
             const list = document.getElementById('top3List');
-            let board = JSON.parse(localStorage.getItem('ptnj_leaderboard')) || [];
 
-            if (board.length > 0) {
-                container.classList.remove('hidden');
-                list.innerHTML = board.slice(0, 3).map((r, i) => {
-                    let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-                    return `<div class="mb-1">${medal} <b class="text-white tracking-wider">${r.name.toUpperCase()}</b> <span class="bg-gray-700 rounded px-2 py-0.5 ml-1 drop-shadow text-yellow-300">${r.score}</span></div>`;
-                }).join('');
-            } else { container.classList.add('hidden'); }
+            try {
+                const { data: board, error } = await supabase.from('ptnj_leaderboard')
+                    .select('*')
+                    .order('score', { ascending: false })
+                    .limit(3);
+
+                if (board && board.length > 0) {
+                    container.classList.remove('hidden');
+                    list.innerHTML = board.map((r, i) => {
+                        let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
+                        return `<div class="mb-1">${medal} <b class="text-white tracking-wider">${r.name.toUpperCase()}</b> <span class="bg-gray-700 rounded px-2 py-0.5 ml-1 drop-shadow text-yellow-300">${r.score}</span></div>`;
+                    }).join('');
+                } else { container.classList.add('hidden'); }
+            } catch (e) {
+                container.classList.add('hidden');
+            }
+        }
+
+        async function initializeApp() {
+            await loadTriviaDB();
+            renderTop3(); // Memuat turun Top 3 Live dari Server
         }
 
         buildLevel(1);
-        renderTop3(); // Initial Render Login Screen
+        initializeApp();
         requestAnimationFrame(gameLoop);
 
     </script>
