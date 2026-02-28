@@ -55,36 +55,49 @@
         }
 
         .title-screen {
-            background-image: url('bg_start.png');
+            background-image: url('bg_jungle.png');
+            background-color: #1a3320;
+            /* fallback */
             background-size: cover;
-            background-position: bottom center;
+            background-position: center;
             background-repeat: no-repeat;
         }
 
-        .mario-title {
-            font-family: 'Arial Black', Impact, sans-serif;
-            font-size: clamp(3rem, 8vw, 6rem);
-            color: #fff;
+        .jungle-title {
+            font-family: 'Fredoka One', 'Varela Round', 'Arial Rounded MT Bold', sans-serif;
+            font-size: clamp(2.5rem, 6vw, 4.5rem);
+            color: #FFD700;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-align: center;
+            /* Text stroke and shadow for that cartoon look */
             text-shadow:
-                -3px -3px 0 #000, 3px -3px 0 #000, -3px 3px 0 #000, 3px 3px 0 #000,
-                0px 8px 0px #0052cc,
-                0px 10px 0px #000,
-                0px 15px 15px rgba(0, 0, 0, 0.6);
+                -2px -2px 0 #8B4513, 2px -2px 0 #8B4513, -2px 2px 0 #8B4513, 2px 2px 0 #8B4513,
+                0px 6px 0px #8B4513,
+                0px 8px 10px rgba(0, 0, 0, 0.5);
             margin-bottom: 2rem;
             line-height: 1.1;
             z-index: 10;
+            background: #D2691E;
+            padding: 10px 30px;
+            border-radius: 30px;
+            border: 4px solid #8B4513;
+            display: inline-block;
         }
 
-        .mario-panel {
-            background-color: rgba(255, 255, 255, 0.95);
-            border: 4px solid #000;
-            border-radius: 20px;
-            box-shadow: 8px 8px 0px rgba(0, 0, 0, 0.5);
-            color: #333;
-            padding: 2rem;
+        .jungle-panel {
+            background-color: #F5E6C8;
+            /* Beige interior */
+            border: 8px solid #8B4513;
+            /* Thick brown border */
+            border-radius: 40px;
+            box-shadow:
+                inset 0 0 0 4px #D2B48C,
+                /* Inner inner border */
+                0px 10px 20px rgba(0, 0, 0, 0.6);
+            color: #5C4033;
+            /* Dark brown text */
+            padding: 2.5rem 2rem;
             max-width: 500px;
             width: 90%;
             text-align: center;
@@ -92,24 +105,65 @@
             z-index: 10;
         }
 
-        .mario-btn {
-            background-color: #e52521;
-            color: white;
-            border: 3px solid #000;
-            border-radius: 12px;
-            font-size: 1.2rem;
-            font-weight: bold;
-            padding: 12px 20px;
-            text-transform: uppercase;
-            box-shadow: 0px 6px 0px #800000;
+        .jungle-btn {
+            background: linear-gradient(to bottom, #74C328, #4CA109);
+            color: #fff;
+            border: 3px solid #005600;
+            border-radius: 30px;
+            font-size: 1.3rem;
+            font-weight: 900;
+            padding: 15px 25px;
+            text-transform: capitalize;
+            box-shadow:
+                inset 0px 3px 0px rgba(255, 255, 255, 0.4),
+                0px 6px 0px #005600,
+                0px 10px 10px rgba(0, 0, 0, 0.3);
+            text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.5);
             transition: all 0.1s;
             cursor: pointer;
             width: 100%;
+            font-family: 'Arial Rounded MT Bold', sans-serif;
+            margin-bottom: 1rem;
         }
 
-        .mario-btn:active {
+        .jungle-btn:active {
             transform: translateY(6px);
-            box-shadow: 0px 0px 0px #800000;
+            box-shadow:
+                inset 0px 3px 0px rgba(255, 255, 255, 0.4),
+                0px 0px 0px #005600,
+                0px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .jungle-btn-red {
+            background: linear-gradient(to bottom, #FF5B4F, #D32F2F);
+            border-color: #8B0000;
+            box-shadow:
+                inset 0px 3px 0px rgba(255, 255, 255, 0.4),
+                0px 6px 0px #8B0000,
+                0px 10px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .jungle-btn-red:active {
+            box-shadow:
+                inset 0px 3px 0px rgba(255, 255, 255, 0.4),
+                0px 0px 0px #8B0000,
+                0px 2px 5px rgba(0, 0, 0, 0.3);
+        }
+
+        .jungle-btn-blue {
+            background: linear-gradient(to bottom, #4FC3F7, #0288D1);
+            border-color: #01579B;
+            box-shadow:
+                inset 0px 3px 0px rgba(255, 255, 255, 0.4),
+                0px 6px 0px #01579B,
+                0px 10px 10px rgba(0, 0, 0, 0.3);
+        }
+
+        .jungle-btn-blue:active {
+            box-shadow:
+                inset 0px 3px 0px rgba(255, 255, 255, 0.4),
+                0px 0px 0px #01579B,
+                0px 2px 5px rgba(0, 0, 0, 0.3);
         }
 
         #hud {
@@ -229,17 +283,18 @@
 
         <!-- Skrin Daftar Nama -->
         <div id="registerScreen" class="overlay title-screen">
-            <h1 class="mario-title">RENJER<br>JOHOR</h1>
-            <div class="mario-panel mx-4">
+            <h1 class="jungle-title">RENJER<br>JOHOR</h1>
+            <div class="jungle-panel mx-4">
                 <h2 class="text-3xl font-black text-gray-800 mb-4">Sila Masukkan Nama</h2>
                 <p class="text-gray-700 font-bold mb-6">Sila masukkan nama anda sebagai rekod pengembaraan.</p>
                 <input type="text" id="playerNameInput" placeholder="Nama Renjer (Contoh: Ali)" maxlength="15"
-                    class="w-full border-4 border-black rounded-lg p-3 text-black text-xl mb-4 text-center focus:outline-none focus:ring-4 focus:ring-blue-500 font-bold">
-                <button id="submitNameBtn" class="mario-btn mb-4">
+                    class="w-full border-4 border-yellow-800 rounded-lg p-3 text-black text-xl mb-4 text-center focus:outline-none focus:ring-4 focus:ring-yellow-500 font-bold"
+                    style="background-color: #FDF5E6;">
+                <button id="submitNameBtn" class="jungle-btn mb-4">
                     Daftar & Mula
                 </button>
                 <button id="openAdminLoginBtn"
-                    class="text-sm text-blue-600 hover:text-blue-800 underline font-extrabold mt-2">
+                    class="text-sm text-green-700 hover:text-green-900 underline font-extrabold mt-2">
                     Log Masuk Super Admin
                 </button>
             </div>
@@ -247,18 +302,18 @@
 
         <!-- Skrin Log Masuk Admin -->
         <div id="adminLoginScreen" class="overlay title-screen hidden">
-            <div class="mario-panel mx-4" style="border-color: #0052cc;">
-                <h2 class="text-2xl font-black text-blue-800 mb-6">⚙️ Akses Super Admin</h2>
+            <div class="jungle-panel mx-4">
+                <h2 class="text-2xl font-black text-green-800 mb-6">⚙️ Akses Super Admin</h2>
                 <input type="text" id="adminUsername" placeholder="ID Admin"
-                    class="w-full border-4 border-black rounded-lg p-3 text-black text-lg mb-4 text-center focus:outline-none font-bold">
+                    class="w-full border-4 border-yellow-800 rounded-lg p-3 text-black text-lg mb-4 text-center focus:outline-none font-bold"
+                    style="background-color: #FDF5E6;">
                 <input type="password" id="adminPassword" placeholder="Kata Laluan"
-                    class="w-full border-4 border-black rounded-lg p-3 text-black text-lg mb-6 text-center focus:outline-none font-bold">
-                <button id="adminLoginSubmitBtn" class="mario-btn mb-4"
-                    style="background-color: #0052cc; box-shadow: 0px 6px 0px #003380;">
+                    class="w-full border-4 border-yellow-800 rounded-lg p-3 text-black text-lg mb-6 text-center focus:outline-none font-bold"
+                    style="background-color: #FDF5E6;">
+                <button id="adminLoginSubmitBtn" class="jungle-btn jungle-btn-blue mb-4">
                     Log Masuk
                 </button>
-                <button id="adminLoginBackBtn" class="mario-btn"
-                    style="background-color: #555; box-shadow: 0px 6px 0px #333;">
+                <button id="adminLoginBackBtn" class="jungle-btn jungle-btn-red">
                     Kembali
                 </button>
             </div>
@@ -336,14 +391,14 @@
 
         <!-- Skrin Menu Utama -->
         <div id="startScreen" class="overlay title-screen hidden">
-            <h1 class="mario-title" style="font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem;">RENJER JOHOR</h1>
-            <div class="mario-panel mx-4 max-w-lg">
-                <h1 class="text-3xl font-black text-blue-600 mb-2 text-center">Selamat Datang,<br><span
+            <h1 class="jungle-title" style="font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem;">RENJER JOHOR</h1>
+            <div class="jungle-panel mx-4 max-w-lg">
+                <h1 class="text-3xl font-black text-green-700 mb-2 text-center">Selamat Datang,<br><span
                         id="displayPlayerName" class="text-red-600"></span>!</h1>
                 <h2 class="text-xl font-bold mb-4 text-gray-700">Bersedia untuk 6 Tahap Misi Taman Negara</h2>
 
-                <div class="bg-blue-50 border-4 border-blue-200 p-4 rounded-lg text-left mb-6 shadow-inner">
-                    <p class="mb-2 text-blue-900">🎮 <strong>Cara Bermain & Halangan:</strong></p>
+                <div class="bg-yellow-50 border-4 border-yellow-300 p-4 rounded-lg text-left mb-6 shadow-inner">
+                    <p class="mb-2 text-green-900">🎮 <strong>Cara Bermain & Halangan:</strong></p>
                     <ul class="text-sm text-gray-800 list-disc pl-5 space-y-1 font-medium">
                         <li>Gunakan panah kiri/kanan & Spacebar untuk lompat (Boleh <strong>Lompat 2 Kali</strong>).
                         </li>
@@ -355,8 +410,7 @@
                     </ul>
                 </div>
 
-                <button id="startBtn" class="mario-btn"
-                    style="background-color: #4CAF50; box-shadow: 0px 6px 0px #2E7D32;">
+                <button id="startBtn" class="jungle-btn">
                     Mula Permainan
                 </button>
             </div>
