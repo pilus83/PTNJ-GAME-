@@ -322,6 +322,10 @@
                 <button id="submitNameBtn" class="jungle-btn mb-4 flex justify-center items-center gap-2">
                     ▶️ Daftar & Mula
                 </button>
+                <button id="openLeaderboardBtn"
+                    class="jungle-btn jungle-btn-blue mb-4 flex justify-center items-center gap-2">
+                    🏆 Papan Markah
+                </button>
                 <button id="openAdminLoginBtn"
                     class="text-sm text-green-700 hover:text-green-900 underline font-extrabold mt-2 flex justify-center items-center gap-1 mx-auto">
                     ⚙️ Log Masuk Super Admin
@@ -549,8 +553,7 @@
         const ADMIN_USER = "admin";
         const ADMIN_PASS = "admin123";
 
-        // Pangkalan Data Soalan (Ditukar dari const ke let supaya Admin boleh ubah)
-        let triviaDB = [
+        const defaultTriviaDB = [
             // TAHAP 1-3 (Mudah) - diff: 1
             { q: "Gunung Ledang merupakan gunung tertinggi di negeri mana?", options: ["Melaka", "Johor", "Pahang"], answer: 1, diff: 1 },
             { q: "Siapakah agensi yang menjaga Taman Negara Johor?", options: ["Jabatan Perhutanan", "PTNJ", "PERHILITAN"], answer: 1, diff: 1 },
@@ -575,6 +578,57 @@
             { q: "Apakah nama saintifik bagi pokok periuk kera yang terdapat di kawasan Gunung Ledang?", options: ["Hibiscus rosa-sinensis", "Nepenthes", "Rafflesia arnoldii"], answer: 1, diff: 3 },
             { q: "Berapakah jumlah anggaran keluasan Taman Negara Endau-Rompin (Peta & Selai)?", options: ["10,000 hektar", "40,000 hektar", "80,000 hektar"], answer: 2, diff: 3 }
         ];
+
+        let triviaDB = JSON.parse(localStorage.getItem('ptnj_trivia')) || defaultTriviaDB;
+
+        function saveTriviaDB() {
+            localStorage.setItem('ptnj_trivia', JSON.stringify(triviaDB));
+        }
+
+        // --- PENGURUSAN PAPAN MARKAH (LEADERBOARD) ---
+        function saveHighScore(name, markah) {
+            if (markah <= 0) return;
+            let board = JSON.parse(localStorage.getItem('ptnj_leaderboard')) || [];
+            board.push({ name: name || "Renjer Tanpa Nama", score: markah, date: new Date().toLocaleDateString() });
+
+            // Susun dari tertinggi ke rendah
+            board.sort((a, b) => b.score - a.score);
+            // Simpan hanya Top 10
+            board = board.slice(0, 10);
+            localStorage.setItem('ptnj_leaderboard', JSON.stringify(board));
+        }
+
+        document.getElementById('openLeaderboardBtn').addEventListener('click', () => {
+            hideAllScreens();
+
+            const tbody = document.getElementById('leaderboardList');
+            tbody.innerHTML = '';
+
+            let board = JSON.parse(localStorage.getItem('ptnj_leaderboard')) || [];
+
+            if (board.length === 0) {
+                tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-500 font-bold">Belum ada rekod. Jadilah yang pertama!</td></tr>';
+            } else {
+                board.forEach((entry, idx) => {
+                    let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
+                    let rowHtml = `<tr class="border-b border-gray-200">
+                        <td class="text-center font-black">${medal}</td>
+                        <td class="font-bold text-gray-800">${entry.name} <span class="text-xs text-gray-400 block">${entry.date}</span></td>
+                        <td class="text-center font-black text-green-700">${entry.score}</td>
+                    </tr>`;
+                    tbody.insertAdjacentHTML('beforeend', rowHtml);
+                });
+            }
+
+            document.getElementById('leaderboardScreen').classList.remove('hidden');
+        });
+
+        document.getElementById('leaderboardBackBtn').addEventListener('click', () => {
+            hideAllScreens();
+            screens.register.classList.remove('hidden');
+        });
+        // --- TAMAT PENGURUSAN PAPAN MARKAH ---
+
         let currentTriviaBlock = null;
 
         // --- FUNGSI SUPER ADMIN ---
@@ -602,6 +656,7 @@
         window.deleteQuestion = function (idx) {
             if (confirm("Adakah anda pasti mahu memadam soalan ini?")) {
                 triviaDB.splice(idx, 1);
+                saveTriviaDB();
                 renderAdminQuestions();
             }
         };
@@ -620,6 +675,7 @@
             }
 
             triviaDB.push({ q: qText, options: [opt0, opt1, opt2], answer: ans, diff: diff });
+            saveTriviaDB();
 
             // Clear forms
             document.getElementById('newQuestion').value = '';
@@ -1235,6 +1291,7 @@
 
         function gameOver() {
             gameState = 'GAMEOVER';
+            saveHighScore(playerName, score); // Simpan skor sebelum tamat
             hideAllScreens();
             screens.end.classList.remove('hidden');
             document.getElementById('endTitle').innerText = "Misi Gagal";
@@ -1243,7 +1300,7 @@
             document.getElementById('finalScore').innerText = score;
 
             document.getElementById('nextLevelBtn').classList.add('hidden');
-            document.getElementById('restartBtn').innerText = "Kembali ke Menu Utama";
+            document.getElementById('restartBtn').innerText = "Main Semula";
             document.getElementById('restartBtn').classList.remove('hidden');
         }
 
@@ -1272,6 +1329,8 @@
 
                 score += 5000 + (timeLeft * 5);
                 updateHUD();
+                saveHighScore(playerName, score); // Simpan markah selepas menang penuh
+
                 document.getElementById('finalScore').innerText = score;
 
                 document.getElementById('nextLevelBtn').classList.add('hidden');
