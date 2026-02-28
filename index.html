@@ -823,7 +823,7 @@
         document.getElementById('openAdminLoginBtn').addEventListener('click', () => {
             hideAllScreens();
             screens.adminLogin.classList.remove('hidden');
-            gameState = 'ADMIN';
+            gameState = 'ADMIN_LOGIN';
         });
 
         document.getElementById('adminLoginBackBtn').addEventListener('click', () => {
@@ -1601,7 +1601,7 @@
                 if (gameState === 'PLAYING') {
                     updatePhysics();
                     drawGame();
-                } else if (gameState !== 'ADMIN') {
+                } else if (gameState !== 'ADMIN' && gameState !== 'ADMIN_LOGIN' && gameState !== 'LEADERBOARD') {
                     lastTimeTick = Date.now();
                     drawGame();
                 }
