@@ -364,104 +364,158 @@
         <div id="adminDashboardScreen" class="overlay hidden">
             <div
                 class="bg-white p-6 rounded-xl text-center max-w-4xl w-[95%] mx-4 shadow-2xl border-4 border-blue-600 flex flex-col h-[90vh]">
-                <div class="flex justify-between items-center mb-4">
+                <div class="flex justify-between items-center mb-3">
                     <h2 class="text-2xl font-bold text-blue-800">Papan Pemuka Super Admin</h2>
                     <button id="adminLogoutBtn"
                         class="bg-red-500 hover:bg-red-600 text-white font-bold py-2 px-4 rounded transition">Log
                         Keluar</button>
                 </div>
 
-                <!-- Senarai Soalan mengikut Tahap (6 Tahap) -->
-                <div
-                    class="flex-grow overflow-y-auto mb-4 p-2 bg-gray-200 border-2 border-gray-400 rounded-lg shadow-inner h-[40vh]">
-                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
-                        <!-- Tahap 1 -->
-                        <div class="bg-white p-3 rounded shadow border-t-4 border-green-400 overflow-y-auto max-h-60">
-                            <h3 class="font-bold text-green-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟢
-                                Tahap 1</h3>
-                            <div id="adminListT1" class="space-y-2 text-left"></div>
-                        </div>
-                        <!-- Tahap 2 -->
-                        <div class="bg-white p-3 rounded shadow border-t-4 border-teal-400 overflow-y-auto max-h-60">
-                            <h3 class="font-bold text-teal-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🔵
-                                Tahap 2</h3>
-                            <div id="adminListT2" class="space-y-2 text-left"></div>
-                        </div>
-                        <!-- Tahap 3 -->
-                        <div class="bg-white p-3 rounded shadow border-t-4 border-blue-400 overflow-y-auto max-h-60">
-                            <h3 class="font-bold text-blue-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟦
-                                Tahap 3</h3>
-                            <div id="adminListT3" class="space-y-2 text-left"></div>
-                        </div>
-                        <!-- Tahap 4 -->
-                        <div class="bg-white p-3 rounded shadow border-t-4 border-yellow-400 overflow-y-auto max-h-60">
-                            <h3 class="font-bold text-yellow-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟡
-                                Tahap 4</h3>
-                            <div id="adminListT4" class="space-y-2 text-left"></div>
-                        </div>
-                        <!-- Tahap 5 -->
-                        <div class="bg-white p-3 rounded shadow border-t-4 border-orange-400 overflow-y-auto max-h-60">
-                            <h3 class="font-bold text-orange-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟠
-                                Tahap 5</h3>
-                            <div id="adminListT5" class="space-y-2 text-left"></div>
-                        </div>
-                        <!-- Tahap 6 -->
-                        <div class="bg-white p-3 rounded shadow border-t-4 border-red-500 overflow-y-auto max-h-60">
-                            <h3 class="font-bold text-red-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🔴 Tahap
-                                6 (Bos)</h3>
-                            <div id="adminListT6" class="space-y-2 text-left"></div>
-                        </div>
-                    </div>
+                <!-- Tab Navigation -->
+                <div class="flex gap-2 mb-3 border-b-2 border-gray-300">
+                    <button id="tabBtnSoalan" onclick="switchAdminTab('soalan')"
+                        class="px-4 py-2 font-bold text-sm rounded-t-lg border-b-4 border-blue-600 text-blue-700 bg-blue-50 transition">
+                        📝 Soalan Trivia
+                    </button>
+                    <button id="tabBtnPemain" onclick="switchAdminTab('pemain')"
+                        class="px-4 py-2 font-bold text-sm rounded-t-lg border-b-4 border-transparent text-gray-500 bg-transparent hover:bg-gray-100 transition">
+                        👤 Pengurusan Pemain
+                    </button>
                 </div>
 
-                <!-- Tambah Soalan Baru -->
-                <div class="bg-blue-100 p-4 rounded-lg text-left mt-2 border-2 border-blue-300">
-                    <div class="flex justify-between items-center mb-3 border-b-2 border-blue-300 pb-2">
-                        <h3 class="text-md font-bold text-blue-800">➕ Tambah Soalan Baharu</h3>
-                        <!-- JANA AI BUTTON -->
-                        <button id="aiGenBtn"
-                            class="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded text-xs font-bold transition flex items-center gap-1 shadow-md border-2 border-purple-900">
-                            ✨ Jana AI (Auto-Isi)
+                <!-- TAB: SOALAN -->
+                <div id="adminTabSoalan">
+                    <div
+                        class="flex-grow overflow-y-auto mb-4 p-2 bg-gray-200 border-2 border-gray-400 rounded-lg shadow-inner h-[40vh]">
+                        <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                            <!-- Tahap 1 -->
+                            <div
+                                class="bg-white p-3 rounded shadow border-t-4 border-green-400 overflow-y-auto max-h-60">
+                                <h3 class="font-bold text-green-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟢
+                                    Tahap 1</h3>
+                                <div id="adminListT1" class="space-y-2 text-left"></div>
+                            </div>
+                            <!-- Tahap 2 -->
+                            <div
+                                class="bg-white p-3 rounded shadow border-t-4 border-teal-400 overflow-y-auto max-h-60">
+                                <h3 class="font-bold text-teal-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🔵
+                                    Tahap 2</h3>
+                                <div id="adminListT2" class="space-y-2 text-left"></div>
+                            </div>
+                            <!-- Tahap 3 -->
+                            <div
+                                class="bg-white p-3 rounded shadow border-t-4 border-blue-400 overflow-y-auto max-h-60">
+                                <h3 class="font-bold text-blue-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟦
+                                    Tahap 3</h3>
+                                <div id="adminListT3" class="space-y-2 text-left"></div>
+                            </div>
+                            <!-- Tahap 4 -->
+                            <div
+                                class="bg-white p-3 rounded shadow border-t-4 border-yellow-400 overflow-y-auto max-h-60">
+                                <h3 class="font-bold text-yellow-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">
+                                    🟡
+                                    Tahap 4</h3>
+                                <div id="adminListT4" class="space-y-2 text-left"></div>
+                            </div>
+                            <!-- Tahap 5 -->
+                            <div
+                                class="bg-white p-3 rounded shadow border-t-4 border-orange-400 overflow-y-auto max-h-60">
+                                <h3 class="font-bold text-orange-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">
+                                    🟠
+                                    Tahap 5</h3>
+                                <div id="adminListT5" class="space-y-2 text-left"></div>
+                            </div>
+                            <!-- Tahap 6 -->
+                            <div class="bg-white p-3 rounded shadow border-t-4 border-red-500 overflow-y-auto max-h-60">
+                                <h3 class="font-bold text-red-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🔴
+                                    Tahap
+                                    6 (Bos)</h3>
+                                <div id="adminListT6" class="space-y-2 text-left"></div>
+                            </div>
+                        </div>
+                    </div>
+
+                    <!-- Tambah Soalan Baru -->
+                    <div class="bg-blue-100 p-4 rounded-lg text-left mt-2 border-2 border-blue-300">
+                        <div class="flex justify-between items-center mb-3 border-b-2 border-blue-300 pb-2">
+                            <h3 class="text-md font-bold text-blue-800">➕ Tambah Soalan Baharu</h3>
+                            <!-- JANA AI BUTTON -->
+                            <button id="aiGenBtn"
+                                class="bg-purple-600 hover:bg-purple-800 text-white px-4 py-1.5 rounded text-xs font-bold transition flex items-center gap-1 shadow-md border-2 border-purple-900">
+                                ✨ Jana AI (Auto-Isi)
+                            </button>
+                        </div>
+                        <input type="text" id="newQuestion" placeholder="Masukkan Soalan (atau klik Butang Jana AI)"
+                            class="w-full p-2 mb-2 border rounded text-black text-sm">
+
+                        <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
+                            <input type="text" id="newOpt0" placeholder="Pilihan 1"
+                                class="w-full p-2 border rounded text-black text-sm border-gray-300">
+                            <input type="text" id="newOpt1" placeholder="Pilihan 2"
+                                class="w-full p-2 border rounded text-black text-sm border-gray-300">
+                            <input type="text" id="newOpt2" placeholder="Pilihan 3"
+                                class="w-full p-2 border rounded text-black text-sm border-gray-300">
+                        </div>
+
+                        <div class="flex gap-4 items-center">
+                            <div class="flex-1">
+                                <label class="text-sm font-semibold text-gray-700">Jawapan Betul:</label>
+                                <select id="newAnswer" class="w-full p-2 border rounded text-black text-sm mt-1">
+                                    <option value="0">Pilihan 1</option>
+                                    <option value="1">Pilihan 2</option>
+                                    <option value="2">Pilihan 3</option>
+                                </select>
+                            </div>
+                            <div class="flex-1">
+                                <label class="text-sm font-semibold text-gray-700">Untuk Tahap:</label>
+                                <select id="newDiff" class="w-full p-2 border rounded text-black text-sm mt-1">
+                                    <option value="1">Tahap 1</option>
+                                    <option value="2">Tahap 2</option>
+                                    <option value="3">Tahap 3</option>
+                                    <option value="4">Tahap 4</option>
+                                    <option value="5">Tahap 5</option>
+                                    <option value="6">Tahap 6 (Bos)</option>
+                                </select>
+                            </div>
+                            <button id="addQuestionBtn"
+                                class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded mt-6 h-10 transition">
+                                Simpan
+                            </button>
+                        </div>
+                    </div>
+                </div> <!-- end adminTabSoalan -->
+
+                <!-- TAB: PEMAIN -->
+                <div id="adminTabPemain" class="hidden flex-col flex-grow overflow-hidden">
+                    <div class="flex justify-between items-center mb-3">
+                        <h3 class="text-lg font-bold text-gray-800">👤 Senarai Pemain &amp; Markah</h3>
+                        <button onclick="loadPlayerList()"
+                            class="bg-blue-500 hover:bg-blue-600 text-white text-sm font-bold px-3 py-1.5 rounded transition">
+                            🔄 Muat Semula
                         </button>
                     </div>
-                    <input type="text" id="newQuestion" placeholder="Masukkan Soalan (atau klik Butang Jana AI)"
-                        class="w-full p-2 mb-2 border rounded text-black text-sm">
-
-                    <div class="grid grid-cols-1 md:grid-cols-3 gap-2 mb-2">
-                        <input type="text" id="newOpt0" placeholder="Pilihan 1"
-                            class="w-full p-2 border rounded text-black text-sm border-gray-300">
-                        <input type="text" id="newOpt1" placeholder="Pilihan 2"
-                            class="w-full p-2 border rounded text-black text-sm border-gray-300">
-                        <input type="text" id="newOpt2" placeholder="Pilihan 3"
-                            class="w-full p-2 border rounded text-black text-sm border-gray-300">
+                    <div class="flex-grow overflow-y-auto border-2 border-gray-300 rounded-lg" style="max-height:55vh;">
+                        <table class="admin-table w-full text-sm" style="color:black;">
+                            <thead>
+                                <tr>
+                                    <th class="text-center w-8">#</th>
+                                    <th>Nama Pemain</th>
+                                    <th class="text-center w-24">Markah</th>
+                                    <th class="text-center w-32">Tindakan</th>
+                                </tr>
+                            </thead>
+                            <tbody id="adminPlayerList">
+                                <tr>
+                                    <td colspan="4" class="text-center py-6 text-gray-400">Klik Muat Semula untuk papar
+                                        senarai pemain...</td>
+                                </tr>
+                            </tbody>
+                        </table>
                     </div>
-
-                    <div class="flex gap-4 items-center">
-                        <div class="flex-1">
-                            <label class="text-sm font-semibold text-gray-700">Jawapan Betul:</label>
-                            <select id="newAnswer" class="w-full p-2 border rounded text-black text-sm mt-1">
-                                <option value="0">Pilihan 1</option>
-                                <option value="1">Pilihan 2</option>
-                                <option value="2">Pilihan 3</option>
-                            </select>
-                        </div>
-                        <div class="flex-1">
-                            <label class="text-sm font-semibold text-gray-700">Untuk Tahap:</label>
-                            <select id="newDiff" class="w-full p-2 border rounded text-black text-sm mt-1">
-                                <option value="1">Tahap 1</option>
-                                <option value="2">Tahap 2</option>
-                                <option value="3">Tahap 3</option>
-                                <option value="4">Tahap 4</option>
-                                <option value="5">Tahap 5</option>
-                                <option value="6">Tahap 6 (Bos)</option>
-                            </select>
-                        </div>
-                        <button id="addQuestionBtn"
-                            class="bg-green-600 hover:bg-green-700 text-white font-bold py-2 px-6 rounded mt-6 h-10 transition">
-                            Simpan
-                        </button>
-                    </div>
+                    <p class="text-xs text-gray-400 mt-2 text-center">* Padam hanya memadam rekod dari papan markah.
+                        Data permainan tidak terjejas.</p>
                 </div>
+
             </div>
         </div>
 
@@ -814,6 +868,140 @@
             screens.register.classList.remove('hidden');
         });
         // --- TAMAT PENGURUSAN PAPAN MARKAH ---
+
+        // --- FUNGSI TAB ADMIN ---
+        window.switchAdminTab = function (tab) {
+            const soalanDiv = document.getElementById('adminTabSoalan');
+            const pemainDiv = document.getElementById('adminTabPemain');
+            const btnSoalan = document.getElementById('tabBtnSoalan');
+            const btnPemain = document.getElementById('tabBtnPemain');
+
+            if (tab === 'soalan') {
+                soalanDiv.classList.remove('hidden');
+                pemainDiv.classList.add('hidden');
+                btnSoalan.className = 'px-4 py-2 font-bold text-sm rounded-t-lg border-b-4 border-blue-600 text-blue-700 bg-blue-50 transition';
+                btnPemain.className = 'px-4 py-2 font-bold text-sm rounded-t-lg border-b-4 border-transparent text-gray-500 bg-transparent hover:bg-gray-100 transition';
+            } else {
+                soalanDiv.classList.add('hidden');
+                pemainDiv.classList.remove('hidden');
+                pemainDiv.style.display = 'flex';
+                btnPemain.className = 'px-4 py-2 font-bold text-sm rounded-t-lg border-b-4 border-blue-600 text-blue-700 bg-blue-50 transition';
+                btnSoalan.className = 'px-4 py-2 font-bold text-sm rounded-t-lg border-b-4 border-transparent text-gray-500 bg-transparent hover:bg-gray-100 transition';
+                loadPlayerList(); // auto-load bila tukar ke tab pemain
+            }
+        };
+
+        window.loadPlayerList = async function () {
+            const tbody = document.getElementById('adminPlayerList');
+            tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-blue-400 font-bold">⏳ Sedang memuat turun...</td></tr>';
+
+            if (!supabaseClient) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Tiada sambungan database.</td></tr>';
+                return;
+            }
+
+            try {
+                const { data: players, error } = await supabaseClient
+                    .from('ptnj_leaderboard')
+                    .select('*')
+                    .order('score', { ascending: false });
+
+                if (error || !players) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Gagal memuat turun senarai pemain.</td></tr>';
+                    return;
+                }
+
+                if (players.length === 0) {
+                    tbody.innerHTML = '<tr><td colspan="4" class="text-center py-6 text-gray-400">Tiada rekod pemain lagi.</td></tr>';
+                    return;
+                }
+
+                tbody.innerHTML = '';
+                players.forEach((p, idx) => {
+                    let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
+                    tbody.insertAdjacentHTML('beforeend', `
+                        <tr class="border-b border-gray-200 hover:bg-gray-50" id="playerRow_${p.id}">
+                            <td class="text-center font-black py-2 px-2">${medal}</td>
+                            <td class="font-semibold text-gray-800 px-2">${p.name}</td>
+                            <td class="text-center px-2">
+                                <span id="scoreDisplay_${p.id}" class="font-black text-green-700 text-base">${p.score}</span>
+                            </td>
+                            <td class="text-center px-2 py-1.5">
+                                <div class="flex gap-1 justify-center">
+                                    <button onclick="editPlayerScore(${p.id}, '${p.name.replace(/'/g, "\\'")}', ${p.score})"
+                                        class="bg-yellow-400 hover:bg-yellow-500 text-black text-xs font-bold px-2 py-1 rounded transition">
+                                        ✏️ Edit
+                                    </button>
+                                    <button onclick="deletePlayer(${p.id}, '${p.name.replace(/'/g, "\\'")}')"
+                                        class="bg-red-500 hover:bg-red-700 text-white text-xs font-bold px-2 py-1 rounded transition">
+                                        🗑️ Padam
+                                    </button>
+                                </div>
+                            </td>
+                        </tr>
+                    `);
+                });
+            } catch (e) {
+                tbody.innerHTML = '<tr><td colspan="4" class="text-center py-4 text-red-500">Ralat sambungan.</td></tr>';
+                console.error('[Admin] Gagal muat pemain:', e);
+            }
+        };
+
+        window.editPlayerScore = async function (id, name, currentScore) {
+            const newScoreStr = prompt(`Edit markah untuk "${name}":\nMarkah semasa: ${currentScore}\n\nMasukkan markah baharu:`, currentScore);
+            if (newScoreStr === null) return; // Batal
+
+            const newScore = parseInt(newScoreStr);
+            if (isNaN(newScore) || newScore < 0) {
+                alert('Sila masukkan nombor yang sah (0 atau lebih).');
+                return;
+            }
+
+            if (!supabaseClient) { alert('Tiada sambungan database.'); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('ptnj_leaderboard')
+                    .update({ score: newScore })
+                    .eq('id', id);
+
+                if (error) {
+                    alert('Gagal kemaskini markah: ' + error.message);
+                } else {
+                    alert(`✅ Markah "${name}" berjaya dikemaskini kepada ${newScore}!`);
+                    loadPlayerList(); // Refresh jadual
+                    // Refresh Top 3 di menu juga
+                    if (typeof renderTop3Main === 'function') renderTop3Main();
+                }
+            } catch (e) {
+                alert('Ralat semasa kemaskini markah.');
+                console.error('[Admin] Edit score error:', e);
+            }
+        };
+
+        window.deletePlayer = async function (id, name) {
+            if (!confirm(`⚠️ Adakah anda pasti mahu MEMADAM rekod pemain:\n\n"${name}"\n\nTindakan ini tidak boleh dibuat asal!`)) return;
+
+            if (!supabaseClient) { alert('Tiada sambungan database.'); return; }
+
+            try {
+                const { error } = await supabaseClient
+                    .from('ptnj_leaderboard')
+                    .delete()
+                    .eq('id', id);
+
+                if (error) {
+                    alert('Gagal memadam pemain: ' + error.message);
+                } else {
+                    alert(`✅ Rekod "${name}" telah berjaya dipadam.`);
+                    loadPlayerList(); // Refresh jadual
+                    if (typeof renderTop3Main === 'function') renderTop3Main();
+                }
+            } catch (e) {
+                alert('Ralat semasa memadam rekod.');
+                console.error('[Admin] Delete player error:', e);
+            }
+        };
 
         let currentTriviaBlock = null;
 
