@@ -696,44 +696,50 @@
 
         async function saveHighScoreAsync(name, markah) {
             if (markah <= 0 || !supabaseClient) return;
-            const finalName = name || "Renjer Tanpa Nama";
-            const newRecord = { name: finalName, score: markah, date: new Date().toLocaleDateString('ms-MY') };
+            const finalName = (name || "Renjer Tanpa Nama").trim();
+            const newRecord = {
+                name: finalName,
+                score: markah,
+                date: new Date().toLocaleDateString('ms-MY')
+            };
 
             try {
-                // Periksa rekod terbaik pemain ini sebelumnya
-                const { data: existing } = await supabaseClient.from('ptnj_leaderboard')
-                    .select('id, score')
-                    .ilike('name', finalName)
-                    .order('score', { ascending: false })
-                    .limit(1);
+                console.log("[Leaderboard] Cuba simpan skor:", finalName, markah);
 
-                // Hanya simpan jika ini markah terbaik baru atau pemain baru
-                const bestPrev = existing && existing.length > 0 ? existing[0].score : 0;
-                if (markah <= bestPrev) {
-                    // Tunjuk kedudukan guna rekod lama
-                    const { data: board } = await supabaseClient.from('ptnj_leaderboard')
-                        .select('id, name, score')
-                        .order('score', { ascending: false });
-                    if (board) {
-                        currentRank = board.findIndex(r => r.name?.toLowerCase() === finalName.toLowerCase() && r.score === bestPrev);
-                        showEndRank(currentRank);
-                    }
+                // Terus masukkan rekod — leaderboard papar top skor, duplikat tidak masalah
+                const { error: insertError } = await supabaseClient
+                    .from('ptnj_leaderboard')
+                    .insert([newRecord]);
+
+                if (insertError) {
+                    console.error("[Leaderboard] Gagal simpan:", insertError.message);
                     return;
                 }
 
-                // Hantar rekod baharu ke Supabase
-                await supabaseClient.from('ptnj_leaderboard').insert([newRecord]);
+                console.log("[Leaderboard] Berjaya disimpan!");
 
-                // Ambil balik semua rekod untuk kira kedudukan (Real-time live rank)
-                const { data } = await supabaseClient.from('ptnj_leaderboard')
+                // Ambil semua rekod untuk kira kedudukan masa nyata
+                const { data: board, error: fetchError } = await supabaseClient
+                    .from('ptnj_leaderboard')
                     .select('id, name, score, date')
                     .order('score', { ascending: false });
 
-                if (data) {
-                    currentRank = data.findIndex(r => r.name === finalName && r.score === markah);
-                    showEndRank(currentRank);
+                if (fetchError) {
+                    console.error("[Leaderboard] Gagal ambil kedudukan:", fetchError.message);
+                    return;
                 }
-            } catch (e) { console.error("Error saving High Score:", e); }
+
+                if (board) {
+                    // Cari kedudukan skor yang baru disimpan
+                    currentRank = board.findIndex(
+                        r => r.name?.toLowerCase() === finalName.toLowerCase() && r.score === markah
+                    );
+                    showEndRank(currentRank);
+                    console.log("[Leaderboard] Kedudukan:", currentRank + 1);
+                }
+            } catch (e) {
+                console.error("[Leaderboard] Ralat tidak dijangka:", e);
+            }
         }
 
         document.getElementById('openLeaderboardBtn').addEventListener('click', async () => {
