@@ -371,27 +371,46 @@
                         Keluar</button>
                 </div>
 
-                <!-- Senarai Soalan (3 Kolum) -->
+                <!-- Senarai Soalan mengikut Tahap (6 Tahap) -->
                 <div
-                    class="flex-grow overflow-y-auto mb-4 p-2 bg-gray-200 border-2 border-gray-400 rounded-lg shadow-inner flex flex-col md:flex-row gap-4 h-[40vh]">
-                    <!-- Mudah -->
-                    <div class="flex-1 bg-white p-3 rounded shadow border-t-4 border-green-500 overflow-y-auto">
-                        <h3 class="font-bold text-green-700 border-b-2 border-gray-100 mb-3 pb-2 sticky top-0 bg-white">
-                            🟩 Mudah (Tahap 1-3)</h3>
-                        <div id="adminListMudah" class="space-y-3 text-left"></div>
-                    </div>
-                    <!-- Sederhana -->
-                    <div class="flex-1 bg-white p-3 rounded shadow border-t-4 border-yellow-500 overflow-y-auto">
-                        <h3
-                            class="font-bold text-yellow-600 border-b-2 border-gray-100 mb-3 pb-2 sticky top-0 bg-white">
-                            🟨 Sederhana (Tahap 4-5)</h3>
-                        <div id="adminListSederhana" class="space-y-3 text-left"></div>
-                    </div>
-                    <!-- Sukar -->
-                    <div class="flex-1 bg-white p-3 rounded shadow border-t-4 border-red-500 overflow-y-auto">
-                        <h3 class="font-bold text-red-600 border-b-2 border-gray-100 mb-3 pb-2 sticky top-0 bg-white">🟥
-                            Sukar (Level Bos)</h3>
-                        <div id="adminListSukar" class="space-y-3 text-left"></div>
+                    class="flex-grow overflow-y-auto mb-4 p-2 bg-gray-200 border-2 border-gray-400 rounded-lg shadow-inner h-[40vh]">
+                    <div class="grid grid-cols-2 md:grid-cols-3 gap-3">
+                        <!-- Tahap 1 -->
+                        <div class="bg-white p-3 rounded shadow border-t-4 border-green-400 overflow-y-auto max-h-60">
+                            <h3 class="font-bold text-green-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟢
+                                Tahap 1</h3>
+                            <div id="adminListT1" class="space-y-2 text-left"></div>
+                        </div>
+                        <!-- Tahap 2 -->
+                        <div class="bg-white p-3 rounded shadow border-t-4 border-teal-400 overflow-y-auto max-h-60">
+                            <h3 class="font-bold text-teal-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🔵
+                                Tahap 2</h3>
+                            <div id="adminListT2" class="space-y-2 text-left"></div>
+                        </div>
+                        <!-- Tahap 3 -->
+                        <div class="bg-white p-3 rounded shadow border-t-4 border-blue-400 overflow-y-auto max-h-60">
+                            <h3 class="font-bold text-blue-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟦
+                                Tahap 3</h3>
+                            <div id="adminListT3" class="space-y-2 text-left"></div>
+                        </div>
+                        <!-- Tahap 4 -->
+                        <div class="bg-white p-3 rounded shadow border-t-4 border-yellow-400 overflow-y-auto max-h-60">
+                            <h3 class="font-bold text-yellow-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟡
+                                Tahap 4</h3>
+                            <div id="adminListT4" class="space-y-2 text-left"></div>
+                        </div>
+                        <!-- Tahap 5 -->
+                        <div class="bg-white p-3 rounded shadow border-t-4 border-orange-400 overflow-y-auto max-h-60">
+                            <h3 class="font-bold text-orange-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🟠
+                                Tahap 5</h3>
+                            <div id="adminListT5" class="space-y-2 text-left"></div>
+                        </div>
+                        <!-- Tahap 6 -->
+                        <div class="bg-white p-3 rounded shadow border-t-4 border-red-500 overflow-y-auto max-h-60">
+                            <h3 class="font-bold text-red-700 border-b mb-2 pb-1 sticky top-0 bg-white text-sm">🔴 Tahap
+                                6 (Bos)</h3>
+                            <div id="adminListT6" class="space-y-2 text-left"></div>
+                        </div>
                     </div>
                 </div>
 
@@ -427,11 +446,14 @@
                             </select>
                         </div>
                         <div class="flex-1">
-                            <label class="text-sm font-semibold text-gray-700">Tahap Kesukaran:</label>
+                            <label class="text-sm font-semibold text-gray-700">Untuk Tahap:</label>
                             <select id="newDiff" class="w-full p-2 border rounded text-black text-sm mt-1">
-                                <option value="1">1 - Mudah (Tahap 1-3)</option>
-                                <option value="2">2 - Sederhana (Tahap 4-5)</option>
-                                <option value="3">3 - Sukar (Tahap 6)</option>
+                                <option value="1">Tahap 1</option>
+                                <option value="2">Tahap 2</option>
+                                <option value="3">Tahap 3</option>
+                                <option value="4">Tahap 4</option>
+                                <option value="5">Tahap 5</option>
+                                <option value="6">Tahap 6 (Bos)</option>
                             </select>
                         </div>
                         <button id="addQuestionBtn"
@@ -632,29 +654,35 @@
         const ADMIN_PASS = "johor2025";
 
         const defaultTriviaDB = [
-            // TAHAP 1-3 (Mudah) - diff: 1
+            // TAHAP 1
             { q: "Gunung Ledang merupakan gunung tertinggi di negeri mana?", options: ["Melaka", "Johor", "Pahang"], answer: 1, diff: 1 },
             { q: "Siapakah agensi yang menjaga Taman Negara Johor?", options: ["Jabatan Perhutanan", "PTNJ", "PERHILITAN"], answer: 1, diff: 1 },
             { q: "Apakah lagenda terkenal yang dikaitkan dengan Gunung Ledang?", options: ["Mahsuri", "Puteri Santubong", "Puteri Gunung Ledang"], answer: 2, diff: 1 },
-            { q: "Tanjung Piai terkenal sebagai?", options: ["Titik Paling Utara Asia", "Penghujung Selatan Benua Asia", "Pulau Terbesar"], answer: 1, diff: 1 },
-            { q: "Apakah haiwan ikonik Taman Negara Endau-Rompin?", options: ["Orang Utan", "Harimau Malaya", "Beruang Panda"], answer: 1, diff: 1 },
-            { q: "Daerah manakah letaknya Gunung Ledang?", options: ["Muar", "Tangkak", "Segamat"], answer: 1, diff: 1 },
 
-            // TAHAP 4-5 (Sederhana) - diff: 2
-            { q: "Pulau Kukup memegang status sebagai pulau bakau tidak berpenghuni yang keberapa terbesar di dunia?", options: ["Pertama", "Kedua", "Ketiga"], answer: 1, diff: 2 },
-            { q: "Apakah kumpulan Orang Asli utama yang menetap di Endau-Rompin (Peta)?", options: ["Semang", "Jakun", "Senoi"], answer: 1, diff: 2 },
-            { q: "Spesies pokok kipas gergasi kuno endemik di Endau-Rompin dipanggil?", options: ["Rafflesia", "Livistona endauensis", "Pokok Cengal"], answer: 1, diff: 2 },
-            { q: "Tanjung Piai dan Pulau Kukup telah diiktiraf sebagai Tapak?", options: ["Tapak Ramsar", "Tapak UNESCO", "Tapak Warisan Bersejarah"], answer: 0, diff: 2 },
-            { q: "Berapakah bilangan pulau utama dalam gugusan Taman Laut Sultan Iskandar?", options: ["5 Pulau", "13 Pulau", "25 Pulau"], answer: 1, diff: 2 },
-            { q: "Paya bakau memainkan peranan penting dalam alam sekitar sebagai...", options: ["Punca air minuman", "Melindungi pantai dari hakisan", "Tempat melombong pasir"], answer: 1, diff: 2 },
+            // TAHAP 2
+            { q: "Tanjung Piai terkenal sebagai?", options: ["Titik Paling Utara Asia", "Penghujung Selatan Benua Asia", "Pulau Terbesar"], answer: 1, diff: 2 },
+            { q: "Apakah haiwan ikonik Taman Negara Endau-Rompin?", options: ["Orang Utan", "Harimau Malaya", "Beruang Panda"], answer: 1, diff: 2 },
+            { q: "Daerah manakah letaknya Gunung Ledang?", options: ["Muar", "Tangkak", "Segamat"], answer: 1, diff: 2 },
 
-            // TAHAP 6 (Sangat Sukar) - diff: 3
-            { q: "Spesies kera apakah yang banyak mendiami kawasan bakau Pulau Kukup?", options: ["Kera Bekantan", "Kera Ekor Panjang (Macaque)", "Cimpanzi"], answer: 1, diff: 3 },
-            { q: "Apakah status flora dan fauna dalam semua Taman Negara?", options: ["Boleh diburu", "Dilindungi sepenuhnya oleh undang-undang", "Tanggungjawab penduduk"], answer: 1, diff: 3 },
-            { q: "Pulau Kukup merupakan pulau yang terbentuk sepenuhnya daripada?", options: ["Pasir Pantai", "Lumpur dan Hutan Bakau", "Batu Karang"], answer: 1, diff: 3 },
-            { q: "Umur dianggarkan bagi pembentukan batuan di Hutan Endau-Rompin?", options: ["50 Juta Tahun", "240 Juta Tahun", "1 Bilion Tahun"], answer: 1, diff: 3 },
-            { q: "Apakah nama saintifik bagi pokok periuk kera yang terdapat di kawasan Gunung Ledang?", options: ["Hibiscus rosa-sinensis", "Nepenthes", "Rafflesia arnoldii"], answer: 1, diff: 3 },
-            { q: "Berapakah jumlah anggaran keluasan Taman Negara Endau-Rompin (Peta & Selai)?", options: ["10,000 hektar", "40,000 hektar", "80,000 hektar"], answer: 2, diff: 3 }
+            // TAHAP 3
+            { q: "Air Terjun Buaya Sangkut merupakan daya tarikan utama di taman negara mana?", options: ["Taman Negara Johor Endau-Rompin", "Taman Marin Sultan Iskandar", "Kawasan Rekreasi Gunung Arong"], answer: 0, diff: 3 },
+            { q: "Paya bakau memainkan peranan penting dalam alam sekitar sebagai...", options: ["Punca air minuman", "Melindungi pantai dari hakisan", "Tempat melombong pasir"], answer: 1, diff: 3 },
+            { q: "Tanjung Piai dan Pulau Kukup telah diiktiraf sebagai Tapak?", options: ["Tapak Ramsar", "Tapak UNESCO", "Tapak Warisan Bersejarah"], answer: 0, diff: 3 },
+
+            // TAHAP 4
+            { q: "Pulau Kukup memegang status sebagai pulau bakau tidak berpenghuni yang keberapa terbesar di dunia?", options: ["Pertama", "Kedua", "Ketiga"], answer: 1, diff: 4 },
+            { q: "Apakah kumpulan Orang Asli utama yang menetap di Endau-Rompin (Peta)?", options: ["Semang", "Jakun", "Senoi"], answer: 1, diff: 4 },
+            { q: "Berapakah bilangan pulau utama dalam gugusan Taman Laut Sultan Iskandar?", options: ["5 Pulau", "13 Pulau", "25 Pulau"], answer: 1, diff: 4 },
+
+            // TAHAP 5
+            { q: "Spesies pokok kipas gergasi kuno endemik di Endau-Rompin dipanggil?", options: ["Rafflesia", "Livistona endauensis", "Pokok Cengal"], answer: 1, diff: 5 },
+            { q: "Spesies kera apakah yang banyak mendiami kawasan bakau Pulau Kukup?", options: ["Kera Bekantan", "Kera Ekor Panjang (Macaque)", "Cimpanzi"], answer: 1, diff: 5 },
+            { q: "Apakah status flora dan fauna dalam semua Taman Negara?", options: ["Boleh diburu", "Dilindungi sepenuhnya oleh undang-undang", "Tanggungjawab penduduk"], answer: 1, diff: 5 },
+
+            // TAHAP 6 (Bos)
+            { q: "Pulau Kukup merupakan pulau yang terbentuk sepenuhnya daripada?", options: ["Pasir Pantai", "Lumpur dan Hutan Bakau", "Batu Karang"], answer: 1, diff: 6 },
+            { q: "Umur dianggarkan bagi pembentukan batuan di Hutan Endau-Rompin?", options: ["50 Juta Tahun", "240 Juta Tahun", "1 Bilion Tahun"], answer: 1, diff: 6 },
+            { q: "Berapakah jumlah anggaran keluasan Taman Negara Endau-Rompin (Peta & Selai)?", options: ["10,000 hektar", "40,000 hektar", "80,000 hektar"], answer: 2, diff: 6 }
         ];
 
         let triviaDB = [...defaultTriviaDB]; // Temporary default while loading
@@ -791,29 +819,29 @@
 
         // --- FUNGSI SUPER ADMIN ---
         function renderAdminQuestions() {
-            const list1 = document.getElementById('adminListMudah');
-            const list2 = document.getElementById('adminListSederhana');
-            const list3 = document.getElementById('adminListSukar');
-            list1.innerHTML = ''; list2.innerHTML = ''; list3.innerHTML = '';
+            const lists = {};
+            for (let i = 1; i <= 6; i++) {
+                lists[i] = document.getElementById(`adminListT${i}`);
+                if (lists[i]) lists[i].innerHTML = '';
+            }
 
             triviaDB.forEach((q, idx) => {
-                let optsText = `<div class="ml-2 mt-2 -space-y-1 text-xs">
-                <span class="${q.answer === 0 ? 'bg-green-200 text-green-900 font-bold px-1 rounded inline-block mb-1' : 'text-gray-600 block mb-1'}">A) ${q.options[0]}</span><br>
-                <span class="${q.answer === 1 ? 'bg-green-200 text-green-900 font-bold px-1 rounded inline-block mb-1' : 'text-gray-600 block mb-1'}">B) ${q.options[1]}</span><br>
-                <span class="${q.answer === 2 ? 'bg-green-200 text-green-900 font-bold px-1 rounded inline-block mb-1' : 'text-gray-600 block mb-1'}">C) ${q.options[2]}</span>
-                </div>`;
+                const level = q.diff || 1; // guna diff sebagai tahap (1-6)
+                const listEl = lists[level];
+                if (!listEl) return;
 
                 const card = document.createElement('div');
-                card.className = "bg-gray-50 border border-gray-300 p-3 rounded-lg relative hover:shadow-md transition";
+                card.className = "bg-gray-50 border border-gray-200 p-2 rounded-lg relative hover:shadow transition";
                 card.innerHTML = `
-                    <p class="font-bold text-gray-900 text-sm leading-snug w-[85%]">${idx + 1}. ${q.q}</p>
-                    ${optsText}
-                    <button onclick="deleteQuestion(${idx}, ${q.id})" title="Padam Soalan" class="absolute top-2 right-2 bg-red-100 hover:bg-red-500 text-red-700 hover:text-white border border-red-300 rounded text-xs px-2 py-1 transition font-bold">X</button>
+                    <p class="font-bold text-gray-900 text-xs leading-snug pr-6">${idx + 1}. ${q.q}</p>
+                    <div class="mt-1 text-xs text-gray-500 space-y-0.5">
+                        <span class="${q.answer === 0 ? 'text-green-700 font-bold' : ''}">A) ${q.options[0]}</span><br>
+                        <span class="${q.answer === 1 ? 'text-green-700 font-bold' : ''}">B) ${q.options[1]}</span><br>
+                        <span class="${q.answer === 2 ? 'text-green-700 font-bold' : ''}">C) ${q.options[2]}</span>
+                    </div>
+                    <button onclick="deleteQuestion(${idx}, ${q.id})" title="Padam" class="absolute top-1 right-1 bg-red-100 hover:bg-red-500 text-red-700 hover:text-white rounded text-xs px-1.5 py-0.5 font-bold transition">X</button>
                 `;
-
-                if (q.diff === 1) list1.appendChild(card);
-                else if (q.diff === 2) list2.appendChild(card);
-                else list3.appendChild(card);
+                listEl.appendChild(card);
             });
         }
 
@@ -875,30 +903,7 @@
             gameState = 'REGISTER';
         });
 
-        document.getElementById('adminLoginSubmitBtn').addEventListener('click', () => {
-            const u = document.getElementById('adminUsername').value;
-            const p = document.getElementById('adminPassword').value;
-            if (u === ADMIN_USER && p === ADMIN_PASS) {
-                document.getElementById('adminUsername').value = '';
-                document.getElementById('adminPassword').value = '';
-                hideAllScreens();
-                try {
-                    if (!triviaDB || triviaDB.length === 0) triviaDB = [...defaultTriviaDB];
-                    renderAdminQuestions();
-                } catch (e) {
-                    console.error("Error rendering admin panel:", e);
-                }
-                screens.adminDash.classList.remove('hidden');
-            } else {
-                alert("ID Admin atau Kata Laluan SALAH!");
-            }
-        });
-
-        document.getElementById('adminLogoutBtn').addEventListener('click', () => {
-            hideAllScreens();
-            screens.register.classList.remove('hidden');
-            gameState = 'REGISTER';
-        });
+        // Listener admin login & logout sudah dipindahkan ke dalam DOMContentLoaded (di bawah) untuk elak duplikasi
         // --- TAMAT FUNGSI ADMIN ---
 
         const keys = { right: false, left: false, up: false };
@@ -1404,13 +1409,11 @@
             hideAllScreens();
             screens.trivia.classList.remove('hidden');
 
-            let diffTarget = 1;
-            if (currentLevel >= 4) diffTarget = 2;
-            if (currentLevel === 6) diffTarget = 3;
-
-            // Carian soalan yang wujud dalam pangkalan data admin yang belum ditanya
-            let pool = triviaDB.filter(q => q.diff === diffTarget && !usedQuestions.includes(q.q));
+            // Soalan diambil berdasarkan tahap semasa (1-6) secara tepat
+            let pool = triviaDB.filter(q => q.diff === currentLevel && !usedQuestions.includes(q.q));
+            // Fallback: ambil soalan dari mana-mana tahap yang belum ditanya
             if (pool.length === 0) pool = triviaDB.filter(q => !usedQuestions.includes(q.q));
+            if (pool.length === 0) { usedQuestions = []; pool = triviaDB.filter(q => q.diff === currentLevel); }
             if (pool.length === 0) { usedQuestions = []; pool = triviaDB; }
 
             // Fallback kecemasan jika admin terpadam SEMUA soalan
