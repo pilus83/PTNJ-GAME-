@@ -3,7 +3,8 @@
 
 <head>
     <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+    <meta name="viewport"
+        content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no, viewport-fit=cover">
     <title>Renjer Johor: Misi Taman Negara</title>
     <script src="https://cdn.tailwindcss.com"></script>
     <script src="https://cdn.jsdelivr.net/npm/canvas-confetti@1.6.0/dist/confetti.browser.min.js"></script>
@@ -15,6 +16,23 @@
             background-color: #1a202c;
             font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
             touch-action: none;
+        }
+
+        /* ===== PAKSA LANDSCAPE PADA MOBILE ===== */
+        /* Putar paparan 90 darjah bila dalam portrait mode pada peranti sentuh kecil */
+        @media screen and (orientation: portrait) and (max-width: 900px) {
+            html {
+                transform: rotate(90deg);
+                transform-origin: left top;
+                width: 100dvh;
+                /* lebar html = tinggi skrin (selepas putaran) */
+                height: 100dvw;
+                /* tinggi html = lebar skrin (selepas putaran) */
+                overflow: hidden;
+                position: fixed;
+                top: 100%;
+                left: 0;
+            }
         }
 
         #game-container {
@@ -2121,6 +2139,16 @@
                 initializeApp();
                 requestAnimationFrame(gameLoop);
                 console.log("Game fully initialized");
+
+                // Cuba kunci orientasi landscape (berfungsi pada Android Chrome & PWA)
+                try {
+                    if (screen.orientation && screen.orientation.lock) {
+                        screen.orientation.lock('landscape').catch(() => {
+                            // Tidak semua browser sokong ini — CSS transform akan handle
+                            console.log('[Orientation] Kunci landscape tidak disokong, guna CSS transform.');
+                        });
+                    }
+                } catch (e) { /* Abaikan jika tidak disokong */ }
             } catch (e) {
                 console.error("Game crash on startup:", e);
             }
