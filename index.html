@@ -699,8 +699,8 @@
             const finalName = (name || "Renjer Tanpa Nama").trim();
             const newRecord = {
                 name: finalName,
-                score: markah,
-                date: new Date().toLocaleDateString('ms-MY')
+                score: markah
+                // 'date' tidak ada dalam jadual Supabase — jangan hantar
             };
 
             try {
@@ -721,7 +721,7 @@
                 // Ambil semua rekod untuk kira kedudukan masa nyata
                 const { data: board, error: fetchError } = await supabaseClient
                     .from('ptnj_leaderboard')
-                    .select('id, name, score, date')
+                    .select('id, name, score')
                     .order('score', { ascending: false });
 
                 if (fetchError) {
@@ -770,7 +770,7 @@
                         let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
                         let rowHtml = `<tr class="border-b border-gray-200">
                             <td class="text-center font-black">${medal}</td>
-                            <td class="font-bold text-gray-800">${entry.name} <span class="text-xs text-gray-400 block">${entry.date}</span></td>
+                            <td class="font-bold text-gray-800">${entry.name}</td>
                             <td class="text-center font-black text-green-700">${entry.score}</td>
                         </tr>`;
                         tbody.insertAdjacentHTML('beforeend', rowHtml);
