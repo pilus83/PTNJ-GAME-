@@ -485,7 +485,8 @@
                     class="bg-gray-900 text-white rounded-xl p-3 mb-5 shadow-lg border-2 border-yellow-500 hidden">
                     <p class="text-yellow-400 font-black text-center mb-2 text-base">🏆 3 Juara Terbaik</p>
                     <div id="top3MainList" class="text-sm font-semibold text-left leading-relaxed"></div>
-                    <p class="text-gray-400 text-xs text-center mt-2 italic">* Hanya pemain yang habiskan semua 6 tahap</p>
+                    <p class="text-gray-400 text-xs text-center mt-2 italic">* Hanya pemain yang habiskan semua 6 tahap
+                    </p>
                 </div>
                 <!-- END TOP 3 -->
 
@@ -695,20 +696,41 @@
 
         async function saveHighScoreAsync(name, markah) {
             if (markah <= 0 || !supabaseClient) return;
-            const newRecord = { name: name || "Renjer Tanpa Nama", score: markah, date: new Date().toLocaleDateString() };
+            const finalName = name || "Renjer Tanpa Nama";
+            const newRecord = { name: finalName, score: markah, date: new Date().toLocaleDateString('ms-MY') };
 
             try {
+                // Periksa rekod terbaik pemain ini sebelumnya
+                const { data: existing } = await supabaseClient.from('ptnj_leaderboard')
+                    .select('id, score')
+                    .ilike('name', finalName)
+                    .order('score', { ascending: false })
+                    .limit(1);
+
+                // Hanya simpan jika ini markah terbaik baru atau pemain baru
+                const bestPrev = existing && existing.length > 0 ? existing[0].score : 0;
+                if (markah <= bestPrev) {
+                    // Tunjuk kedudukan guna rekod lama
+                    const { data: board } = await supabaseClient.from('ptnj_leaderboard')
+                        .select('id, name, score')
+                        .order('score', { ascending: false });
+                    if (board) {
+                        currentRank = board.findIndex(r => r.name?.toLowerCase() === finalName.toLowerCase() && r.score === bestPrev);
+                        showEndRank(currentRank);
+                    }
+                    return;
+                }
+
                 // Hantar rekod baharu ke Supabase
                 await supabaseClient.from('ptnj_leaderboard').insert([newRecord]);
 
                 // Ambil balik semua rekod untuk kira kedudukan (Real-time live rank)
-                const { data, error } = await supabaseClient.from('ptnj_leaderboard')
+                const { data } = await supabaseClient.from('ptnj_leaderboard')
                     .select('id, name, score, date')
                     .order('score', { ascending: false });
 
                 if (data) {
-                    // Cari kedudukan terkini rekod tadi
-                    currentRank = data.findIndex(r => r.name === newRecord.name && r.score === newRecord.score);
+                    currentRank = data.findIndex(r => r.name === finalName && r.score === markah);
                     showEndRank(currentRank);
                 }
             } catch (e) { console.error("Error saving High Score:", e); }
@@ -1464,14 +1486,20 @@
         function gameOver() {
             gameState = 'GAMEOVER';
 
-            // Skor TIDAK disimpan bila pemain kalah — hanya pemain yang habiskan 6 tahap layak
             document.getElementById('rankContainer').classList.add('hidden');
+
+            // Simpan skor online — nama akan muncul di leaderboard jika markah cukup tinggi
+            if (score > 0) {
+                saveHighScoreAsync(playerName, score).then(() => {
+                    renderTop3Main();
+                });
+            }
 
             hideAllScreens();
             screens.end.classList.remove('hidden');
             document.getElementById('endTitle').innerText = "Misi Gagal";
             document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-red-500";
-            document.getElementById('endMessage').innerText = `Anda tewas di Tahap ${currentLevel}. Habiskan semua 6 tahap untuk masuk papan markah!`;
+            document.getElementById('endMessage').innerText = `Anda tewas di Tahap ${currentLevel}. Markah anda direkodkan — cuba lagi untuk capai tangga teratas!`;
             document.getElementById('finalScore').innerText = score;
 
             document.getElementById('nextLevelBtn').classList.add('hidden');
