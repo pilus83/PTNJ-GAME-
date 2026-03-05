@@ -287,6 +287,64 @@
         .admin-table tr:hover {
             background-color: #e2e8f0;
         }
+
+        /* ===== MOBILE RESPONSIVE FIXES ===== */
+        .overlay {
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        .jungle-panel {
+            max-height: 85dvh;
+            overflow-y: auto;
+            -webkit-overflow-scrolling: touch;
+        }
+
+        @media (max-width: 480px) {
+            .jungle-panel {
+                padding: 1rem;
+                max-width: 96%;
+                width: 96%;
+                border-width: 4px;
+                border-radius: 14px;
+            }
+
+            .jungle-title {
+                font-size: clamp(1.4rem, 6vw, 2.2rem);
+                padding: 12px 0;
+                max-width: 96%;
+            }
+
+            .jungle-btn {
+                font-size: 0.95rem;
+                padding: 0.6rem 1rem;
+                margin-bottom: 0.5rem;
+            }
+
+            #touch-controls {
+                bottom: 4px;
+            }
+
+            #touch-controls button {
+                width: 52px;
+                height: 52px;
+                font-size: 1.3rem;
+                opacity: 0.85;
+            }
+        }
+
+        @media (max-height: 600px) and (orientation: landscape) {
+            .jungle-panel {
+                max-height: 80dvh;
+                padding: 0.75rem 1rem;
+            }
+
+            .jungle-title {
+                font-size: 1.4rem;
+                padding: 8px 0;
+                margin-bottom: 0.5rem;
+            }
+        }
     </style>
 </head>
 
@@ -779,19 +837,37 @@
         async function saveHighScoreAsync(name, markah) {
             if (markah <= 0 || !supabaseClient) return;
             const finalName = (name || "Renjer Tanpa Nama").trim();
-            const newRecord = {
-                name: finalName,
-                score: markah
-                // 'date' tidak ada dalam jadual Supabase — jangan hantar
-            };
 
             try {
                 console.log("[Leaderboard] Cuba simpan skor:", finalName, markah);
 
-                // Terus masukkan rekod — leaderboard papar top skor, duplikat tidak masalah
+                // Periksa markah terbaik sedia ada untuk pemain ini
+                const { data: existing } = await supabaseClient
+                    .from('ptnj_leaderboard')
+                    .select('id, score')
+                    .ilike('name', finalName)
+                    .order('score', { ascending: false })
+                    .limit(1);
+
+                const bestPrev = (existing && existing.length > 0) ? existing[0].score : 0;
+
+                if (markah <= bestPrev) {
+                    console.log("[Leaderboard] Skor tidak lebih baik dari rekod lama:", bestPrev, "> ", markah, "- Tidak disimpan.");
+                    // Papar kedudukan guna rekod lama
+                    const { data: board } = await supabaseClient.from('ptnj_leaderboard')
+                        .select('id, name, score').order('score', { ascending: false });
+                    if (board) {
+                        const deduped = deduplicateByName(board);
+                        currentRank = deduped.findIndex(r => r.name?.toLowerCase() === finalName.toLowerCase());
+                        showEndRank(currentRank);
+                    }
+                    return;
+                }
+
+                // Skor lebih baik — simpan rekod baru
                 const { error: insertError } = await supabaseClient
                     .from('ptnj_leaderboard')
-                    .insert([newRecord]);
+                    .insert([{ name: finalName, score: markah }]);
 
                 if (insertError) {
                     console.error("[Leaderboard] Gagal simpan:", insertError.message);
@@ -800,7 +876,7 @@
 
                 console.log("[Leaderboard] Berjaya disimpan!");
 
-                // Ambil semua rekod untuk kira kedudukan masa nyata
+                // Ambil semua rekod, deduplikasi, kira kedudukan
                 const { data: board, error: fetchError } = await supabaseClient
                     .from('ptnj_leaderboard')
                     .select('id, name, score')
@@ -812,16 +888,26 @@
                 }
 
                 if (board) {
-                    // Cari kedudukan skor yang baru disimpan
-                    currentRank = board.findIndex(
-                        r => r.name?.toLowerCase() === finalName.toLowerCase() && r.score === markah
-                    );
+                    const deduped = deduplicateByName(board);
+                    currentRank = deduped.findIndex(r => r.name?.toLowerCase() === finalName.toLowerCase());
                     showEndRank(currentRank);
                     console.log("[Leaderboard] Kedudukan:", currentRank + 1);
                 }
             } catch (e) {
                 console.error("[Leaderboard] Ralat tidak dijangka:", e);
             }
+        }
+
+        // Fungsi deduplikasi — pilih skor tertinggi sahaja bagi setiap nama pemain
+        function deduplicateByName(records) {
+            const seen = {};
+            records.forEach(r => {
+                const key = (r.name || '').toLowerCase();
+                if (!seen[key] || r.score > seen[key].score) {
+                    seen[key] = r;
+                }
+            });
+            return Object.values(seen).sort((a, b) => b.score - a.score);
         }
 
         document.getElementById('openLeaderboardBtn').addEventListener('click', async () => {
@@ -848,7 +934,9 @@
                 if (!board || board.length === 0) {
                     tbody.innerHTML = '<tr><td colspan="3" class="text-center py-4 text-gray-500 font-bold">Belum ada rekod. Jadilah yang pertama!</td></tr>';
                 } else {
-                    board.forEach((entry, idx) => {
+                    // Deduplikasi — satu nama = satu kedudukan (skor tertinggi sahaja)
+                    const deduped = deduplicateByName(board).slice(0, 10);
+                    deduped.forEach((entry, idx) => {
                         let medal = idx === 0 ? '🥇' : idx === 1 ? '🥈' : idx === 2 ? '🥉' : `${idx + 1}`;
                         let rowHtml = `<tr class="border-b border-gray-200">
                             <td class="text-center font-black">${medal}</td>
@@ -1933,12 +2021,12 @@
                 try {
                     const { data: board } = await supabaseClient.from('ptnj_leaderboard')
                         .select('*')
-                        .order('score', { ascending: false })
-                        .limit(3);
+                        .order('score', { ascending: false });
 
                     if (board && board.length > 0) {
+                        const deduped = deduplicateByName(board).slice(0, 3);
                         container.classList.remove('hidden');
-                        list.innerHTML = board.map((r, i) => {
+                        list.innerHTML = deduped.map((r, i) => {
                             let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
                             return `<div class="mb-1">${medal} <b class="text-white tracking-wider">${r.name.toUpperCase()}</b> <span class="bg-gray-700 rounded px-2 py-0.5 ml-1 drop-shadow text-yellow-300">${r.score}</span></div>`;
                         }).join('');
@@ -1961,8 +2049,7 @@
                 try {
                     const { data: board } = await supabaseClient.from('ptnj_leaderboard')
                         .select('*')
-                        .order('score', { ascending: false })
-                        .limit(3);
+                        .order('score', { ascending: false });
 
                     if (board && board.length > 0) {
                         container.classList.remove('hidden');
@@ -1972,7 +2059,8 @@
                             'linear-gradient(90deg,#4a4a4a,#9e9e9e)',
                             'linear-gradient(90deg,#6b2b00,#a0522d)'
                         ];
-                        list.innerHTML = board.map((r, i) => {
+                        const deduped = deduplicateByName(board).slice(0, 3);
+                        list.innerHTML = deduped.map((r, i) => {
                             return `<div style="background:${bgColors[i]};border-radius:8px;padding:6px 10px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
                                 <span style="font-size:1.3rem;">${medals[i]}</span>
                                 <b style="flex:1;margin-left:8px;font-size:0.95rem;letter-spacing:1px;">${r.name.toUpperCase()}</b>
