@@ -472,12 +472,22 @@
         </div>
 
         <!-- Skrin Menu Utama -->
+        <!-- Skrin Menu Utama -->
         <div id="startScreen" class="overlay title-screen hidden">
             <h1 class="jungle-title" style="font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem;">RENJER JOHOR</h1>
-            <div class="jungle-panel mx-4 max-w-lg">
+            <div class="jungle-panel mx-4 max-w-lg" style="overflow-y:auto; max-height:90vh;">
                 <h1 class="text-3xl font-black text-green-700 mb-2 text-center">Selamat Datang,<br><span
                         id="displayPlayerName" class="text-red-600"></span>!</h1>
                 <h2 class="text-xl font-bold mb-4 text-gray-700">Bersedia untuk 6 Tahap Misi Taman Negara</h2>
+
+                <!-- TOP 3 LEADERBOARD DI MENU UTAMA -->
+                <div id="top3MainContainer"
+                    class="bg-gray-900 text-white rounded-xl p-3 mb-5 shadow-lg border-2 border-yellow-500 hidden">
+                    <p class="text-yellow-400 font-black text-center mb-2 text-base">🏆 3 Juara Terbaik</p>
+                    <div id="top3MainList" class="text-sm font-semibold text-left leading-relaxed"></div>
+                    <p class="text-gray-400 text-xs text-center mt-2 italic">* Hanya pemain yang habiskan semua 6 tahap</p>
+                </div>
+                <!-- END TOP 3 -->
 
                 <div class="bg-yellow-50 border-4 border-yellow-300 p-4 rounded-lg text-left mb-6 shadow-inner">
                     <p class="mb-2 text-green-900">🎮 <strong>Cara Bermain & Halangan:</strong></p>
@@ -1454,18 +1464,15 @@
         function gameOver() {
             gameState = 'GAMEOVER';
 
-            // Set kedudukan kepada hidden dahulu semntara menunggu Cloud Server
+            // Skor TIDAK disimpan bila pemain kalah — hanya pemain yang habiskan 6 tahap layak
             document.getElementById('rankContainer').classList.add('hidden');
-
-            saveHighScoreAsync(playerName, score); // Simpan skor secara Async Backend
 
             hideAllScreens();
             screens.end.classList.remove('hidden');
             document.getElementById('endTitle').innerText = "Misi Gagal";
             document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-red-500";
-            document.getElementById('endMessage').innerText = `Anda tewas di Tahap ${currentLevel}.`;
+            document.getElementById('endMessage').innerText = `Anda tewas di Tahap ${currentLevel}. Habiskan semua 6 tahap untuk masuk papan markah!`;
             document.getElementById('finalScore').innerText = score;
-            // showEndRank(rank); di panggil dalam promise saveHighScoreAsync
 
             document.getElementById('nextLevelBtn').classList.add('hidden');
             document.getElementById('restartBtn').innerText = "Main Semula";
@@ -1491,18 +1498,21 @@
                 document.getElementById('restartBtn').classList.add('hidden');
             } else {
                 screens.end.classList.remove('hidden');
-                document.getElementById('endTitle').innerText = "MISI SELESAI!";
+                document.getElementById('endTitle').innerText = "MISI SELESAI! 🎉";
                 document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-yellow-400";
-                document.getElementById('endMessage').innerText = "Tahniah! Anda berjaya menamatkan kesemua 6 Tahap!";
+                document.getElementById('endMessage').innerText = "Tahniah! Anda berjaya menamatkan kesemua 6 Tahap! Markah anda telah direkodkan!";
 
                 score += 5000 + (timeLeft * 5);
                 updateHUD();
 
                 document.getElementById('rankContainer').classList.add('hidden');
-                saveHighScoreAsync(playerName, score); // Simpan markah selepas menang penuh
+                // Simpan markah HANYA bila pemain habiskan semua 6 tahap
+                saveHighScoreAsync(playerName, score).then(() => {
+                    // Refresh Top 3 di menu utama selepas skor baru disimpan
+                    renderTop3Main();
+                });
 
                 document.getElementById('finalScore').innerText = score;
-                // showEndRank(rank); dipanggil dalam promise
 
                 document.getElementById('nextLevelBtn').classList.add('hidden');
                 document.getElementById('restartBtn').innerText = "Main Semula";
@@ -1685,6 +1695,7 @@
                 document.getElementById('newAnswer').value = c.answer;
             });
 
+            // Render Top 3 di skrin register (skrin nama)
             async function renderTop3() {
                 const container = document.getElementById('top3Container');
                 const list = document.getElementById('top3List');
@@ -1695,7 +1706,7 @@
                 }
 
                 try {
-                    const { data: board, error } = await supabaseClient.from('ptnj_leaderboard')
+                    const { data: board } = await supabaseClient.from('ptnj_leaderboard')
                         .select('*')
                         .order('score', { ascending: false })
                         .limit(3);
@@ -1712,11 +1723,51 @@
                 }
             }
 
+            // Render Top 3 di skrin Menu Utama (selepas daftar nama)
+            async function renderTop3Main() {
+                const container = document.getElementById('top3MainContainer');
+                const list = document.getElementById('top3MainList');
+
+                if (!supabaseClient) {
+                    container.classList.add('hidden');
+                    return;
+                }
+
+                try {
+                    const { data: board } = await supabaseClient.from('ptnj_leaderboard')
+                        .select('*')
+                        .order('score', { ascending: false })
+                        .limit(3);
+
+                    if (board && board.length > 0) {
+                        container.classList.remove('hidden');
+                        const medals = ['🥇', '🥈', '🥉'];
+                        const bgColors = [
+                            'linear-gradient(90deg,#7c5c00,#b8860b)',
+                            'linear-gradient(90deg,#4a4a4a,#9e9e9e)',
+                            'linear-gradient(90deg,#6b2b00,#a0522d)'
+                        ];
+                        list.innerHTML = board.map((r, i) => {
+                            return `<div style="background:${bgColors[i]};border-radius:8px;padding:6px 10px;margin-bottom:6px;display:flex;align-items:center;justify-content:space-between;">
+                                <span style="font-size:1.3rem;">${medals[i]}</span>
+                                <b style="flex:1;margin-left:8px;font-size:0.95rem;letter-spacing:1px;">${r.name.toUpperCase()}</b>
+                                <span style="background:rgba(0,0,0,0.4);border-radius:6px;padding:2px 10px;color:#FFD700;font-weight:900;font-size:1rem;">${r.score}</span>
+                            </div>`;
+                        }).join('');
+                    } else {
+                        container.classList.add('hidden');
+                    }
+                } catch (e) {
+                    container.classList.add('hidden');
+                }
+            }
+
             async function initializeApp() {
                 try {
                     if (supabaseClient) {
                         await loadTriviaDB();
-                        renderTop3(); // Memuat turun Top 3 Live dari Server
+                        renderTop3();     // Top 3 di skrin nama/register
+                        renderTop3Main(); // Top 3 di skrin menu utama
                     }
                 } catch (e) { console.error("Initialization error:", e); }
             }
