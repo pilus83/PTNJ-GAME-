@@ -546,7 +546,7 @@
                 <div id="top3Container"
                     class="bg-gray-900 text-white rounded-lg p-3 mb-3 shadow mx-auto w-full border border-yellow-500"
                     style="display:none;">
-                    <p class="text-yellow-400 font-bold mb-2 text-sm text-center">🏆 Carta 3 Teratas :</p>
+                    <p class="text-yellow-400 font-bold mb-2 text-sm text-center">🏆 Carta 5 Teratas :</p>
                     <div id="top3List" class="text-sm font-semibold text-left mx-2 leading-relaxed"></div>
                 </div>
 
@@ -2191,7 +2191,7 @@
                 document.getElementById('newAnswer').value = c.answer;
             });
 
-            // Render Top 3 di skrin register (skrin nama)
+            // Render Top 5 di skrin register (skrin nama)
             async function renderTop3() {
                 const container = document.getElementById('top3Container');
                 const list = document.getElementById('top3List');
@@ -2207,11 +2207,22 @@
                         .order('score', { ascending: false });
 
                     if (board && board.length > 0) {
-                        const deduped = deduplicateByName(board).slice(0, 3);
+                        const deduped = deduplicateByName(board).slice(0, 5);
                         container.style.display = 'block';
+                        const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                        const backgrounds = [
+                            'linear-gradient(90deg,#7c5c00,#b8860b)',
+                            'linear-gradient(90deg,#4a4a4a,#9e9e9e)',
+                            'linear-gradient(90deg,#6b2b00,#a0522d)',
+                            'linear-gradient(90deg,#1a3a1a,#2d6a2d)',
+                            'linear-gradient(90deg,#1a3a1a,#2d6a2d)'
+                        ];
                         list.innerHTML = deduped.map((r, i) => {
-                            let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-                            return `<div style="background:${['linear-gradient(90deg,#7c5c00,#b8860b)', 'linear-gradient(90deg,#4a4a4a,#9e9e9e)', 'linear-gradient(90deg,#6b2b00,#a0522d)'][i]};border-radius:8px;padding:6px 10px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:1.2rem;">${medal}</span><b style="flex:1;margin-left:8px;font-size:0.9rem;letter-spacing:1px;">${r.name.toUpperCase()}</b><span style="background:rgba(0,0,0,0.4);border-radius:6px;padding:2px 8px;color:#FFD700;font-weight:900;">${r.score}</span></div>`;
+                            return `<div style="background:${backgrounds[i]};border-radius:8px;padding:5px 10px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;">
+                                <span style="font-size:1.1rem;min-width:28px;text-align:center;">${medals[i]}</span>
+                                <b style="flex:1;margin-left:8px;font-size:0.85rem;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.name.toUpperCase()}</b>
+                                <span style="background:rgba(0,0,0,0.4);border-radius:6px;padding:2px 8px;color:#FFD700;font-weight:900;font-size:0.85rem;margin-left:6px;">${r.score}</span>
+                            </div>`;
                         }).join('');
                     } else { container.style.display = 'none'; }
                 } catch (e) {
