@@ -969,7 +969,12 @@
             // TAHAP 6 (Bos)
             { q: "Pulau Kukup merupakan pulau yang terbentuk sepenuhnya daripada?", options: ["Pasir Pantai", "Lumpur dan Hutan Bakau", "Batu Karang"], answer: 1, diff: 6 },
             { q: "Umur dianggarkan bagi pembentukan batuan di Hutan Endau-Rompin?", options: ["50 Juta Tahun", "240 Juta Tahun", "1 Bilion Tahun"], answer: 1, diff: 6 },
-            { q: "Berapakah jumlah anggaran keluasan Taman Negara Endau-Rompin (Peta & Selai)?", options: ["10,000 hektar", "40,000 hektar", "80,000 hektar"], answer: 2, diff: 6 }
+            { q: "Berapakah jumlah anggaran keluasan Taman Negara Endau-Rompin (Peta & Selai)?", options: ["10,000 hektar", "40,000 hektar", "80,000 hektar"], answer: 2, diff: 6 },
+
+            // TAHAP 7 (Penamat — Misi Rahsia)
+            { q: "Apakah nama program pemuliharaan harimau malaya yang dijalankan di Johor?", options: ["Program MYCAT", "Save Our Tigers", "Projek Harimau Tenggara"], answer: 1, diff: 7 },
+            { q: "Berapakah anggaran bilangan harimau Malaya yang masih tinggal di alam liar?", options: ["Kurang dari 200 ekor", "500-700 ekor", "Lebih 1000 ekor"], answer: 0, diff: 7 },
+            { q: "Apakah cabaran terbesar yang dihadapi Taman Negara Johor pada abad ke-21?", options: ["Cuaca sejuk", "Pembalakan haram & kehilangan habitat", "Banjir besar"], answer: 1, diff: 7 }
         ];
 
         let triviaDB = [...defaultTriviaDB]; // Temporary default while loading
@@ -1529,7 +1534,8 @@
 
             if (level <= 2) theme = 'gunung';
             else if (level <= 4) theme = 'hutan';
-            else theme = 'bakau';
+            else if (level <= 6) theme = 'bakau';
+            else theme = 'malam'; // Tahap 7 — Hutan Malam
 
             timeLeft = 80 + (level * 20);
             lastTimeTick = Date.now();
@@ -1547,10 +1553,14 @@
             let animalTypes = [];
             if (theme === 'gunung') animalTypes = ['monyet', 'burung'];
             else if (theme === 'hutan') animalTypes = ['harimau', 'gajah', 'monyet', 'burung'];
-            else animalTypes = ['burung', 'monyet', 'harimau'];
+            else if (theme === 'bakau') animalTypes = ['burung', 'monyet', 'harimau'];
+            else animalTypes = ['ular', 'cendawan', 'harimau', 'burung']; // malam
 
             if (level >= 4) {
                 animalTypes.push('pemburu', 'pemburu');
+            }
+            if (level >= 6) {
+                animalTypes.push('ular', 'ular', 'cendawan', 'cendawan');
             }
 
             while (curX < levelWidth - 800) {
@@ -1579,12 +1589,18 @@
                     } else if (eType === 'pemburu') {
                         eObj.width = 40; eObj.height = 60; eObj.vx = enemyBaseSpeed * 0.8; eObj.minX = curX; eObj.maxX = curX + platW;
                         eObj.lastShoot = Date.now() + Math.random() * 2000;
+                    } else if (eType === 'ular') {
+                        eObj.width = 60; eObj.height = 20; eObj.vx = enemyBaseSpeed * 1.2; eObj.minX = curX; eObj.maxX = curX + platW;
+                        eObj.baseY = 400 - 20;
+                    } else if (eType === 'cendawan') {
+                        eObj.width = 35; eObj.height = 40; eObj.vx = enemyBaseSpeed * 0.9; eObj.minX = curX; eObj.maxX = curX + platW;
+                        eObj.vy = -8; eObj.baseY = 400 - 40;
                     } else {
                         eObj.width = 30; eObj.height = 30; eObj.type = 'fire';
                     }
 
                     eObj.x = eType === 'fire' ? curX + platW / 2 : curX + 20;
-                    eObj.y = eType === 'burung' ? eObj.startY : 400 - eObj.height;
+                    eObj.y = eType === 'burung' ? eObj.startY : (eType === 'ular' ? eObj.baseY : (eType === 'cendawan' ? eObj.baseY : 400 - eObj.height));
 
                     enemies.push(eObj);
                 }
@@ -1636,6 +1652,22 @@
                 for (let i = 0; i < 15; i++) {
                     ctx.beginPath(); let bx = (i * 200) - cameraX * 0.15;
                     ctx.moveTo(bx, 400); ctx.lineTo(bx + 30, 250); ctx.lineTo(bx + 60, 400); ctx.fill();
+                }
+            }
+            else if (theme === 'malam') {
+                let grad = ctx.createLinearGradient(0, 0, 0, canvas.height);
+                grad.addColorStop(0, '#0D1B2A'); grad.addColorStop(0.5, '#1B2A4A'); grad.addColorStop(1, '#152238');
+                ctx.fillStyle = grad; ctx.fillRect(0, 0, canvas.width, canvas.height);
+                ctx.fillStyle = 'rgba(255,255,255,0.7)';
+                for (let i = 0; i < 30; i++) {
+                    let sx = ((i * 97 + 50) % canvas.width);
+                    let sy = ((i * 53 + 20) % 150);
+                    ctx.beginPath(); ctx.arc(sx, sy, 1.5, 0, Math.PI * 2); ctx.fill();
+                }
+                ctx.fillStyle = '#0A1628';
+                for (let i = 0; i < 12; i++) {
+                    let bx = (i * 260) - (cameraX * 0.15 % 260);
+                    ctx.beginPath(); ctx.moveTo(bx, 400); ctx.lineTo(bx + 40, 200); ctx.lineTo(bx + 80, 400); ctx.fill();
                 }
             }
         }
@@ -1744,6 +1776,18 @@
                     if (e.y >= 400 - e.height) { e.y = 400 - e.height; if (Math.random() < 0.05) e.vy = -8; }
                 } else if (e.type === 'burung') {
                     e.x += e.vx; e.y = e.startY + Math.sin(now * 0.005) * 40;
+                } else if (e.type === 'ular') {
+                    // Ular bergerak mendatar dengan gelombang menegak
+                    e.x += e.vx;
+                    if (e.x <= e.minX || e.x + e.width >= e.maxX) e.vx *= -1;
+                    e.y = e.baseY + Math.sin(now * 0.004 + e.x * 0.02) * 8;
+                } else if (e.type === 'cendawan') {
+                    // Cendawan melantun naik turun
+                    e.x += e.vx;
+                    if (e.x <= e.minX || e.x + e.width >= e.maxX) e.vx *= -1;
+                    e.vy += 0.6;
+                    e.y += e.vy;
+                    if (e.y >= e.baseY) { e.y = e.baseY; e.vy = -9; }
                 }
 
                 if (checkCollision(player, e)) {
@@ -1847,6 +1891,44 @@
                     let faceDir = e.vx > 0 ? e.width - 15 : 5;
                     ctx.fillStyle = '#FBD38D'; ctx.fillRect(cx + faceDir, e.y + 5, 10, 15);
                     ctx.fillStyle = '#1A202C'; ctx.fillRect(cx - 5, e.y - 5, e.width + 10, 10);
+                }
+                else if (e.type === 'ular') {
+                    // Badan ular — siri bulatan hijau
+                    ctx.fillStyle = '#276749';
+                    for (let s = 0; s < 4; s++) {
+                        let sx = cx + s * 16;
+                        let sy = e.y + Math.sin(now * 0.008 + s * 1.2) * 4;
+                        ctx.beginPath(); ctx.ellipse(sx + 8, sy + 10, 10, 8, 0, 0, Math.PI * 2); ctx.fill();
+                    }
+                    // Kepala
+                    ctx.fillStyle = '#38A169';
+                    let headX = e.vx > 0 ? cx + e.width - 16 : cx;
+                    ctx.beginPath(); ctx.ellipse(headX + 8, e.y + 10, 12, 10, 0, 0, Math.PI * 2); ctx.fill();
+                    // Mata
+                    ctx.fillStyle = '#FC8181';
+                    ctx.beginPath(); ctx.arc(headX + (e.vx > 0 ? 14 : 2), e.y + 7, 3, 0, Math.PI * 2); ctx.fill();
+                    // Lidah
+                    ctx.strokeStyle = '#FC8181'; ctx.lineWidth = 1.5;
+                    ctx.beginPath();
+                    let tx = e.vx > 0 ? headX + 22 : headX - 6;
+                    ctx.moveTo(headX + (e.vx > 0 ? 20 : 0), e.y + 12);
+                    ctx.lineTo(tx, e.y + 9); ctx.lineTo(tx + (e.vx > 0 ? 4 : -4), e.y + 7);
+                    ctx.stroke();
+                }
+                else if (e.type === 'cendawan') {
+                    // Batang cendawan
+                    ctx.fillStyle = '#F6E05E';
+                    ctx.fillRect(cx + 10, e.y + 22, 15, 18);
+                    // Topi cendawan — setengah bulatan merah dengan tompokan
+                    ctx.fillStyle = '#E53E3E';
+                    ctx.beginPath(); ctx.arc(cx + 18, e.y + 22, 18, Math.PI, 0); ctx.fill();
+                    ctx.fillStyle = '#FFF5F5';
+                    ctx.beginPath(); ctx.arc(cx + 12, e.y + 16, 4, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(cx + 24, e.y + 14, 3, 0, Math.PI * 2); ctx.fill();
+                    // Mata cendawan
+                    ctx.fillStyle = '#1A202C';
+                    ctx.beginPath(); ctx.arc(cx + 14, e.y + 26, 2.5, 0, Math.PI * 2); ctx.fill();
+                    ctx.beginPath(); ctx.arc(cx + 22, e.y + 26, 2.5, 0, Math.PI * 2); ctx.fill();
                 }
                 else if (e.type === 'fire') {
                     let flicker = Math.sin(Date.now() * 0.01) * 5;
@@ -2061,7 +2143,7 @@
             gameState = 'GAMEOVER';
             hideAllScreens();
 
-            if (currentLevel < 6) {
+            if (currentLevel < 7) {
                 screens.end.classList.remove('hidden');
                 document.getElementById('endTitle').innerText = `Tahap ${currentLevel} Selesai!`;
                 document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-green-400";
@@ -2078,7 +2160,7 @@
                 screens.end.classList.remove('hidden');
                 document.getElementById('endTitle').innerText = "MISI SELESAI! 🎉";
                 document.getElementById('endTitle').className = "text-5xl font-bold mb-2 text-center text-yellow-400";
-                document.getElementById('endMessage').innerText = "Tahniah! Anda berjaya menamatkan kesemua 6 Tahap! Markah anda telah direkodkan!";
+                document.getElementById('endMessage').innerText = "Tahniah! Anda berjaya menamatkan kesemua 7 Tahap! Markah anda telah direkodkan!";
 
                 score += 5000 + (timeLeft * 5);
                 updateHUD();
@@ -2184,7 +2266,8 @@
                     2: { src: 'pulau_kukup.png', caption: 'Pulau Kukup — Tapak Ramsar Johor' },
                     3: { src: 'endau_rompin.png', caption: 'Taman Negara Endau-Rompin Johor' },
                     4: { src: 'endau_rompin_selai.png', caption: 'Endau-Rompin Selai — Johor National Park' },
-                    5: { src: 'gunung_ledang.png', caption: 'Gunung Ledang — Taman Negara Johor (Waterfall)' }
+                    5: { src: 'gunung_ledang.png', caption: 'Gunung Ledang — Taman Negara Johor (Waterfall)' },
+                    6: { src: 'gunung_ledang.png', caption: 'Misi Terakhir — Bertahan di Hutan Malam Johor!' }
                 };
 
                 if (interstitialImages[currentLevel]) {
