@@ -785,8 +785,9 @@
             <h1 class="jungle-title" style="font-size: clamp(2rem, 5vw, 4rem); margin-bottom: 1rem;">RENJER JOHOR</h1>
             <div class="jungle-panel mx-4 max-w-lg" style="overflow-y:auto; max-height:90vh;">
                 <h1 class="text-3xl font-black text-green-700 mb-2 text-center">Selamat Datang,<br><span
-                        id="displayPlayerName" class="text-red-600"></span>!</h1>
-                <h2 class="text-xl font-bold mb-4 text-gray-700">Bersedia untuk 6 Tahap Misi Taman Negara</h2>
+                        id="displayPlayerName" class="text-yellow-600"></span>!</h1>
+                <h2 class="text-lg font-bold mb-4 text-gray-700">Bersediakah anda menakluki<br><span
+                        class="text-green-700">6 Misi Rahsia Taman Negara Johor?</span></h2>
 
                 <!-- TOP 3 LEADERBOARD DI MENU UTAMA -->
                 <div id="top3MainContainer"
@@ -1283,13 +1284,16 @@
                 const card = document.createElement('div');
                 card.className = "bg-gray-50 border border-gray-200 p-2 rounded-lg relative hover:shadow transition";
                 card.innerHTML = `
-                    <p class="font-bold text-gray-900 text-xs leading-snug pr-6">${idx + 1}. ${q.q}</p>
+                    <p class="font-bold text-gray-900 text-xs leading-snug pr-14">${idx + 1}. ${q.q}</p>
                     <div class="mt-1 text-xs text-gray-500 space-y-0.5">
                         <span class="${q.answer === 0 ? 'text-green-700 font-bold' : ''}">A) ${q.options[0]}</span><br>
                         <span class="${q.answer === 1 ? 'text-green-700 font-bold' : ''}">B) ${q.options[1]}</span><br>
                         <span class="${q.answer === 2 ? 'text-green-700 font-bold' : ''}">C) ${q.options[2]}</span>
                     </div>
-                    <button onclick="deleteQuestion(${idx}, ${q.id})" title="Padam" class="absolute top-1 right-1 bg-red-100 hover:bg-red-500 text-red-700 hover:text-white rounded text-xs px-1.5 py-0.5 font-bold transition">X</button>
+                    <div class="absolute top-1 right-1 flex gap-1">
+                        <button onclick="editQuestion(${idx})" title="Edit" class="bg-blue-100 hover:bg-blue-500 text-blue-700 hover:text-white rounded text-xs px-1.5 py-0.5 font-bold transition">✏️</button>
+                        <button onclick="deleteQuestion(${idx}, ${q.id})" title="Padam" class="bg-red-100 hover:bg-red-500 text-red-700 hover:text-white rounded text-xs px-1.5 py-0.5 font-bold transition">✕</button>
+                    </div>
                 `;
                 listEl.appendChild(card);
             });
@@ -1302,6 +1306,89 @@
                 if (dbId) await removeTriviaDB(dbId);
             }
         };
+
+        window.editQuestion = async function (idx) {
+            const q = triviaDB[idx];
+            if (!q) return;
+
+            // Isi semula borang tambah soalan dengan data soalan yang dipilih
+            document.getElementById('newQuestion').value = q.q;
+            document.getElementById('newOpt0').value = q.options[0];
+            document.getElementById('newOpt1').value = q.options[1];
+            document.getElementById('newOpt2').value = q.options[2];
+            document.getElementById('newAnswer').value = q.answer;
+            document.getElementById('newDiff').value = q.diff || 1;
+
+            // Scroll ke borang
+            document.getElementById('newQuestion').scrollIntoView({ behavior: 'smooth', block: 'center' });
+            document.getElementById('newQuestion').focus();
+
+            // Tukar butang Simpan kepada mod Edit
+            const saveBtn = document.getElementById('addQuestionBtn');
+            saveBtn.innerText = '💾 Simpan Edit';
+            saveBtn.style.background = 'linear-gradient(to bottom, #3B82F6, #1D4ED8)';
+            saveBtn._editIdx = idx;
+            saveBtn._editDbId = q.id;
+            saveBtn._isEditing = true;
+
+            alert(`✏️ Soalan #${idx + 1} dimuatkan ke borang. Buat perubahan dan klik "Simpan Edit"`);
+        };
+
+        // Override addQuestionBtn untuk sokong mod edit
+        document.getElementById('addQuestionBtn').addEventListener('click', async function () {
+            const btn = this;
+            if (!btn._isEditing) return; // biarkan listener asal uruskan tambah baru
+
+            const qText = document.getElementById('newQuestion').value.trim();
+            const opt0 = document.getElementById('newOpt0').value.trim();
+            const opt1 = document.getElementById('newOpt1').value.trim();
+            const opt2 = document.getElementById('newOpt2').value.trim();
+            const ansVal = parseInt(document.getElementById('newAnswer').value);
+            const diffVal = parseInt(document.getElementById('newDiff').value);
+
+            if (!qText || !opt0 || !opt1 || !opt2) {
+                alert('Sila isi semua medan sebelum menyimpan.');
+                return;
+            }
+
+            const idx = btn._editIdx;
+            const dbId = btn._editDbId;
+
+            // Kemaskini dalam memori
+            triviaDB[idx].q = qText;
+            triviaDB[idx].options = [opt0, opt1, opt2];
+            triviaDB[idx].answer = ansVal;
+            triviaDB[idx].diff = diffVal;
+
+            // Kemaskini dalam Supabase
+            if (supabaseClient && dbId) {
+                try {
+                    await supabaseClient.from('ptnj_trivia').update({
+                        question: qText,
+                        option_a: opt0,
+                        option_b: opt1,
+                        option_c: opt2,
+                        correct_answer: ansVal,
+                        difficulty: diffVal
+                    }).eq('id', dbId);
+                } catch (e) { console.error('Edit error:', e); }
+            }
+
+            // Reset borang & butang
+            btn.innerText = 'Simpan';
+            btn.style.background = '';
+            btn._isEditing = false;
+            btn._editIdx = null;
+            btn._editDbId = null;
+
+            document.getElementById('newQuestion').value = '';
+            document.getElementById('newOpt0').value = '';
+            document.getElementById('newOpt1').value = '';
+            document.getElementById('newOpt2').value = '';
+
+            renderAdminQuestions();
+            alert('✅ Soalan berjaya dikemaskini!');
+        }, true); // capture=true supaya ini diproses dahulu
 
         document.getElementById('addQuestionBtn').addEventListener('click', async () => {
             const qText = document.getElementById('newQuestion').value.trim();
