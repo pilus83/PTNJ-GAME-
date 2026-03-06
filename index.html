@@ -205,6 +205,15 @@
             right: 0;
         }
 
+        .main-logo {
+            width: clamp(260px, 55vw, 480px);
+            max-width: 90%;
+            height: auto;
+            position: relative;
+            z-index: 10;
+            margin-bottom: 0.5rem;
+            filter: drop-shadow(0 6px 16px rgba(0, 0, 0, 0.5));
+        }
 
         .jungle-btn {
             background: linear-gradient(to bottom, #74C328, #4CA109);
@@ -524,11 +533,10 @@
             <div class="leaf-left">🌿<br>🍃<br>🌿<br>🍃<br>🌿</div>
             <div class="leaf-right">🌿<br>🍃<br>🌿<br>🍃<br>🌿</div>
 
-            <!-- Logo / Title Crest -->
-            <div class="title-crest">
-                <div class="crest-circle"></div>
-                <h1 class="jungle-title">RENJER<br>JOHOR</h1>
-            </div>
+            <!-- Logo Image -->
+            <img src="renjer_johor_logo.png" alt="RENJER JOHOR" class="main-logo"
+                onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
+            <h1 id="fallbackTitle" class="jungle-title" style="display:none;">RENJER<br>JOHOR</h1>
 
             <!-- Main Panel -->
             <div class="jungle-panel mx-4">
