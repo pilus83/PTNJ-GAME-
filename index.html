@@ -2178,24 +2178,31 @@
             });
 
             document.getElementById('nextLevelBtn').addEventListener('click', () => {
-                if (currentLevel === 1 || currentLevel === 2) {
+                // Papar interstitial untuk tahap 1 hingga 5
+                const interstitialImages = {
+                    1: { src: 'tanjung_piai.png', caption: 'Tanjung Piai — Hujung Selatan Benua Asia' },
+                    2: { src: 'pulau_kukup.png', caption: 'Pulau Kukup — Tapak Ramsar Johor' },
+                    3: { src: 'endau_rompin.png', caption: 'Taman Negara Endau-Rompin Johor' },
+                    4: { src: 'endau_rompin_selai.png', caption: 'Endau-Rompin Selai — Johor National Park' },
+                    5: { src: 'gunung_ledang.png', caption: 'Gunung Ledang — Taman Negara Johor (Waterfall)' }
+                };
+
+                if (interstitialImages[currentLevel]) {
+                    const info = interstitialImages[currentLevel];
                     document.getElementById('interstitialNameDisplay').innerText = playerName;
 
                     let imgEl = document.getElementById('interstitialImg');
-                    imgEl.classList.add('opacity-0'); // Sembunyikan sementara memuat turun
-
-                    if (currentLevel === 1) {
-                        imgEl.src = "tanjung_piai.png";
-                    } else if (currentLevel === 2) {
-                        imgEl.src = "pulau_kukup.png";
-                    }
+                    imgEl.classList.add('opacity-0');
+                    imgEl.src = info.src;
 
                     imgEl.onload = () => {
                         imgEl.classList.remove('opacity-0');
-                        imgEl.classList.add('opacity-100');
-                        imgEl.classList.add('transition-opacity');
-                        imgEl.classList.add('duration-500');
+                        imgEl.classList.add('opacity-100', 'transition-opacity', 'duration-500');
                     };
+
+                    // Kemaskini teks caption pada skrin interstitial jika ada
+                    const captionEl = document.getElementById('interstitialCaption');
+                    if (captionEl) captionEl.innerText = info.caption;
 
                     hideAllScreens();
                     screens.interstitial.classList.remove('hidden');
@@ -2203,26 +2210,10 @@
                     // Tembak bunga api (confetti)
                     let duration = 3 * 1000;
                     let end = Date.now() + duration;
-
                     (function frame() {
-                        confetti({
-                            particleCount: 5,
-                            angle: 60,
-                            spread: 55,
-                            origin: { x: 0 },
-                            zIndex: 100
-                        });
-                        confetti({
-                            particleCount: 5,
-                            angle: 120,
-                            spread: 55,
-                            origin: { x: 1 },
-                            zIndex: 100
-                        });
-
-                        if (Date.now() < end) {
-                            requestAnimationFrame(frame);
-                        }
+                        confetti({ particleCount: 5, angle: 60, spread: 55, origin: { x: 0 }, zIndex: 100 });
+                        confetti({ particleCount: 5, angle: 120, spread: 55, origin: { x: 1 }, zIndex: 100 });
+                        if (Date.now() < end) requestAnimationFrame(frame);
                     }());
 
                 } else {
