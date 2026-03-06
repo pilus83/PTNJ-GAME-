@@ -120,14 +120,53 @@
             align-items: center;
         }
 
+
+
+
+        .jungle-panel {
+            background-color: #F5E6C8;
+            border: 6px solid #8B4513;
+            border-radius: 20px;
+            box-shadow:
+                inset 0 0 0 3px #D2B48C,
+                0px 8px 15px rgba(0, 0, 0, 0.6);
+            color: #1A365D;
+            padding: 1.5rem 2rem;
+            max-width: 420px;
+            width: 90%;
+            text-align: center;
+            position: relative;
+            z-index: 10;
+        }
+
+        /* ===== PAPARAN UTAMA - CREST & LEAVES ===== */
+        .title-crest {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            margin-bottom: 0.5rem;
+            z-index: 10;
+        }
+
+        .crest-circle {
+            position: absolute;
+            width: 120px;
+            height: 120px;
+            background: radial-gradient(circle, #1a4a20 40%, #0f2d13 100%);
+            border-radius: 50%;
+            border: 4px solid #2d6a36;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.6), inset 0 0 20px rgba(0, 0, 0, 0.4);
+            z-index: 0;
+        }
+
         .jungle-title {
             font-family: 'Fredoka One', 'Titan One', 'Arial Black', sans-serif;
-            font-size: clamp(2rem, 6vw, 4rem);
+            font-size: clamp(2rem, 5vw, 3.2rem);
             color: #FFF9D2;
             text-transform: uppercase;
             letter-spacing: 2px;
             text-align: center;
-
             -webkit-text-stroke: 1px #8E4A0B;
             text-shadow:
                 0px 1px 0px #FFC107,
@@ -135,43 +174,37 @@
                 0px 4px 0px #D84315,
                 0px 6px 0px #5D4037,
                 0px 10px 10px rgba(0, 0, 0, 0.6);
-
-            margin-bottom: 1rem;
-            line-height: 1.2;
-            z-index: 10;
-            width: 100%;
-            max-width: 450px;
-            /* Match max-width with panel */
-
-            background: linear-gradient(to bottom, #C47A41, #965321);
-            padding: 20px 0;
-            border-radius: 15px;
-            /* Less rounded per screenshot */
-            border: 4px solid #4A2912;
-            box-shadow:
-                inset 0px 4px 0px rgba(255, 255, 255, 0.15),
-                inset 0px -3px 0px rgba(0, 0, 0, 0.2),
-                0px 5px 0px #311A0B,
-                0px 10px 15px rgba(0, 0, 0, 0.5);
-        }
-
-        .jungle-panel {
-            background-color: #F5E6C8;
-            border: 6px solid #8B4513;
-            border-radius: 20px;
-            /* Less rounded */
-            box-shadow:
-                inset 0 0 0 3px #D2B48C,
-                0px 8px 15px rgba(0, 0, 0, 0.6);
-            color: #1A365D;
-            /* Darker blue text per screenshot */
-            padding: 2rem 2rem;
-            max-width: 450px;
-            width: 90%;
-            text-align: center;
+            line-height: 1.1;
             position: relative;
-            z-index: 10;
+            z-index: 1;
+            padding: 10px 20px;
         }
+
+        .leaf-left,
+        .leaf-right {
+            position: absolute;
+            top: 0;
+            bottom: 0;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            font-size: clamp(3rem, 10vw, 7rem);
+            line-height: 1;
+            pointer-events: none;
+            z-index: 5;
+            opacity: 0.85;
+            gap: 0;
+        }
+
+        .leaf-left {
+            left: 0;
+            transform: scaleX(-1);
+        }
+
+        .leaf-right {
+            right: 0;
+        }
+
 
         .jungle-btn {
             background: linear-gradient(to bottom, #74C328, #4CA109);
@@ -487,31 +520,47 @@
 
         <!-- Skrin Daftar Nama -->
         <div id="registerScreen" class="overlay title-screen">
-            <h1 class="jungle-title">RENJER<br>JOHOR</h1>
+            <!-- Leaf decorations -->
+            <div class="leaf-left">🌿<br>🍃<br>🌿<br>🍃<br>🌿</div>
+            <div class="leaf-right">🌿<br>🍃<br>🌿<br>🍃<br>🌿</div>
+
+            <!-- Logo / Title Crest -->
+            <div class="title-crest">
+                <div class="crest-circle"></div>
+                <h1 class="jungle-title">RENJER<br>JOHOR</h1>
+            </div>
+
+            <!-- Main Panel -->
             <div class="jungle-panel mx-4">
-                <h2 class="text-3xl font-black text-gray-800 mb-4">Sila Masukkan Nama</h2>
-                <!-- TOP 3 -->
+                <h2 class="text-2xl font-black text-gray-800 mb-3">Sila Masukkan Nama</h2>
+
+                <!-- TOP 3 Leaderboard -->
                 <div id="top3Container"
-                    class="bg-gray-800 text-white rounded p-3 mb-4 shadow mx-auto max-w-sm hidden border border-yellow-600">
-                    <p class="text-yellow-400 font-bold mb-2">🏆 Carta 3 Teratas :</p>
-                    <div id="top3List" class="text-sm font-semibold text-left mx-6 leading-relaxed"></div>
+                    class="bg-gray-900 text-white rounded-lg p-3 mb-3 shadow mx-auto w-full border border-yellow-500"
+                    style="display:none;">
+                    <p class="text-yellow-400 font-bold mb-2 text-sm text-center">🏆 Carta 3 Teratas :</p>
+                    <div id="top3List" class="text-sm font-semibold text-left mx-2 leading-relaxed"></div>
                 </div>
-                <!-- END TOP 3 -->
-                <p class="text-gray-700 font-bold mb-6">Sila masukkan nama anda sebagai rekod pengembaraan.</p>
+
+                <p class="text-gray-700 font-semibold mb-4 text-sm">Sila masukkan nama anda sebagai
+                    rekod<br>pengembaraan.</p>
+
                 <input type="text" id="playerNameInput" placeholder="Nama Renjer (Contoh: Ali)" maxlength="15"
-                    class="w-full border-4 border-yellow-800 rounded-lg p-3 text-black text-xl mb-4 text-center focus:outline-none focus:ring-4 focus:ring-yellow-500 font-bold"
+                    class="w-full border-2 border-yellow-700 rounded-lg p-3 text-black text-lg mb-3 text-center focus:outline-none focus:ring-4 focus:ring-yellow-500 font-bold"
                     style="background-color: #FDF5E6;">
-                <button id="submitNameBtn" class="jungle-btn mb-4 flex justify-center items-center gap-2">
-                    ▶️ Daftar & Mula
+
+                <button id="submitNameBtn" class="jungle-btn mb-3 flex justify-center items-center gap-2">
+                    ▶️ Daftar &amp; Mula
                 </button>
                 <button id="openLeaderboardBtn"
-                    class="jungle-btn jungle-btn-blue mb-4 flex justify-center items-center gap-2">
+                    class="jungle-btn jungle-btn-blue mb-3 flex justify-center items-center gap-2">
                     🏆 Papan Markah
                 </button>
                 <button id="openAdminLoginBtn"
-                    class="text-sm text-green-700 hover:text-green-900 underline font-extrabold mt-2 flex justify-center items-center gap-1 mx-auto">
-                    ⚙️ Log Masuk Super Admin
+                    class="text-xs text-green-700 hover:text-green-900 underline font-extrabold mt-1 flex justify-center items-center gap-1 mx-auto">
+                    ⚙ Log Masuk Super Admin
                 </button>
+                <p class="text-xs text-gray-400 font-bold mt-2">@PILUS</p>
             </div>
         </div>
 
@@ -2140,7 +2189,7 @@
                 const list = document.getElementById('top3List');
 
                 if (!supabaseClient) {
-                    container.classList.add('hidden');
+                    container.style.display = 'none';
                     return;
                 }
 
@@ -2151,14 +2200,14 @@
 
                     if (board && board.length > 0) {
                         const deduped = deduplicateByName(board).slice(0, 3);
-                        container.classList.remove('hidden');
+                        container.style.display = 'block';
                         list.innerHTML = deduped.map((r, i) => {
                             let medal = i === 0 ? '🥇' : i === 1 ? '🥈' : '🥉';
-                            return `<div class="mb-1">${medal} <b class="text-white tracking-wider">${r.name.toUpperCase()}</b> <span class="bg-gray-700 rounded px-2 py-0.5 ml-1 drop-shadow text-yellow-300">${r.score}</span></div>`;
+                            return `<div style="background:${['linear-gradient(90deg,#7c5c00,#b8860b)', 'linear-gradient(90deg,#4a4a4a,#9e9e9e)', 'linear-gradient(90deg,#6b2b00,#a0522d)'][i]};border-radius:8px;padding:6px 10px;margin-bottom:5px;display:flex;align-items:center;justify-content:space-between;"><span style="font-size:1.2rem;">${medal}</span><b style="flex:1;margin-left:8px;font-size:0.9rem;letter-spacing:1px;">${r.name.toUpperCase()}</b><span style="background:rgba(0,0,0,0.4);border-radius:6px;padding:2px 8px;color:#FFD700;font-weight:900;">${r.score}</span></div>`;
                         }).join('');
-                    } else { container.classList.add('hidden'); }
+                    } else { container.style.display = 'none'; }
                 } catch (e) {
-                    container.classList.add('hidden');
+                    container.style.display = 'none';
                 }
             }
 
