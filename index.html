@@ -1287,17 +1287,31 @@
                 if (!listEl) return;
 
                 const card = document.createElement('div');
-                card.className = "bg-gray-50 border border-gray-200 p-2 rounded-lg relative hover:shadow transition";
+                card.className = "bg-gray-50 border border-gray-200 p-2 rounded-lg relative hover:shadow transition mb-2";
+
+                let levelBadge = "";
+                if (level == 1) levelBadge = "🟢 T1";
+                else if (level == 2) levelBadge = "🔵 T2";
+                else if (level == 3) levelBadge = "🟦 T3";
+                else if (level == 4) levelBadge = "🟡 T4";
+                else if (level == 5) levelBadge = "🟠 T5";
+                else if (level >= 6) levelBadge = "🔴 T6";
+
                 card.innerHTML = `
-                    <p class="font-bold text-gray-900 text-xs leading-snug pr-14">${idx + 1}. ${q.q}</p>
+                    <div class="flex justify-between items-start pr-14">
+                        <p class="font-bold text-gray-900 text-xs leading-snug">${idx + 1}. ${q.q}</p>
+                    </div>
                     <div class="mt-1 text-xs text-gray-500 space-y-0.5">
                         <span class="${q.answer === 0 ? 'text-green-700 font-bold' : ''}">A) ${q.options[0]}</span><br>
                         <span class="${q.answer === 1 ? 'text-green-700 font-bold' : ''}">B) ${q.options[1]}</span><br>
                         <span class="${q.answer === 2 ? 'text-green-700 font-bold' : ''}">C) ${q.options[2]}</span>
                     </div>
-                    <div class="absolute top-1 right-1 flex gap-1">
-                        <button onclick="editQuestion(${idx})" title="Edit" class="bg-blue-100 hover:bg-blue-500 text-blue-700 hover:text-white rounded text-xs px-1.5 py-0.5 font-bold transition">✏️</button>
-                        <button onclick="deleteQuestion(${idx}, ${q.id})" title="Padam" class="bg-red-100 hover:bg-red-500 text-red-700 hover:text-white rounded text-xs px-1.5 py-0.5 font-bold transition">✕</button>
+                    <div class="absolute top-1 right-1 flex gap-1 flex-col items-end">
+                        <span class="text-[10px] font-black px-1 rounded bg-gray-200 text-gray-700 mb-1">${levelBadge}</span>
+                        <div class="flex gap-1">
+                            <button onclick="editQuestion(${idx})" title="Edit" class="bg-blue-100 hover:bg-blue-500 text-blue-700 hover:text-white rounded text-xs px-1.5 py-0.5 font-bold transition">✏️</button>
+                            <button onclick="deleteQuestion(${idx}, ${q.id})" title="Padam" class="bg-red-100 hover:bg-red-500 text-red-700 hover:text-white rounded text-xs px-1.5 py-0.5 font-bold transition">✕</button>
+                        </div>
                     </div>
                 `;
                 listEl.appendChild(card);
