@@ -983,11 +983,12 @@
             if (!supabaseClient) return;
             try {
                 const { data, error } = await supabaseClient.from('ptnj_trivia').select('*');
-                if (data && data.length > 0) {
-                    triviaDB = data;
-                } else if (error) {
+                if (error) {
                     console.warn("Supabase Warning Loading Trivia:", error.message);
                     triviaDB = [...defaultTriviaDB]; // Fallback if table doesn't exist
+                } else if (data) {
+                    // Set directly to data, even if it's empty []
+                    triviaDB = data;
                 }
             } catch (e) {
                 console.error("Network Error Loading Trivia:", e);
@@ -1282,7 +1283,11 @@
             }
 
             triviaDB.forEach((q, idx) => {
-                const level = q.diff || 1; // guna diff sebagai tahap (1-6)
+                const qText = q.question || q.q;
+                const opts = q.option_a !== undefined ? [q.option_a, q.option_b, q.option_c] : q.options;
+                const ans = q.correct_answer !== undefined ? q.correct_answer : q.answer;
+                const level = q.difficulty !== undefined ? q.difficulty : (q.diff || 1);
+
                 const listEl = lists[level];
                 if (!listEl) return;
 
@@ -1299,12 +1304,12 @@
 
                 card.innerHTML = `
                     <div class="flex justify-between items-start pr-14">
-                        <p class="font-bold text-gray-900 text-xs leading-snug">${idx + 1}. ${q.q}</p>
+                        <p class="font-bold text-gray-900 text-xs leading-snug">${idx + 1}. ${qText}</p>
                     </div>
                     <div class="mt-1 text-xs text-gray-500 space-y-0.5">
-                        <span class="${q.answer === 0 ? 'text-green-700 font-bold' : ''}">A) ${q.options[0]}</span><br>
-                        <span class="${q.answer === 1 ? 'text-green-700 font-bold' : ''}">B) ${q.options[1]}</span><br>
-                        <span class="${q.answer === 2 ? 'text-green-700 font-bold' : ''}">C) ${q.options[2]}</span>
+                        <span class="${ans === 0 ? 'text-green-700 font-bold' : ''}">A) ${opts[0]}</span><br>
+                        <span class="${ans === 1 ? 'text-green-700 font-bold' : ''}">B) ${opts[1]}</span><br>
+                        <span class="${ans === 2 ? 'text-green-700 font-bold' : ''}">C) ${opts[2]}</span>
                     </div>
                     <div class="absolute top-1 right-1 flex gap-1 flex-col items-end">
                         <span class="text-[10px] font-black px-1 rounded bg-gray-200 text-gray-700 mb-1">${levelBadge}</span>
@@ -1330,13 +1335,18 @@
             const q = triviaDB[idx];
             if (!q) return;
 
+            const qText = q.question || q.q;
+            const opts = q.option_a !== undefined ? [q.option_a, q.option_b, q.option_c] : q.options;
+            const ans = q.correct_answer !== undefined ? q.correct_answer : q.answer;
+            const diff = q.difficulty !== undefined ? q.difficulty : (q.diff || 1);
+
             // Isi semula borang tambah soalan dengan data soalan yang dipilih
-            document.getElementById('newQuestion').value = q.q;
-            document.getElementById('newOpt0').value = q.options[0];
-            document.getElementById('newOpt1').value = q.options[1];
-            document.getElementById('newOpt2').value = q.options[2];
-            document.getElementById('newAnswer').value = q.answer;
-            document.getElementById('newDiff').value = q.diff || 1;
+            document.getElementById('newQuestion').value = qText;
+            document.getElementById('newOpt0').value = opts[0];
+            document.getElementById('newOpt1').value = opts[1];
+            document.getElementById('newOpt2').value = opts[2];
+            document.getElementById('newAnswer').value = ans;
+            document.getElementById('newDiff').value = diff;
 
             // Scroll ke borang
             document.getElementById('newQuestion').scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -1383,8 +1393,8 @@
                 const idx = btn._editIdx;
                 const dbId = btn._editDbId;
 
-                // Update in memory temporarily for immediate UI response
-                triviaDB[idx] = { ...triviaDB[idx], q: qText, options: [opt0, opt1, opt2], answer: ansVal, diff: diffVal };
+                // Update in memory temporarily for immediate UI response, merging Supabase payload structure
+                triviaDB[idx] = { ...triviaDB[idx], ...payload_sb, diff: diffVal };
                 renderAdminQuestions();
 
                 if (supabaseClient && dbId) {
