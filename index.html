@@ -1402,24 +1402,29 @@
                 alert('✅ Soalan berjaya dikemaskini!');
 
             } else {
-                // ADD NEW QUESTION
-                const mem_payload = { q: qText, options: [opt0, opt1, opt2], answer: ansVal, diff: diffVal };
-                triviaDB.push(mem_payload); // Optimistic addition
-                renderAdminQuestions();
-
                 if (supabaseClient) {
                     try {
-                        const { error } = await supabaseClient.from('ptnj_trivia').insert([payload_sb]);
-                        if (error) console.error('Insert error Supabase:', error);
+                        const { data, error } = await supabaseClient.from('ptnj_trivia').insert([payload_sb]).select();
+                        if (error) {
+                            console.error('Insert error Supabase:', error);
+                        } else if (data && data.length > 0) {
+                            // Sync directly with Supabase returned object which has the real ID
+                            triviaDB.push(data[0]);
+                            renderAdminQuestions();
+                        }
                     } catch (e) { console.error('Insert error:', e); }
+                } else {
+                    // Fallback for no connection
+                    const mem_payload = { q: qText, options: [opt0, opt1, opt2], answer: ansVal, diff: diffVal, id: Date.now() };
+                    triviaDB.push(mem_payload);
+                    renderAdminQuestions();
                 }
 
                 alert("✅ Soalan baharu berjaya ditambah!");
             }
 
-            // Sync with db to ensure ID maps correctly for future deletes/edits
-            await loadTriviaDB();
-            renderAdminQuestions();
+            // Also reload all data in background to be perfectly in sync
+            loadTriviaDB().then(() => renderAdminQuestions());
 
             btn.innerText = 'Simpan';
             btn.disabled = false;
@@ -2357,6 +2362,7 @@
                 document.getElementById('newOpt1').value = c.options[1];
                 document.getElementById('newOpt2').value = c.options[2];
                 document.getElementById('newAnswer').value = c.answer;
+                document.getElementById('newDiff').value = c.diff;
             });
 
             // Render Top 5 di skrin register (skrin nama)
