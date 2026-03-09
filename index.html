@@ -1895,6 +1895,7 @@
                 else if (e.type === 'ular') {
                     // Badan ular — siri bulatan hijau
                     ctx.fillStyle = '#276749';
+                    let now = Date.now();
                     for (let s = 0; s < 4; s++) {
                         let sx = cx + s * 16;
                         let sy = e.y + Math.sin(now * 0.008 + s * 1.2) * 4;
@@ -2275,8 +2276,16 @@
                     document.getElementById('interstitialNameDisplay').innerText = playerName;
 
                     let imgEl = document.getElementById('interstitialImg');
+
+                    // Reset opacity classes and clear source completely before loading new image
+                    imgEl.classList.remove('opacity-100', 'transition-opacity', 'duration-500');
                     imgEl.classList.add('opacity-0');
-                    imgEl.src = info.src;
+                    imgEl.src = ''; // Prevents the old image from being displayed momentarily
+
+                    // Put fetching in timeout to let DOM register opacity change
+                    setTimeout(() => {
+                        imgEl.src = info.src;
+                    }, 10);
 
                     imgEl.onload = () => {
                         imgEl.classList.remove('opacity-0');
