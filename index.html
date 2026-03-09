@@ -1339,11 +1339,8 @@
             alert(`✏️ Soalan #${idx + 1} dimuatkan ke borang. Buat perubahan dan klik "Simpan Edit"`);
         };
 
-        // Override addQuestionBtn untuk sokong mod edit
         document.getElementById('addQuestionBtn').addEventListener('click', async function () {
             const btn = this;
-            if (!btn._isEditing) return; // biarkan listener asal uruskan tambah baru
-
             const qText = document.getElementById('newQuestion').value.trim();
             const opt0 = document.getElementById('newOpt0').value.trim();
             const opt1 = document.getElementById('newOpt1').value.trim();
@@ -1356,81 +1353,68 @@
                 return;
             }
 
-            const idx = btn._editIdx;
-            const dbId = btn._editDbId;
+            btn.innerText = "Menyimpan...";
+            btn.disabled = true;
 
-            // Kemaskini dalam memori
-            triviaDB[idx].q = qText;
-            triviaDB[idx].options = [opt0, opt1, opt2];
-            triviaDB[idx].answer = ansVal;
-            triviaDB[idx].diff = diffVal;
+            const payload_sb = {
+                question: qText,
+                option_a: opt0,
+                option_b: opt1,
+                option_c: opt2,
+                correct_answer: ansVal,
+                difficulty: diffVal
+            };
 
-            // Kemaskini dalam Supabase
-            if (supabaseClient && dbId) {
-                try {
-                    await supabaseClient.from('ptnj_trivia').update({
-                        question: qText,
-                        option_a: opt0,
-                        option_b: opt1,
-                        option_c: opt2,
-                        correct_answer: ansVal,
-                        difficulty: diffVal
-                    }).eq('id', dbId);
-                } catch (e) { console.error('Edit error:', e); }
+            if (btn._isEditing) {
+                const idx = btn._editIdx;
+                const dbId = btn._editDbId;
+
+                // Update in memory temporarily for immediate UI response
+                triviaDB[idx] = { ...triviaDB[idx], q: qText, options: [opt0, opt1, opt2], answer: ansVal, diff: diffVal };
+                renderAdminQuestions();
+
+                if (supabaseClient && dbId) {
+                    try {
+                        const { error } = await supabaseClient.from('ptnj_trivia').update(payload_sb).eq('id', dbId);
+                        if (error) console.error('Edit error Supabase:', error);
+                    } catch (e) { console.error('Edit error:', e); }
+                }
+
+                btn.innerText = 'Simpan';
+                btn.style.background = '';
+                btn._isEditing = false;
+                btn._editIdx = null;
+                btn._editDbId = null;
+                alert('✅ Soalan berjaya dikemaskini!');
+
+            } else {
+                // ADD NEW QUESTION
+                const mem_payload = { q: qText, options: [opt0, opt1, opt2], answer: ansVal, diff: diffVal };
+                triviaDB.push(mem_payload); // Optimistic addition
+                renderAdminQuestions();
+
+                if (supabaseClient) {
+                    try {
+                        const { error } = await supabaseClient.from('ptnj_trivia').insert([payload_sb]);
+                        if (error) console.error('Insert error Supabase:', error);
+                    } catch (e) { console.error('Insert error:', e); }
+                }
+
+                alert("✅ Soalan baharu berjaya ditambah!");
             }
 
-            // Reset borang & butang
+            // Sync with db to ensure ID maps correctly for future deletes/edits
+            await loadTriviaDB();
+            renderAdminQuestions();
+
             btn.innerText = 'Simpan';
-            btn.style.background = '';
-            btn._isEditing = false;
-            btn._editIdx = null;
-            btn._editDbId = null;
-
-            document.getElementById('newQuestion').value = '';
-            document.getElementById('newOpt0').value = '';
-            document.getElementById('newOpt1').value = '';
-            document.getElementById('newOpt2').value = '';
-
-            renderAdminQuestions();
-            alert('✅ Soalan berjaya dikemaskini!');
-        }, true); // capture=true supaya ini diproses dahulu
-
-        document.getElementById('addQuestionBtn').addEventListener('click', async () => {
-            const qText = document.getElementById('newQuestion').value.trim();
-            const opt0 = document.getElementById('newOpt0').value.trim();
-            const opt1 = document.getElementById('newOpt1').value.trim();
-            const opt2 = document.getElementById('newOpt2').value.trim();
-            const ans = parseInt(document.getElementById('newAnswer').value);
-            const diff = parseInt(document.getElementById('newDiff').value);
-
-            if (!qText || !opt0 || !opt1 || !opt2) {
-                alert("Sila lengkapkan semua medan soalan dan pilihan jawapan!");
-                return;
-            }
-
-            const payload = { q: qText, options: [opt0, opt1, opt2], answer: ans, diff: diff };
-            // Optimistic UI mapping
-            triviaDB.push(payload);
-            renderAdminQuestions();
-
-            document.getElementById('addQuestionBtn').innerText = "Menyimpan...";
-            document.getElementById('addQuestionBtn').disabled = true;
-
-            await saveTriviaDB(payload);
-            await loadTriviaDB(); // Ambil balik soalan yang dah ada auto-increment ID
-            renderAdminQuestions(); // Render semula dengan ID rasmi
-
-            document.getElementById('addQuestionBtn').innerText = "Simpan";
-            document.getElementById('addQuestionBtn').disabled = false;
+            btn.disabled = false;
 
             // Clear forms
             document.getElementById('newQuestion').value = '';
             document.getElementById('newOpt0').value = '';
             document.getElementById('newOpt1').value = '';
             document.getElementById('newOpt2').value = '';
-
-            renderAdminQuestions();
-            alert("Soalan baharu berjaya ditambah!");
         });
 
         document.getElementById('openAdminLoginBtn').addEventListener('click', () => {
