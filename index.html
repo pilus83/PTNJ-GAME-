@@ -528,47 +528,100 @@
         <canvas id="gameCanvas" width="800" height="450"></canvas>
 
         <!-- Skrin Daftar Nama -->
-        <div id="registerScreen" class="overlay title-screen">
-            <!-- Leaf decorations -->
-            <div class="leaf-left">🌿<br>🍃<br>🌿<br>🍃<br>🌿</div>
-            <div class="leaf-right">🌿<br>🍃<br>🌿<br>🍃<br>🌿</div>
+        <div id="registerScreen" class="overlay flex-row justify-between items-center w-full h-full p-4 md:p-8"
+            style="background-image: url('bg_jungle.png'); background-size: cover; background-position: center; display: flex;">
 
-            <!-- Logo Image -->
-            <img src="renjer_johor_logo.png" alt="RENJER JOHOR" class="main-logo"
-                onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
-            <h1 id="fallbackTitle" class="jungle-title" style="display:none;">RENJER<br>JOHOR</h1>
+            <!-- KIRI: TOP 5 LEADERBOARD -->
+            <div class="hidden md:flex flex-col items-center justify-center h-full w-[30%]" style="max-width: 320px;">
+                <div id="top3Container" class="w-full h-full max-h-[420px]"
+                    style="background-color: #cf8b50; border: 8px solid #5C3A21; border-radius: 12px; padding: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.6); display: flex; flex-direction: column;">
+                    <div
+                        style="background-color: #FDF1D6; border: 4px dashed #A0522D; border-radius: 8px; padding: 12px; flex: 1; display: flex; flex-direction: column;">
+                        <h3 class="text-center font-black text-[#FFF9D2] mb-3 leading-tight"
+                            style="-webkit-text-stroke: 1px #8B4513; text-shadow: 2px 2px 0px #8B4513; font-size: 1.4rem; letter-spacing: 1px;">
+                            TOP 5<br>LEADERBOARD</h3>
+                        <div id="top3List" class="flex-1 flex flex-col gap-2 overflow-y-auto">
+                            <!-- Diisi oleh renderTop3 -->
+                        </div>
+                    </div>
+                </div>
+            </div>
 
-            <!-- Main Panel -->
-            <div class="jungle-panel mx-4">
-                <h2 class="text-2xl font-black text-gray-800 mb-3">Sila Masukkan Nama</h2>
+            <!-- TENGAH: LOGO & INPUT -->
+            <div class="flex flex-col items-center justify-center flex-1 h-full px-4" style="z-index: 20;">
+                <img src="renjer_johor_logo.png" alt="RENJER JOHOR"
+                    class="w-[85%] max-w-[500px] object-contain drop-shadow-2xl mb-4"
+                    onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
+                <h1 id="fallbackTitle" class="jungle-title hidden" style="font-size: clamp(3rem, 6vw, 5rem);">
+                    RENJER<br>JOHOR</h1>
 
-                <!-- TOP 3 Leaderboard -->
-                <div id="top3Container"
-                    class="bg-gray-900 text-white rounded-lg p-3 mb-3 shadow mx-auto w-full border border-yellow-500"
-                    style="display:none;">
-                    <p class="text-yellow-400 font-bold mb-2 text-sm text-center">🏆 Carta 5 Teratas :</p>
-                    <div id="top3List" class="text-sm font-semibold text-left mx-2 leading-relaxed"></div>
+                <div class="w-full max-w-[400px] px-2 mb-3">
+                    <input type="text" id="playerNameInput" placeholder="Masukkan Nama" maxlength="15"
+                        class="w-full h-[60px] text-white placeholder-[#E2B671] rounded-2xl px-6 text-center focus:outline-none shadow-inner"
+                        style="background-color: #6d3916; border: 5px solid #4a240c; text-shadow: 1px 1px 2px black; font-size: 1.3rem; font-weight: 800; font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif;">
                 </div>
 
-                <p class="text-gray-700 font-semibold mb-4 text-sm">Sila masukkan nama anda sebagai
-                    rekod<br>pengembaraan.</p>
-
-                <input type="text" id="playerNameInput" placeholder="Nama Renjer (Contoh: Ali)" maxlength="15"
-                    class="w-full border-2 border-yellow-700 rounded-lg p-3 text-black text-lg mb-3 text-center focus:outline-none focus:ring-4 focus:ring-yellow-500 font-bold"
-                    style="background-color: #FDF5E6;">
-
-                <button id="submitNameBtn" class="jungle-btn mb-3 flex justify-center items-center gap-2">
-                    ▶️ Daftar &amp; Mula
+                <button id="submitNameBtn"
+                    class="w-[200px] bg-gradient-to-b from-[#7fe92e] to-[#45a706] text-white border-4 border-[#125501] rounded-[20px] py-3 text-3xl uppercase tracking-wider hover:scale-105 active:scale-95 transition-transform"
+                    style="text-shadow: 2px 2px 0px #125501; font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif; font-weight: 900; box-shadow: inset 0px 4px 6px rgba(255,255,255,0.4), 0px 8px 15px rgba(0,0,0,0.5);">
+                    MULA
                 </button>
+
+                <!-- Social Icons -->
+                <div class="flex gap-4 justify-center mt-6">
+                    <div class="w-12 h-12 rounded-2xl bg-[#1877F2] border-2 border-white flex justify-center items-center text-white text-2xl font-bold shadow-lg"
+                        style="box-shadow: 0px 4px 8px rgba(0,0,0,0.5);">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M24 12.073c0-6.627-5.373-12-12-12s-12 5.373-12 12c0 5.99 4.388 10.954 10.125 11.854v-8.385H7.078v-3.469h3.047V9.43c0-3.007 1.792-4.669 4.533-4.669 1.312 0 2.686.235 2.686.235v2.953H15.83c-1.491 0-1.956.925-1.956 1.874v2.25h3.328l-.532 3.469h-2.796v8.385C19.612 23.027 24 18.062 24 12.073z" />
+                        </svg>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-[#FF0000] border-2 border-white flex justify-center items-center text-white text-2xl font-bold shadow-lg"
+                        style="box-shadow: 0px 4px 8px rgba(0,0,0,0.5);">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M23.498 6.186a3.016 3.016 0 0 0-2.122-2.136C19.505 3.545 12 3.545 12 3.545s-7.505 0-9.377.505A3.017 3.017 0 0 0 .502 6.186C0 8.07 0 12 0 12s0 3.93.502 5.814a3.016 3.016 0 0 0 2.122 2.136c1.871.505 9.376.505 9.376.505s7.505 0 9.377-.505a3.015 3.015 0 0 0 2.122-2.136C24 15.93 24 12 24 12s0-3.93-.502-5.814zM9.545 15.568V8.432L15.818 12l-6.273 3.568z" />
+                        </svg>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-gradient-to-tr from-[#FD1D1D] via-[#E1306C] to-[#833AB4] border-2 border-white flex justify-center items-center text-white text-2xl font-bold shadow-lg"
+                        style="box-shadow: 0px 4px 8px rgba(0,0,0,0.5);">
+                        <svg class="w-6 h-6 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M12 2.163c3.204 0 3.584.012 4.85.07 3.252.148 4.771 1.691 4.919 4.919.058 1.265.069 1.645.069 4.849 0 3.205-.012 3.584-.069 4.849-.149 3.225-1.664 4.771-4.919 4.919-1.266.058-1.644.07-4.85.07-3.204 0-3.584-.012-4.849-.07-3.26-.149-4.771-1.699-4.919-4.92-.058-1.265-.07-1.644-.07-4.849 0-3.204.013-3.583.07-4.849.149-3.227 1.664-4.771 4.919-4.919 1.266-.057 1.645-.069 4.849-.069zM12 0C8.741 0 8.333.014 7.053.072 2.695.272.273 2.69.073 7.052.014 8.333 0 8.741 0 12c0 3.259.014 3.668.072 4.948.2 4.358 2.618 6.78 6.98 6.98C8.333 23.986 8.741 24 12 24c3.259 0 3.668-.014 4.948-.072 4.354-.2 6.782-2.618 6.979-6.98.059-1.28.073-1.689.073-4.948 0-3.259-.014-3.667-.072-4.947-.196-4.354-2.617-6.78-6.979-6.98C15.668.014 15.259 0 12 0zm0 5.838a6.162 6.162 0 1 0 0 12.324 6.162 6.162 0 0 0 0-12.324zM12 16a4 4 0 1 1 0-8 4 4 0 0 1 0 8zm6.406-11.845a1.44 1.44 0 1 0 0 2.881 1.44 1.44 0 0 0 0-2.881z" />
+                        </svg>
+                    </div>
+                    <div class="w-12 h-12 rounded-2xl bg-black border-2 border-white flex justify-center items-center text-white text-2xl font-bold shadow-lg"
+                        style="box-shadow: 0px 4px 8px rgba(0,0,0,0.5);">
+                        <svg class="w-5 h-5 fill-current" viewBox="0 0 24 24">
+                            <path
+                                d="M19.59 6.69a4.83 4.83 0 0 1-3.77-4.25V2h-3.45v13.67a2.89 2.89 0 0 1-5.2 1.34 2.88 2.88 0 0 1 2.31-4.53 2.66 2.66 0 0 1 1.04.2v-3.24a5.85 5.85 0 0 0-6.64 5.43 5.84 5.84 0 0 0 5.88 5.82 5.86 5.86 0 0 0 5.83-5.83V8.12a8.14 8.14 0 0 0 4 .97v-2.4z" />
+                        </svg>
+                    </div>
+                </div>
+                <p class="text-white text-md font-black mt-2 drop-shadow-md"
+                    style="font-family: 'Fredoka One', sans-serif; text-shadow: 1px 1px 2px black;">@PILUS</p>
+            </div>
+
+            <!-- KANAN: BUTANG MENU -->
+            <div class="flex flex-col gap-4 w-[25%] max-w-[240px] items-center justify-center h-full">
                 <button id="openLeaderboardBtn"
-                    class="jungle-btn jungle-btn-blue mb-3 flex justify-center items-center gap-2">
-                    🏆 Papan Markah
+                    class="w-full h-[65px] bg-gradient-to-b from-[#4FC3F7] to-[#0288D1] border-[4px] border-[#01579B] rounded-2xl text-white font-black drop-shadow-lg flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-transform"
+                    style="font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif; box-shadow: inset 0px 3px 0px rgba(255,255,255,0.4), 0px 6px 10px rgba(0,0,0,0.5);">
+                    <span class="text-2xl drop-shadow-md">🏆</span>
+                    <span
+                        style="text-shadow: 1px 1px 0 #01579B; font-size: 1.1rem; line-height: 1.1; text-align: left;">PAPAN<br>MARKAH</span>
                 </button>
                 <button id="openAdminLoginBtn"
-                    class="text-xs text-green-700 hover:text-green-900 underline font-extrabold mt-1 flex justify-center items-center gap-1 mx-auto">
-                    ⚙ Log Masuk Super Admin
+                    class="w-full h-[60px] bg-gradient-to-b from-[#7fe92e] to-[#45a706] border-[4px] border-[#125501] rounded-2xl text-white font-black drop-shadow-lg hover:scale-105 active:scale-95 transition-transform"
+                    style="font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif; font-size: 1.3rem; text-shadow: 1px 1px 0 #005600; letter-spacing: 1px; box-shadow: inset 0px 3px 0px rgba(255,255,255,0.4), 0px 6px 10px rgba(0,0,0,0.5);">
+                    ADMIN
                 </button>
-                <p class="text-xs text-gray-400 font-bold mt-2">@PILUS</p>
+                <button id="exitGameBtn"
+                    onclick="if(confirm('Adakah anda pasti mahu keluar?')){ window.location.reload(); }"
+                    class="w-full h-[60px] bg-gradient-to-b from-[#7fe92e] to-[#45a706] border-[4px] border-[#125501] rounded-2xl text-white font-black drop-shadow-lg hover:scale-105 active:scale-95 transition-transform"
+                    style="font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif; font-size: 1.3rem; text-shadow: 1px 1px 0 #005600; letter-spacing: 1px; box-shadow: inset 0px 3px 0px rgba(255,255,255,0.4), 0px 6px 10px rgba(0,0,0,0.5);">
+                    KELUAR
+                </button>
             </div>
         </div>
 
@@ -2394,18 +2447,11 @@
                         const deduped = deduplicateByName(board).slice(0, 5);
                         container.style.display = 'block';
                         const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
-                        const backgrounds = [
-                            'linear-gradient(90deg,#7c5c00,#b8860b)',
-                            'linear-gradient(90deg,#4a4a4a,#9e9e9e)',
-                            'linear-gradient(90deg,#6b2b00,#a0522d)',
-                            'linear-gradient(90deg,#1a3a1a,#2d6a2d)',
-                            'linear-gradient(90deg,#1a3a1a,#2d6a2d)'
-                        ];
                         list.innerHTML = deduped.map((r, i) => {
-                            return `<div style="background:${backgrounds[i]};border-radius:8px;padding:5px 10px;margin-bottom:4px;display:flex;align-items:center;justify-content:space-between;">
-                                <span style="font-size:1.1rem;min-width:28px;text-align:center;">${medals[i]}</span>
-                                <b style="flex:1;margin-left:8px;font-size:0.85rem;letter-spacing:1px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${r.name.toUpperCase()}</b>
-                                <span style="background:rgba(0,0,0,0.4);border-radius:6px;padding:2px 8px;color:#FFD700;font-weight:900;font-size:0.85rem;margin-left:6px;">${r.score}</span>
+                            return `<div style="background-color: #B5652A; border: 3px solid #5C3A21; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: inset 0px 0px 4px rgba(0,0,0,0.5), 0px 4px 6px rgba(0,0,0,0.4);">
+                                <span style="font-size: 1.2rem; min-width: 28px; text-align: center; background: #fff; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); margin-right: 6px;">${medals[i]}</span>
+                                <b style="flex: 1; margin-left: 4px; font-size: 0.95rem; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white; text-shadow: 1px 1px 2px black;">${i + 1}. ${r.name.toUpperCase()}</b>
+                                <span style="color: #fff; font-weight: 900; font-size: 1rem; margin-left: 6px; text-shadow: 1px 1px 2px black;">${r.score}</span>
                             </div>`;
                         }).join('');
                     } else { container.style.display = 'none'; }
