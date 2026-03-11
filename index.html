@@ -532,17 +532,70 @@
             style="background-image: url('bg_jungle.png'); background-size: cover; background-position: center; display: flex;">
 
             <!-- KIRI: TOP 5 LEADERBOARD -->
-            <div class="hidden md:flex flex-col items-center justify-center h-full w-[30%]" style="max-width: 320px;">
-                <div id="top3Container" class="w-full h-full max-h-[420px]"
-                    style="background-color: #cf8b50; border: 8px solid #5C3A21; border-radius: 12px; padding: 12px; box-shadow: 0 10px 20px rgba(0,0,0,0.6); display: flex; flex-direction: column;">
-                    <div
-                        style="background-color: #FDF1D6; border: 4px dashed #A0522D; border-radius: 8px; padding: 12px; flex: 1; display: flex; flex-direction: column;">
-                        <h3 class="text-center font-black text-[#FFF9D2] mb-3 leading-tight"
-                            style="-webkit-text-stroke: 1px #8B4513; text-shadow: 2px 2px 0px #8B4513; font-size: 1.4rem; letter-spacing: 1px;">
-                            TOP 5<br>LEADERBOARD</h3>
-                        <div id="top3List" class="flex-1 flex flex-col gap-2 overflow-y-auto">
-                            <!-- Diisi oleh renderTop3 -->
+            <style>
+                @keyframes glowPulse {
+
+                    0%,
+                    100% {
+                        box-shadow: 0 0 12px 4px #38bdf8, 0 0 30px 8px rgba(56, 189, 248, 0.3), inset 0 0 20px rgba(56, 189, 248, 0.08);
+                    }
+
+                    50% {
+                        box-shadow: 0 0 22px 8px #38bdf8, 0 0 50px 16px rgba(56, 189, 248, 0.5), inset 0 0 36px rgba(56, 189, 248, 0.16);
+                    }
+                }
+
+                #top3Container {
+                    animation: glowPulse 2.5s ease-in-out infinite;
+                }
+
+                .lb-row {
+                    transition: transform 0.15s, background 0.15s;
+                }
+
+                .lb-row:hover {
+                    transform: scale(1.03);
+                    background: #1e3a5f !important;
+                }
+            </style>
+            <div class="hidden md:flex flex-col items-center justify-center h-full w-[30%]" style="max-width: 300px;">
+                <div id="top3Container" class="w-full flex flex-col" style="background: linear-gradient(170deg, #0d1f3c 0%, #0a1628 100%);
+                           border: 3px solid #38bdf8;
+                           border-radius: 18px;
+                           padding: 14px 12px 16px;
+                           position: relative;">
+
+                    <!-- Notch bawah (decorative) -->
+                    <div style="position:absolute; bottom:-2px; left:50%; transform:translateX(-50%);
+                                width:60px; height:14px; background:#0a1628;
+                                border-left: 3px solid #38bdf8; border-right: 3px solid #38bdf8;
+                                border-radius: 0 0 10px 10px;"></div>
+
+                    <!-- Header Hijau dengan daun -->
+                    <div style="background: linear-gradient(135deg, #22c55e, #16a34a);
+                                border: 3px solid #166534;
+                                border-radius: 14px;
+                                padding: 8px 16px;
+                                text-align: center;
+                                margin-bottom: 14px;
+                                position: relative;
+                                box-shadow: 0 4px 12px rgba(0,0,0,0.5), inset 0 1px 0 rgba(255,255,255,0.2);">
+                        <!-- Daun kiri -->
+                        <span
+                            style="position:absolute; left:4px; top:-8px; font-size:1.4rem; transform:rotate(-30deg);">🍃</span>
+                        <span
+                            style="position:absolute; right:4px; top:-8px; font-size:1.4rem; transform:rotate(30deg) scaleX(-1);">🍃</span>
+                        <div
+                            style="font-family:'Fredoka One','Arial Black',sans-serif; font-size:1.05rem; font-weight:900;
+                                    color:#fff; text-shadow: 1px 2px 4px rgba(0,0,0,0.6); letter-spacing:2px; line-height:1.2;">
+                            TOP 5<br>LEADERBOARD
                         </div>
+                    </div>
+
+                    <!-- Senarai -->
+                    <div id="top3List" class="flex flex-col gap-2">
+                        <!-- Diisi oleh renderTop3 -->
+                        <div style="text-align:center; color:#94a3b8; font-size:0.8rem; padding:8px;">Memuatkan...</div>
                     </div>
                 </div>
             </div>
@@ -2445,13 +2498,30 @@
 
                     if (board && board.length > 0) {
                         const deduped = deduplicateByName(board).slice(0, 5);
-                        container.style.display = 'block';
-                        const medals = ['🥇', '🥈', '🥉', '4️⃣', '5️⃣'];
+                        container.style.display = 'flex';
+
+                        // Medal icons matching the design image
+                        const medalIcons = [
+                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:linear-gradient(135deg,#ffd700,#ff8c00);border-radius:50%;border:2px solid #b8860b;font-size:1rem;flex-shrink:0;">🥇</span>`,
+                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:linear-gradient(135deg,#c0c0c0,#808080);border-radius:50%;border:2px solid #a0a0a0;font-size:1rem;flex-shrink:0;">🥈</span>`,
+                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:linear-gradient(135deg,#cd7f32,#8b4513);border-radius:50%;border:2px solid #a0522d;font-size:1rem;flex-shrink:0;">🥉</span>`,
+                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1e3a5f;border-radius:50%;border:2px solid #2d5a8e;font-size:0.85rem;color:#94a3b8;font-weight:900;flex-shrink:0;">4</span>`,
+                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1a2840;border-radius:50%;border:2px solid #2a4a6e;font-size:0.85rem;color:#64748b;font-weight:900;flex-shrink:0;">5</span>`
+                        ];
+
+                        const rowBg = [
+                            'linear-gradient(90deg, rgba(255,215,0,0.08), rgba(30,40,70,0.9))',
+                            'linear-gradient(90deg, rgba(192,192,192,0.07), rgba(25,35,60,0.9))',
+                            'linear-gradient(90deg, rgba(205,127,50,0.07), rgba(22,32,55,0.9))',
+                            'rgba(13,25,48,0.85)',
+                            'rgba(10,20,40,0.85)'
+                        ];
+
                         list.innerHTML = deduped.map((r, i) => {
-                            return `<div style="background-color: #B5652A; border: 3px solid #5C3A21; border-radius: 8px; padding: 8px 12px; margin-bottom: 8px; display: flex; align-items: center; justify-content: space-between; box-shadow: inset 0px 0px 4px rgba(0,0,0,0.5), 0px 4px 6px rgba(0,0,0,0.4);">
-                                <span style="font-size: 1.2rem; min-width: 28px; text-align: center; background: #fff; border-radius: 50%; width: 28px; height: 28px; display: flex; align-items: center; justify-content: center; box-shadow: inset 0 2px 4px rgba(0,0,0,0.3); margin-right: 6px;">${medals[i]}</span>
-                                <b style="flex: 1; margin-left: 4px; font-size: 0.95rem; letter-spacing: 1px; white-space: nowrap; overflow: hidden; text-overflow: ellipsis; color: white; text-shadow: 1px 1px 2px black;">${i + 1}. ${r.name.toUpperCase()}</b>
-                                <span style="color: #fff; font-weight: 900; font-size: 1rem; margin-left: 6px; text-shadow: 1px 1px 2px black;">${r.score}</span>
+                            return `<div class="lb-row" style="background:${rowBg[i]};border:1px solid rgba(56,189,248,0.18);border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.4);">
+                                ${medalIcons[i]}
+                                <span style="flex:1;font-family:'Fredoka One','Arial Rounded MT Bold',sans-serif;font-size:0.88rem;font-weight:900;color:#38bdf8;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${i + 1}. ${r.name.toUpperCase()}</span>
+                                <span style="color:#fff;font-weight:900;font-size:0.95rem;font-family:'Fredoka One',sans-serif;letter-spacing:0.5px;">${r.score}</span>
                             </div>`;
                         }).join('');
                     } else { container.style.display = 'none'; }
