@@ -557,8 +557,49 @@
                     transform: scale(1.03);
                     background: #1e3a5f !important;
                 }
+
+                /* Mobile: susun semula layout */
+                @media (max-width: 768px) {
+                    #registerScreen {
+                        flex-direction: column !important;
+                        justify-content: flex-start !important;
+                        overflow-y: auto !important;
+                        padding: 8px !important;
+                        gap: 8px;
+                    }
+                    #leaderboardSide {
+                        width: 100% !important;
+                        max-width: 100% !important;
+                        order: 2;
+                        height: auto !important;
+                    }
+                    #centerSection {
+                        width: 100% !important;
+                        flex: none !important;
+                        order: 1;
+                        height: auto !important;
+                    }
+                    #rightSection {
+                        width: 100% !important;
+                        max-width: 100% !important;
+                        order: 3;
+                        flex-direction: row !important;
+                        justify-content: center !important;
+                        gap: 8px !important;
+                        height: auto !important;
+                    }
+                    #rightSection button {
+                        flex: 1 !important;
+                        width: auto !important;
+                        height: 50px !important;
+                        font-size: 0.85rem !important;
+                    }
+                    #top3Container {
+                        max-height: none;
+                    }
+                }
             </style>
-            <div class="hidden md:flex flex-col items-center justify-center h-full w-[30%]" style="max-width: 300px;">
+            <div id="leaderboardSide" class="flex flex-col items-center justify-center h-full w-[30%]" style="max-width: 300px;">
                 <div id="top3Container" class="w-full flex flex-col" style="background: linear-gradient(170deg, #0d1f3c 0%, #0a1628 100%);
                            border: 3px solid #38bdf8;
                            border-radius: 18px;
@@ -601,7 +642,7 @@
             </div>
 
             <!-- TENGAH: LOGO & INPUT -->
-            <div class="flex flex-col items-center justify-center flex-1 h-full px-4" style="z-index: 20;">
+            <div id="centerSection" class="flex flex-col items-center justify-center flex-1 h-full px-4" style="z-index: 20;">
                 <img src="renjer_johor_logo.png" alt="RENJER JOHOR"
                     class="w-[85%] max-w-[500px] object-contain drop-shadow-2xl mb-4"
                     onerror="this.style.display='none'; document.getElementById('fallbackTitle').style.display='block';">
@@ -656,7 +697,7 @@
             </div>
 
             <!-- KANAN: BUTANG MENU -->
-            <div class="flex flex-col gap-4 w-[25%] max-w-[240px] items-center justify-center h-full">
+            <div id="rightSection" class="flex flex-col gap-4 w-[25%] max-w-[240px] items-center justify-center h-full">
                 <button id="openLeaderboardBtn"
                     class="w-full h-[65px] bg-gradient-to-b from-[#4FC3F7] to-[#0288D1] border-[4px] border-[#01579B] rounded-2xl text-white font-black drop-shadow-lg flex items-center justify-center gap-3 hover:scale-105 active:scale-95 transition-transform"
                     style="font-family: 'Fredoka One', 'Arial Rounded MT Bold', sans-serif; box-shadow: inset 0px 3px 0px rgba(255,255,255,0.4), 0px 6px 10px rgba(0,0,0,0.5);">
@@ -2500,28 +2541,58 @@
                         const deduped = deduplicateByName(board).slice(0, 5);
                         container.style.display = 'flex';
 
-                        // Medal icons matching the design image
-                        const medalIcons = [
-                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:linear-gradient(135deg,#ffd700,#ff8c00);border-radius:50%;border:2px solid #b8860b;font-size:1rem;flex-shrink:0;">🥇</span>`,
-                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:linear-gradient(135deg,#c0c0c0,#808080);border-radius:50%;border:2px solid #a0a0a0;font-size:1rem;flex-shrink:0;">🥈</span>`,
-                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:linear-gradient(135deg,#cd7f32,#8b4513);border-radius:50%;border:2px solid #a0522d;font-size:1rem;flex-shrink:0;">🥉</span>`,
-                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1e3a5f;border-radius:50%;border:2px solid #2d5a8e;font-size:0.85rem;color:#94a3b8;font-weight:900;flex-shrink:0;">4</span>`,
-                            `<span style="display:inline-flex;align-items:center;justify-content:center;width:32px;height:32px;background:#1a2840;border-radius:50%;border:2px solid #2a4a6e;font-size:0.85rem;color:#64748b;font-weight:900;flex-shrink:0;">5</span>`
-                        ];
+                        const nameColors = ['#fde047', '#ffffff', '#f97316', '#ffffff', '#ffffff'];
+
+                        function getMedalHtml(i) {
+                            if (i === 0) {
+                                // Gold with wings + red ribbons
+                                return `<div style="position:relative;width:44px;height:44px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <svg style="position:absolute;top:50%;left:-18px;transform:translateY(-50%);width:24px;height:24px;color:#fbbf24;filter:drop-shadow(0 2px 1px rgba(0,0,0,0.5));" viewBox="0 0 24 24" fill="#fbbf24" stroke="#78350f" stroke-width="1.5"><path d="M22 12c-4 0-8-2-10-6 0 4-4 6-10 6 6 0 10 2 10 6 0-4 4-6 10-6z"/></svg>
+                                    <svg style="position:absolute;top:50%;right:-18px;transform:translateY(-50%) scaleX(-1);width:24px;height:24px;color:#fbbf24;filter:drop-shadow(0 2px 1px rgba(0,0,0,0.5));" viewBox="0 0 24 24" fill="#fbbf24" stroke="#78350f" stroke-width="1.5"><path d="M22 12c-4 0-8-2-10-6 0 4-4 6-10 6 6 0 10 2 10 6 0-4 4-6 10-6z"/></svg>
+                                    <div style="position:absolute;bottom:-10px;left:5px;width:14px;height:22px;border-radius:2px;background:#dc2626;border:2px solid #7f1d1d;transform:rotate(25deg);z-index:-1;"></div>
+                                    <div style="position:absolute;bottom:-10px;right:5px;width:14px;height:22px;border-radius:2px;background:#dc2626;border:2px solid #7f1d1d;transform:rotate(-25deg);z-index:-1;"></div>
+                                    <div style="position:relative;width:100%;height:100%;border-radius:50%;background:linear-gradient(to bottom,#fde047,#f59e0b,#b45309);border:3px solid #78350f;box-shadow:inset 0 2px 4px rgba(255,255,255,0.8),0 4px 6px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;color:white;font-size:1.3rem;font-family:'Lilita One','Fredoka One',cursive;z-index:1;text-shadow:-1px -1px 0 #78350f,1px -1px 0 #78350f,-1px 1px 0 #78350f,1px 1px 0 #78350f;">1</div>
+                                </div>`;
+                            } else if (i === 1) {
+                                // Silver + red ribbons
+                                return `<div style="position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <div style="position:absolute;bottom:-10px;left:5px;width:14px;height:22px;border-radius:2px;background:#dc2626;border:2px solid #7f1d1d;transform:rotate(25deg);z-index:-1;"></div>
+                                    <div style="position:absolute;bottom:-10px;right:5px;width:14px;height:22px;border-radius:2px;background:#dc2626;border:2px solid #7f1d1d;transform:rotate(-25deg);z-index:-1;"></div>
+                                    <div style="position:relative;width:100%;height:100%;border-radius:50%;background:linear-gradient(to bottom,#f1f5f9,#cbd5e1,#64748b);border:3px solid #334155;box-shadow:inset 0 2px 4px rgba(255,255,255,0.9),0 4px 6px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;color:white;font-size:1.2rem;font-family:'Lilita One','Fredoka One',cursive;z-index:1;text-shadow:-2px -2px 0 #0f172a,2px -2px 0 #0f172a,-2px 2px 0 #0f172a,2px 2px 0 #0f172a,0 3px 0 #080c16;">2</div>
+                                </div>`;
+                            } else if (i === 2) {
+                                // Bronze + grey ribbons
+                                return `<div style="position:relative;width:40px;height:40px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <div style="position:absolute;bottom:-10px;left:5px;width:14px;height:22px;border-radius:2px;background:#4b5563;border:2px solid #1f2937;transform:rotate(25deg);z-index:-1;"></div>
+                                    <div style="position:absolute;bottom:-10px;right:5px;width:14px;height:22px;border-radius:2px;background:#4b5563;border:2px solid #1f2937;transform:rotate(-25deg);z-index:-1;"></div>
+                                    <div style="position:relative;width:100%;height:100%;border-radius:50%;background:linear-gradient(to bottom,#fdba74,#ea580c,#9a3412);border:3px solid #5a1b06;box-shadow:inset 0 2px 4px rgba(255,255,255,0.5),0 4px 6px rgba(0,0,0,0.6);display:flex;align-items:center;justify-content:center;color:white;font-size:1.2rem;font-family:'Lilita One','Fredoka One',cursive;z-index:1;text-shadow:-1px -1px 0 #78350f,1px -1px 0 #78350f,-1px 1px 0 #78350f,1px 1px 0 #78350f;">3</div>
+                                </div>`;
+                            } else if (i === 4) {
+                                // Cyan diamond for rank 5
+                                return `<div style="position:relative;width:28px;height:28px;margin-right:4px;display:flex;align-items:center;justify-content:center;flex-shrink:0;">
+                                    <svg style="position:absolute;width:100%;height:100%;color:#38bdf8;filter:drop-shadow(0 0 4px #38bdf8);" viewBox="0 0 24 24" fill="none" stroke="#38bdf8" stroke-width="3"><rect x="5" y="5" width="14" height="14" transform="rotate(45 12 12)"/></svg>
+                                    <div style="width:6px;height:6px;background:white;border-radius:2px;transform:rotate(45deg);"></div>
+                                </div>`;
+                            } else {
+                                // Rank 4 plain
+                                return `<span style="display:inline-flex;align-items:center;justify-content:center;width:28px;height:28px;color:#94a3b8;font-family:'Lilita One','Fredoka One',cursive;font-size:1rem;flex-shrink:0;">${i+1}.</span>`;
+                            }
+                        }
 
                         const rowBg = [
-                            'linear-gradient(90deg, rgba(255,215,0,0.08), rgba(30,40,70,0.9))',
-                            'linear-gradient(90deg, rgba(192,192,192,0.07), rgba(25,35,60,0.9))',
-                            'linear-gradient(90deg, rgba(205,127,50,0.07), rgba(22,32,55,0.9))',
-                            'rgba(13,25,48,0.85)',
-                            'rgba(10,20,40,0.85)'
+                            'linear-gradient(to bottom,#2f3e57,#1c273a)',
+                            'linear-gradient(to bottom,#2f3e57,#1c273a)',
+                            'linear-gradient(to bottom,#2f3e57,#1c273a)',
+                            'linear-gradient(to bottom,#2f3e57,#1c273a)',
+                            'linear-gradient(to bottom,#2f3e57,#1c273a)'
                         ];
 
                         list.innerHTML = deduped.map((r, i) => {
-                            return `<div class="lb-row" style="background:${rowBg[i]};border:1px solid rgba(56,189,248,0.18);border-radius:12px;padding:8px 10px;display:flex;align-items:center;gap:8px;box-shadow:0 2px 8px rgba(0,0,0,0.4);">
-                                ${medalIcons[i]}
-                                <span style="flex:1;font-family:'Fredoka One','Arial Rounded MT Bold',sans-serif;font-size:0.88rem;font-weight:900;color:#38bdf8;letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;">${i + 1}. ${r.name.toUpperCase()}</span>
-                                <span style="color:#fff;font-weight:900;font-size:0.95rem;font-family:'Fredoka One',sans-serif;letter-spacing:0.5px;">${r.score}</span>
+                            const paddingLeft = i === 0 ? '52px' : (i <= 2 ? '48px' : i === 4 ? '4px' : '4px');
+                            return `<div class="lb-row" style="position:relative;background:${rowBg[i]};border:3px solid #101827;border-radius:12px;padding:10px 12px;display:flex;align-items:center;box-shadow:inset 0 2px 0 rgba(255,255,255,0.1),0 4px 0 #0b101a;margin-bottom:2px;">
+                                ${getMedalHtml(i)}
+                                <span style="padding-left:${i===0?'14px':i<=2?'10px':'4px'};flex:1;font-family:'Lilita One','Fredoka One',cursive;font-size:0.88rem;color:${nameColors[i]};letter-spacing:0.5px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;text-shadow:-2px -2px 0 #0f172a,2px -2px 0 #0f172a,-2px 2px 0 #0f172a,2px 2px 0 #0f172a,0 3px 0 #080c16;">${i + 1}. ${r.name.toUpperCase()}</span>
+                                <span style="color:#38bdf8;font-family:'Lilita One','Fredoka One',cursive;font-size:0.95rem;text-shadow:-2px -2px 0 #0f172a,2px -2px 0 #0f172a,-2px 2px 0 #0f172a,2px 2px 0 #0f172a;">${r.score}</span>
                             </div>`;
                         }).join('');
                     } else { container.style.display = 'none'; }
